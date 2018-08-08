@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>PhishDetect - Anti-Phishing Service</title>
+    <link rel="stylesheet" href="/static/css/tailwind.min.css">
+    <link rel="stylesheet" href="/static/font-awesome/css/fontawesome-all.min.css">
+</head>
+<body class="bg-grey-lighter">
+    <div id="container" class="container mx-auto justify-center items-center bg-white p-16 mt-16 mb-16 rounded-lg">
+        <div class="text-center mb-6">
+            <img src="/static/images/icon.png" class="h-16 mb-4" />
+            <h1 class="font-normal"><b>PhishDetect</b> Check</h1>
+        </div>
+
+        <div style="text-align: center;">
+            <div id="status">
+                <div style="margin-top: 30px;margin-bottom: 30px;">We are analyzing the link. This might take a few moments...<br /><a target="_blank" href="https://phishdetect.io/" class="text-blue hover:text-blue-darker hover:no-underline">Click here</a> for more information on this service.</div>
+                <div><img src="/static/images/rolling.gif" class="h-32" /></div>
+            </div>
+        </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    $.post({
+        url: "/analyze/",
+        data: {
+            "url": "{{url|safe}}",
+            "html": "{{html}}",
+            "tor": "{{tor}}",
+            "force": "{{force}}",
+            "screenshot": "{{screenshot}}"
+        },
+        dataType: "html",
+        contentType: "application/x-www-form-urlencoded ",
+        cache: false,
+        timeout: 120000,
+        success: function(response) {
+            $("#container").html(response);
+            $(document).trigger("warningLoaded");
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log(textStatus);
+            console.log(errorThrown);
+            $("#status").html("<div class=\"border-l-8 border-red-lighter bg-red-lightest p-6 rounded-lg text-left text-red-darker\"><b>Error! Something failed while analyzing the link!</b><br /><a href=\"javascript:location.reload();\" class=\"text-red-darker hover:no-underline\">Do you want to try again?</a> If the error persists, please get in contact with the operators of this PhishDetect Node.</div>");
+        }
+    });
+});
+
+$(document).on("warningLoaded", function() {
+    $("#warnings").on("hide.bs.collapse", function() {
+        $("#warningsLink").html("More details <i class=\"fa fa-plus-square\" aria-hidden=\"true\"></i>");
+    });
+
+    $("#warnings").on("show.bs.collapse", function() {
+        $("#warningsLink").html("Less details <i class=\"fa fa-minus-square\" aria-hidden=\"true\"></i>");
+    });
+
+    /*$("#contactForm").submit(function(event) {
+        event.preventDefault();
+
+        if (document.forms["contactForm"]["contact"].value == "") {
+            $("#contactMsg").addClass("text-danger");
+            $("#contactMsg").text("Please enter a valid contact!");
+        } else {
+            var formURL = $(this).attr("action");
+            var postData = $(this).serializeArray();
+
+            $.ajax({
+                url: formURL,
+                type: "POST",
+                crossDomain: false,
+                data: postData,
+                success: function(data, textStatus, jqXHR) {
+                    $("#contactDiv").html("Thank you for leaving your contact!");
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $("#contactDiv").html("Sorry, something failed leaving your contact...");
+                }
+            });
+        }
+    });*/
+});
+</script>
+</body>
+</html>
