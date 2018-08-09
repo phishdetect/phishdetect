@@ -1,7 +1,7 @@
-<center><p><i class="fas fa-exclamation-triangle" style="font-size: 90px;" aria-hidden="true"></i></p></center>
+<div class="text-center mb-8"><i class="fas fa-exclamation-triangle" style="font-size: 90px;" aria-hidden="true"></i></div>
 
 {% if errors %}
-<div class="alert alert-danger">
+<div class="border-l-8 border-red-lighter mb-8 bg-red-lightest text-red-darker p-6 rounded-lg leading-normal">
     <b>Sorry!</b> We were <b>not able</b> to analyze the provided URL <span class="mono">{{url}}</span>
     <p>The following errors occurred:</p>
     <ul>
@@ -12,39 +12,39 @@
 </div>
 {% else %}
     {% if oauth %}
-        <div class="alert alert-danger">While this is a legitimate Google site, <b>this link would grant an external application access to your account</b>! While this might have legitimate uses, it can also be a popular attack technique called <b>OAuth Phishing</b>. You can find more information about it <a target="_blank" href="https://duo.com/blog/gmail-oauth-phishing-goes-viral">here</a>. Unless you are absolutely certain about its legitimacy, <b>we recommend to not proceed</b>.</div>
+        <!--TODO:
+            <div class="alert alert-danger">While this is a legitimate Google site, <b>this link would grant an external application access to your account</b>! While this might have legitimate uses, it can also be a popular attack technique called <b>OAuth Phishing</b>. You can find more information about it <a target="_blank" href="https://duo.com/blog/gmail-oauth-phishing-goes-viral">here</a>. Unless you are absolutely certain about its legitimacy, <b>we recommend to not proceed</b>.</div>-->
     {% else %}
         {% if whitelisted %}
 
         {% else %}
             {% if score >= 30 and score <= 60 %}
-            <div class="alert alert-warning">
-                You tried to visit <span class="mono">{{url}}</span><br />This website has suspicious properties. This is <b>possibly a phishing site{% if brand %} impersonating <i class="fab fa-{{brand}}"></i> {{brand|capfirst}}{% endif %}</b>. Please proceed with caution.
+            <div class="border-l-8 border-yellow-lighter mb-8 bg-yellow-lightest text-yellow-darker p-6 rounded-lg leading-normal">
+                <div>You tried to visit <span class="font-mono">{{url}}</span><br />This website has suspicious properties. This is <b>possibly a phishing site{% if brand %} impersonating <i class="fab fa-{{brand}}"></i> {{brand|capfirst}}{% endif %}</b>. Please proceed with caution.</div>
             {% elif score > 60 %}
-            <div class="alert alert-danger">
-                You tried to visit <span class="mono">{{url}}</span><br />This website has very suspicious properties. This is <b>highly likely a phishing site{% if brand %} impersonating <i class="fab fa-{{brand}}"></i> {{brand|capfirst}}{% endif %}</b>. We recommend to not proceed to this page.
+            <div class="border-l-8 border-red-lighter mb-8 bg-red-lightest text-red-darker p-6 rounded-lg leading-normal">
+                <div>You tried to visit <span class="font-mono">{{url}}</span><br />This website has very suspicious properties. This is <b>highly likely a phishing site{% if brand %} impersonating <i class="fab fa-{{brand}}"></i> {{brand|capfirst}}{% endif %}</b>. We recommend to not proceed to this page.</div>
             {% endif %}
 
-                <div style="text-align: right;"><a data-toggle="collapse" href="#warnings" aria-expanded="true" aria-controls="warnings" id="warningsLink">More details <i class="fa fa-plus-square" aria-hidden="true"></i></a></div>
+                <h4 class="mt-4">Warnings</h4>
 
                 <div id="warnings" class="collapse" role="tabpanel">
-                    <table class="table table-sm">
-                        <tr><th style="border: 0;">Warnings</th></tr>
-                    {% for warning in warnings %}
-                        <tr><td style="border: 0;">&bull; {{warning.Description}}</td></tr>
-                    {% endfor %}
-                    </table>
+                    <ul>
+                        {% for warning in warnings %}
+                        <li>{{warning.Description}}</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         {% endif %}
     {% endif %}
 
     {% if urlFinal and url != urlFinal %}
-    <p>The original link <span class="mono">{{url}}</span> redirected to the final URL <span class="mono">{{urlFinal}}</span></p>
+    <div>The original link <span class="font-mono">{{url}}</span> redirected to the final URL <span class="font-mono">{{urlFinal}}</span></div>
+    {% endif %}
+
+    <div class="mb-4">Following is a screenshot preview of the website.{% if brand and not whitelisted %} Bear in mind, <b>this website is not a legitimate {{brand|capfirst}} site.</b>{% endif %}</div>
+    <div class="text-center"><img class="rounded-lg shadow-lg w-full border-t-2 border-grey-lighter" src="{{screenshot}}" width="100%" alt="Screenshot not available" /></div>
 {% endif %}
 
-<p>Following is a screenshot preview of the website.{% if brand and not whitelisted %} Bear in mind, <b>this website is not a legitimate {{brand|capfirst}} site.</b>{% endif %}</p>
-<center><img class="rounded border" src="{{screenshot}}" width="100%" alt="Screenshot not available" /></center>
-{% endif %}
-
-<p style="margin: 25px;"><center><a href="{{url}}" class="btn btn-lg btn-danger" role="button" onclick="return confirm('Are you sure?');">Continue anyway at my own risk!</a></center></p>
+<div class="text-center mt-16"><a href="{{url}}" class="border-b-8 rounded text-xl cursor-pointer px-6 py-4 no-underline bg-red border-red-dark text-white hover:bg-red-light hover:border-red" role="button" onclick="return confirm('Are you sure?');">Continue anyway at my own risk!</a></div>
