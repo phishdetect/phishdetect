@@ -43,7 +43,7 @@
     {% endif %}
 
     {% if urlFinal and url != urlFinal %}
-    <div>The original link <span class="font-mono">{{url}}</span> redirected to the final URL <span class="font-mono">{{urlFinal}}</span></div>
+    <div class="mb-8">The original link <span class="font-mono bg-grey-lighter">{{url}}</span> redirected to the final URL <span class="font-mono bg-grey-lighter">{{urlFinal}}</span></div>
     {% endif %}
 
     <div class="mb-4">Following is a screenshot preview of the website.{% if brand and not whitelisted %} Bear in mind, <b>this website is not a legitimate {{brand|capfirst}} site.</b>{% endif %}</div>
