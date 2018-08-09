@@ -27,7 +27,7 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 		"support", "suport",
 		"unlock",
 		"update",
-		"verify", "verification", "everivcation", "verifications",
+		"verify", "verification", "everivcation", "verifications", "veryfication", "veryfications",
 		"wallet",
 	}
 
