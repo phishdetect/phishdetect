@@ -30,10 +30,9 @@ while navigating to the suspicious link.
 
 Install Docker Community Edition for [Windows](https://download.docker.com/win/stable/Docker%20for%20Windows%20Installer.exe), [Mac](https://download.docker.com/mac/stable/Docker.dmg) or [Linux](https://docs.docker.com/install/linux/docker-ce/ubuntu/).
 
-Create the Docker container (please keep "phishdetect" as tag):
+Download the Docker image from Docker Hub using:
 
-    $ cd docker
-    $ docker build . -t phishdetect
+    $ docker pull phishdetect/phishdetect
 
 Once the Docker image is created you can proceed building the binaries.
 Proceed cloning the Git repository:

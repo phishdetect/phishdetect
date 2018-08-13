@@ -107,7 +107,7 @@ func (b *Browser) startContainer() error {
 	}
 
 	config := &container.Config{
-		Image: "phishdetect",
+		Image: "phishdetect/phishdetect",
 		Env:   envs,
 		ExposedPorts: nat.PortSet{
 			"9222/tcp": struct{}{},
