@@ -8,7 +8,6 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
-	"github.com/goware/urlx"
 	"github.com/mafredri/cdp"
 	"github.com/mafredri/cdp/devtool"
 	"github.com/mafredri/cdp/protocol/dom"
@@ -39,20 +38,8 @@ type Browser struct {
 
 // NewBrowser instantiates a new Browser struct.
 func NewBrowser(url string, screenshotPath string, useTor bool) *Browser {
-	// We normalize the URL in case it misses a scheme or other components.
-	url = strings.TrimSpace(url)
-	newURL, _ := urlx.Parse(url)
-	normalized, _ := urlx.Normalize(newURL)
-	if normalized == "" {
-		normalized = url
-	} else {
-		if normalized != url {
-			log.Info("The URL was normalized to ", normalized)
-		}
-	}
-
 	return &Browser{
-		URL:            normalized,
+		URL:            url,
 		ScreenshotPath: screenshotPath,
 		UseTor:         useTor,
 	}

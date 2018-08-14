@@ -196,6 +196,8 @@ func analyze(w http.ResponseWriter, r *http.Request) {
 	// force 	:= r.PostFormValue("force")
 
 	html := ""
+
+	// For the moment, urlFinal will be the original URL.
 	urlFinal := url
 
 	// If there is no specified HTML string, it means we need to open the link.
@@ -264,6 +266,7 @@ func analyze(w http.ResponseWriter, r *http.Request) {
 	if analysis.Whitelisted || analysis.Score < 30 {
 		err := tmplRedirect.ExecuteWriter(pongo.Context{
 			"url":         url,
+			"normalized":  analysis.NormalizedURL,
 			"urlFinal":    urlFinal,
 			"sha1":        urlSHA1,
 			"brand":       brand,
@@ -282,6 +285,7 @@ func analyze(w http.ResponseWriter, r *http.Request) {
 	// Otherwise we show the warning.
 	err = tmplWarning.ExecuteWriter(pongo.Context{
 		"url":        url,
+		"normalized": analysis.NormalizedURL,
 		"urlFinal":   urlFinal,
 		"sha1":       urlSHA1,
 		"warnings":   analysis.Warnings,
