@@ -2,43 +2,28 @@ package phishdetect
 
 import (
 	"errors"
-	"github.com/goware/urlx"
 	log "github.com/sirupsen/logrus"
-	"strings"
 )
 
 // Analysis contains information on the outcome of the URL and/or HTML analysis.
 type Analysis struct {
-	URL           string
-	NormalizedURL string
-	FinalURL      string
-	HTML          string
-	Warnings      []Check
-	Score         int
-	Whitelisted   bool
-	Brands        *Brands
+	URL         string
+	FinalURL    string
+	HTML        string
+	Warnings    []Check
+	Score       int
+	Whitelisted bool
+	Brands      *Brands
 }
 
 // NewAnalysis instantiates a new Analysis struct.
 func NewAnalysis(url, html string) *Analysis {
 	brands := NewBrands()
-	url = strings.TrimSpace(url)
-	cleanURL, _ := urlx.Parse(url)
-	normalized, _ := urlx.Normalize(cleanURL)
-	if normalized == "" {
-		normalized = url
-	} else {
-		if normalized != url {
-			log.Info("The URL was normalized to ", normalized)
-		}
-	}
-
 	return &Analysis{
-		URL:           url,
-		NormalizedURL: normalized,
-		FinalURL:      url,
-		HTML:          html,
-		Brands:        brands,
+		URL:      url,
+		FinalURL: url,
+		HTML:     html,
+		Brands:   brands,
 	}
 }
 

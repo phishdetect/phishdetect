@@ -7,7 +7,7 @@
 <div class="border-l-8 border-green-lighter mb-8 bg-green-lightest text-green-darker p-6 rounded-lg leading-normal">The domain the link leads to is <b>whitelisted</b>! It appears to be a legitimate {% if brand %}<i class="fab fa-{{brand}}"></i> <b>{{brand|capfirst}}</b>{% endif %} site.</div>
 {% endif %}
 
-<div class="border-l-8 border-blue-lighter mb-8 bg-blue-lightest text-blue-darker p-6 rounded-lg leading-normal"><b>Please notice:</b></br />No suspicious elements have been found in this page. <b>This does not guarantee that the page is completely safe</b> (for example, it might evade our detection or identify our service and redirect instead to a legitimate page), please always be cautious. You are going to be redirected to the original link <span class="mono"><a class="text-blue-darker hover:no-underline" href="{{url}}">{{url}}</a></span> in <span id="counter" style="font-weight: bold;">30</span> seconds (<a class="text-blue-darker hover:no-underline" id="stopCounter" href="#">stop counter</a>)...</div>
+<div class="border-l-8 border-blue-lighter mb-8 bg-blue-lightest text-blue-darker p-6 rounded-lg leading-normal"><b>Please notice:</b></br />No suspicious elements have been found in this page. <b>This does not guarantee that the page is completely safe</b> (for example, it might evade our detection or identify our service and redirect instead to a legitimate page), please always be cautious. You are going to be redirected to the original link <span class="mono"><a class="text-blue-darker hover:no-underline" href="{{urlNormalized}}">{{url}}</a></span> in <span id="counter" style="font-weight: bold;">30</span> seconds (<a class="text-blue-darker hover:no-underline" id="stopCounter" href="#">stop counter</a>)...</div>
 
 {% if urlFinal and url != urlFinal %}
 <div class="mb-8">The original URL <span class="font-mono bg-grey-lighter">{{url}}</span> redirected to the final URL <span class="font-mono bg-grey-lighter">{{urlFinal}}</span></div>
@@ -16,7 +16,7 @@
 <div class="mb-4">Following is a screenshot preview of the website.</div>
 <div class="text-center"><img class="rounded-lg shadow-lg w-full border-t-2 border-grey-lighter" src="{{screenshot}}" /></div>
 
-<div class="text-center mt-16"><a href="{{url}}" class="border-b-8 rounded text-xl cursor-pointer px-6 py-4 no-underline bg-blue border-blue-dark text-white hover:bg-blue-light hover:border-blue">Continue to the link now</a></div>
+<div class="text-center mt-16"><a href="{{urlNormalized}}" class="border-b-8 rounded text-xl cursor-pointer px-6 py-4 no-underline bg-blue border-blue-dark text-white hover:bg-blue-light hover:border-blue">Continue to the link now</a></div>
 
 <script src="/static/js/jquery.min.js"></script>
 <script>

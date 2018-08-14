@@ -199,12 +199,13 @@ func analyze(w http.ResponseWriter, r *http.Request) {
 
 	// For the moment, urlFinal will be the original URL.
 	urlFinal := url
+	urlNormalized := phishdetect.NormalizeURL(url)
 
 	// If there is no specified HTML string, it means we need to open the link.
 	if htmlEncoded == "" {
 		// We do some validation checks for the URL to avoid potential file
 		// disclosure issues.
-		linkTest, err := phishdetect.NewLink(url)
+		linkTest, err := phishdetect.NewLink(urlNormalized)
 		if err != nil {
 			log.Error(err)
 			errorPage(w, "Something failed parsing the link. It might be invalid.")
@@ -218,7 +219,7 @@ func analyze(w http.ResponseWriter, r *http.Request) {
 		// Setting Docker API version.
 		os.Setenv("DOCKER_API_VERSION", apiVersion)
 		// Instantiate new browser and open the link.
-		browser := phishdetect.NewBrowser(url, "", tor)
+		browser := phishdetect.NewBrowser(urlNormalized, "", tor)
 		err = browser.Run()
 		if err != nil {
 			log.Error(err)
@@ -265,13 +266,13 @@ func analyze(w http.ResponseWriter, r *http.Request) {
 	// redirect to the original link.
 	if analysis.Whitelisted || analysis.Score < 30 {
 		err := tmplRedirect.ExecuteWriter(pongo.Context{
-			"url":         url,
-			"normalized":  analysis.NormalizedURL,
-			"urlFinal":    urlFinal,
-			"sha1":        urlSHA1,
-			"brand":       brand,
-			"whitelisted": analysis.Whitelisted,
-			"screenshot":  screenshot,
+			"url":           url,
+			"urlNormalized": urlNormalized,
+			"urlFinal":      urlFinal,
+			"sha1":          urlSHA1,
+			"brand":         brand,
+			"whitelisted":   analysis.Whitelisted,
+			"screenshot":    screenshot,
 		}, w)
 		if err != nil {
 			log.Error(err)
@@ -284,14 +285,14 @@ func analyze(w http.ResponseWriter, r *http.Request) {
 
 	// Otherwise we show the warning.
 	err = tmplWarning.ExecuteWriter(pongo.Context{
-		"url":        url,
-		"normalized": analysis.NormalizedURL,
-		"urlFinal":   urlFinal,
-		"sha1":       urlSHA1,
-		"warnings":   analysis.Warnings,
-		"brand":      brand,
-		"score":      analysis.Score,
-		"screenshot": screenshot,
+		"url":           url,
+		"urlNormalized": urlNormalized,
+		"urlFinal":      urlFinal,
+		"sha1":          urlSHA1,
+		"warnings":      analysis.Warnings,
+		"brand":         brand,
+		"score":         analysis.Score,
+		"screenshot":    screenshot,
 	}, w)
 	if err != nil {
 		log.Error(err)

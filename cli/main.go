@@ -54,7 +54,7 @@ func main() {
 		log.Debug("Instantiated url-only analysis.")
 		analysis = phishdetect.NewAnalysis(url, "")
 	} else {
-		browser = phishdetect.NewBrowser(url, *screenPath, *tor)
+		browser = phishdetect.NewBrowser(phishdetect.NormalizeURL(url), *screenPath, *tor)
 		err := browser.Run()
 		if err != nil {
 			log.Fatal(err)

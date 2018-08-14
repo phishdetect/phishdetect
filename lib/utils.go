@@ -1,6 +1,7 @@
 package phishdetect
 
 import (
+	"github.com/goware/urlx"
 	"strings"
 )
 
@@ -26,5 +27,18 @@ func SliceContains(slice []string, item string) bool {
 			return true
 		}
 	}
+
 	return false
+}
+
+// NormalizeURL fixes a URL that is e.g. missing a scheme, etc.
+func NormalizeURL(url string) string {
+	url = strings.TrimSpace(url)
+	cleanURL, _ := urlx.Parse(url)
+	normalized, _ := urlx.Normalize(cleanURL)
+	if normalized == "" {
+		normalized = url
+	}
+
+	return normalized
 }
