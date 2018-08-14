@@ -22,9 +22,9 @@ type Analysis struct {
 // NewAnalysis instantiates a new Analysis struct.
 func NewAnalysis(url, html string) *Analysis {
 	brands := NewBrands()
-	url = strings.TrimSpace(url)
-	newURL, _ := urlx.Parse(url)
-	normalized, _ := url.Normalize(newURL)
+	
+	url, _ := urlx.Parse(strings.TrimSpace(url))
+	normalized, _ := urlx.Normalize(newURL)
 	if normalized == "" {
 		normalized = url
 	} else {
