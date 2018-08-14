@@ -25,7 +25,7 @@ function countdown() {
 
     if (parseInt(cnt.innerHTML) <= 0) {
         clearInterval(counter);
-        location.href = "{{url}}";
+        location.href = "{{urlNormalized}}";
     } else {
         cnt.innerHTML = parseInt(cnt.innerHTML) - 1;
     }
