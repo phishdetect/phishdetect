@@ -76,6 +76,21 @@ func checkEncodedText(link *Link, page *Page, brands *Brands) bool {
 	return false
 }
 
+// This is mostly used for brand identification.
+// We actually give it a score of 0, so that it doesn't influence classification.
+func checkBrandOriginal(link *Link, page *Page, brands *Brands) bool {
+	for _, brand := range brands.List {
+		for _, keyword := range brand.Original {
+			if TextContains(page.Text, keyword) {
+				brand.Matches++
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
 func checkSuspiciousText(link *Link, page *Page, brands *Brands) bool {
 	// TODO: Need to move these in brands.
 	patterns := []string{
@@ -271,6 +286,12 @@ func checkMultiAuth(link *Link, page *Page, brands *Brands) bool {
 // GetHTMLChecks returns a list of all the available HTML checks.
 func GetHTMLChecks() []Check {
 	return []Check{
+		Check{
+			checkBrandOriginal,
+			0,
+			"brand-original",
+			"The page contains mentions of original brand names (e.g. \"Google\", \"Facebook\", etc.)",
+		},
 		Check{
 			checkHiddenInput,
 			5,
