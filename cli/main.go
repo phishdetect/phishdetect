@@ -85,6 +85,16 @@ func main() {
 	}
 	log.Info("Whitelisted: ", analysis.Whitelisted)
 	log.Info("Final score: ", analysis.Score)
+
+	log.Debug("All brands scores:")
+	for _, brand := range analysis.Brands.List {
+		if brand.Matches == 0 {
+			continue
+		}
+
+		log.Debug("\t- ", brand.Name, ": ", brand.Matches)
+	}
+
 	log.Info("Brand: ", brand)
 	log.Info("Warnings:")
 	for _, warning := range analysis.Warnings {
