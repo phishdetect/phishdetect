@@ -5,7 +5,7 @@
 
 {% if errors %}
 <div class="border-l-8 border-red-lighter mb-8 bg-red-lightest text-red-darker p-6 rounded-lg leading-normal">
-    <b>Sorry!</b> We were <b>not able</b> to analyze the provided URL <span class="mono">{{url}}</span>
+    <b>Sorry!</b> We were <b>not able</b> to analyze the provided URL <span class="font-mono">{{url}}</span>
     <p>The following errors occurred:</p>
     <ul>
         {% for error in errors %}
@@ -23,10 +23,10 @@
         {% else %}
             {% if score >= 30 and score <= 60 %}
             <div class="border-l-8 border-yellow-lighter mb-8 bg-yellow-lightest text-yellow-darker p-6 rounded-lg leading-normal">
-                <div>You tried to visit <span class="font-mono">{{url}}</span><br />This website has suspicious properties. This is <b>possibly a phishing site{% if brand %} impersonating <i class="fab fa-{{brand}}"></i> {{brand|capfirst}}{% endif %}</b>. Please proceed with caution.</div>
+                <div>You tried to visit <span class="font-mono" style="word-break: break-all;">{{url}}</span><br />This website has suspicious properties. This is <b>possibly a phishing site{% if brand %} impersonating <i class="fab fa-{{brand}}"></i> {{brand|capfirst}}{% endif %}</b>. Please proceed with caution.</div>
             {% elif score > 60 %}
             <div class="border-l-8 border-red-lighter mb-8 bg-red-lightest text-red-darker p-6 rounded-lg leading-normal">
-                <div>You tried to visit <span class="font-mono">{{url}}</span><br />This website has very suspicious properties. This is <b>highly likely a phishing site{% if brand %} impersonating <i class="fab fa-{{brand}}"></i> {{brand|capfirst}}{% endif %}</b>. We recommend to not proceed to this page.</div>
+                <div>You tried to visit <span class="font-mono" style="word-break: break-all;">{{url}}</span><br />This website has very suspicious properties. This is <b>highly likely a phishing site{% if brand %} impersonating <i class="fab fa-{{brand}}"></i> {{brand|capfirst}}{% endif %}</b>. We recommend to not proceed to this page.</div>
             {% endif %}
 
                 <h4 class="mt-4">Warnings</h4>
@@ -43,7 +43,7 @@
     {% endif %}
 
     {% if urlFinal and url != urlFinal %}
-    <div class="mb-8">The original link <span class="font-mono bg-grey-lighter">{{url}}</span> redirected to the final URL <span class="font-mono bg-grey-lighter">{{urlFinal}}</span></div>
+    <div class="mb-8">The original link <span class="font-mono bg-grey-lighter" style="word-break: break-all;">{{url}}</span> redirected to the final URL <span class="font-mono bg-grey-lighter" style="word-break: break-all;">{{urlFinal}}</span></div>
     {% endif %}
 
     <div class="mb-4">Following is a screenshot preview of the website.{% if brand and not whitelisted %} Bear in mind, <b>this website is not a legitimate {{brand|capfirst}} site.</b>{% endif %}</div>
