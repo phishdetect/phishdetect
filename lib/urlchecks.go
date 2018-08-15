@@ -41,10 +41,14 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 	for _, word := range words {
 		for _, brand := range brands.List {
 			if SliceContains(brand.Suspicious, word) {
-				brand.Matches++
+				// A suspicious brand name in the domain should have more weight than
+				// anything.
+				brand.Matches += 10
 				return true
 			} else if SliceContains(brand.Original, word) {
-				brand.Matches++
+				// A brand name in a domain should have more weight than a brand name in the
+				// page HTML.
+				brand.Matches += 3
 				high++
 			}
 		}
