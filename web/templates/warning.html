@@ -28,7 +28,7 @@
             {% if score >= 30 and score <= 50 %}
             <div class="border-l-8 border-yellow-lighter mb-8 bg-yellow-lightest text-yellow-darker p-6 rounded-lg leading-normal">
                 <div style="word-break: break-all;">You tried to visit: <span class="font-mono bg-yellow-lighter text-yellow-darkest">{{url}}</span></div>
-                <div>This website has suspicious properties. This is <b>possibly a phishing site{% if brand %} impersonating <i class="fab fa-{{brand}}"></i> {{brand|capfirst}}{% endif %}</b>. Please proceed with caution.</div>
+                <div>This website has suspicious properties. This is <b>could be a phishing site{% if brand %} impersonating <i class="fab fa-{{brand}}"></i> {{brand|capfirst}}{% endif %}</b>, but we couldn't determine more conclusively. Please proceed with caution.</div>
             {% elif score > 50 %}
             <div class="border-l-8 border-red-lighter mb-8 bg-red-lightest text-red-darker p-6 rounded-lg leading-normal">
                 <div style="word-break: break-all;">You tried to visit <span class="font-mono bg-red-lighter text-red-darkest">{{url}}</span></div>
