@@ -324,7 +324,7 @@ func GetHTMLChecks() []Check {
 			checkNoIndexRobots,
 			10,
 			"noindex",
-			"The page explicitely forbids search sites to index it",
+			"The page explicitly forbids search sites to index it",
 		},
 		Check{
 			checkIFrameWithPHP,
