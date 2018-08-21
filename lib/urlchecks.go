@@ -176,43 +176,43 @@ func checkB64Parameters(link *Link, page *Page, brands *Brands) bool {
 // GetURLChecks returns a list of all the available URL checks.
 func GetURLChecks() []Check {
 	return []Check{
-		Check{
+		{
 			checkSuspiciousHostname,
 			30,
 			"suspicious-hostname",
 			"The domain contains suspicious words",
 		},
-		Check{
+		{
 			checkSuspiciousTLD,
 			5,
 			"suspicious-tld",
 			"The domain uses a suspicious TLD",
 		},
-		Check{
+		{
 			checkSuspiciousBridges,
 			30,
 			"suspicious-bridges",
 			"The domain uses very suspicious patterns used for bad domains composition",
 		},
-		Check{
+		{
 			checkEncodedDomain,
 			50,
 			"encoded-domain",
 			"The domain contains special characters to mimic known brands",
 		},
-		Check{
+		{
 			checkExcessivePunct,
 			20,
 			"excessive-punct",
 			"The domain has suspicious amount of dots and dashes",
 		},
-		Check{
+		{
 			checkNoTLS,
 			20,
 			"no-tls",
 			"The website is not using a secure transport layer (HTTPS)",
 		},
-		Check{
+		{
 			checkB64Parameters,
 			5,
 			"base64-parameters",

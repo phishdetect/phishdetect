@@ -302,85 +302,85 @@ func checkMultiAuth(link *Link, page *Page, brands *Brands) bool {
 // GetHTMLChecks returns a list of all the available HTML checks.
 func GetHTMLChecks() []Check {
 	return []Check{
-		Check{
+		{
 			checkBrandOriginal,
 			0,
 			"brand-original",
 			"The page contains mentions of original brand names (e.g. \"Google\", \"Facebook\", etc.)",
 		},
-		Check{
+		{
 			checkHiddenInput,
 			5,
 			"hidden-input",
 			"The page contains an hidden input",
 		},
-		Check{
+		{
 			checkPasswordInput,
 			10,
 			"password-input",
 			"The page contains a password input",
 		},
-		Check{
+		{
 			checkNoIndexRobots,
 			10,
 			"noindex",
 			"The page explicitly forbids search sites to index it",
 		},
-		Check{
+		{
 			checkIFrameWithPHP,
 			15,
 			"php-iframe",
 			"The page contains a frame loading a PHP page",
 		},
-		Check{
+		{
 			checkSigninData,
 			20,
 			"signin-data",
 			"The page contains sign-in data, suggesting it is a clone",
 		},
-		Check{
+		{
 			checkSuspiciousTitle,
 			20,
 			"suspicious-title",
 			"The page has a suspicious title",
 		},
-		Check{
+		{
 			checkTwoFactor,
 			20,
 			"two-factor",
 			"The page may attempt to steal the two-factor authentication token",
 		},
-		Check{
+		{
 			checkDecrypt,
 			20,
 			"decrypt",
 			"The page contains decryption routines",
 		},
-		Check{
+		{
 			checkPHPFormAction,
 			20,
 			"php-form",
 			"The page contains a form pointing to a PHP script",
 		},
-		Check{
+		{
 			checkSuspiciousText,
 			25,
 			"suspicious-text",
 			"The page contains suspicious text",
 		},
-		Check{
+		{
 			checkEscapedText,
 			25,
 			"escaped-text",
 			"The page is escaping brand words with HTML entities to evade detection",
 		},
-		Check{
+		{
 			checkEncodedText,
 			25,
 			"encoded-text",
 			"The page is obfuscating brand words to evade detection",
 		},
-		Check{
+		{
 			checkMultiAuth,
 			20,
 			"multi-auth",
