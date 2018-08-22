@@ -1,7 +1,8 @@
-BUILD_FOLDER	= $(shell pwd)/build
+GOPATH        = ${GOPATH}
+BUILD_FOLDER  = $(shell pwd)/build
 
-FLAGS_DARWIN	= GOOS=darwin
-FLAGS_WINDOWS	= GOOS=windows GOARCH=386 CC=i686-w64-mingw32-gcc CGO_ENABLED=1
+FLAGS_DARWIN  = GOOS=darwin
+FLAGS_WINDOWS = GOOS=windows GOARCH=386 CC=i686-w64-mingw32-gcc CGO_ENABLED=1
 
 lint:
 	@echo "[lint] Running linter on codebase"
@@ -16,7 +17,7 @@ deps:
 	go get -u github.com/gobuffalo/packr/...
 
 	@echo "[deps] Need to fix an issue with Docker client vendoring..."
-	rm -rf $GOPATH/src/github.com/docker/docker/vendor/github.com/docker/go-connections
+	rm -rf $(GOPATH)/src/github.com/docker/docker/vendor/github.com/docker/go-connections
 
 	@echo "[deps] Done!"
 
