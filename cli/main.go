@@ -21,9 +21,9 @@ import (
 	"github.com/mattn/go-colorable"
 	"github.com/phishdetect/phishdetect/lib"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"os"
 	"strings"
-	"io/ioutil"
 )
 
 var (

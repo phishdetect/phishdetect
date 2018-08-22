@@ -18,10 +18,10 @@ package phishdetect
 
 import (
 	"encoding/base64"
+	"github.com/google/safebrowsing"
+	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
-	log "github.com/sirupsen/logrus"
-	"github.com/google/safebrowsing"
 )
 
 var SafeBrowsingKey string = ""
