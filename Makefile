@@ -1,4 +1,3 @@
-GOPATH        = ${GOPATH}
 BUILD_FOLDER  = $(shell pwd)/build
 
 FLAGS_DARWIN  = GOOS=darwin
