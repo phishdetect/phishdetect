@@ -28,6 +28,7 @@ import (
 	"github.com/mattn/go-colorable"
 	"github.com/phishdetect/phishdetect/lib"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -36,8 +37,9 @@ import (
 )
 
 var (
-	portNumber string
-	apiVersion string
+	portNumber   string
+	apiVersion   string
+	safeBrowsing string
 
 	templatesBox packr.Box
 	staticBox    packr.Box
@@ -62,6 +64,7 @@ func init() {
 	debug := flag.Bool("debug", false, "Enable debug logging")
 	flag.StringVar(&portNumber, "port", "7856", "Specify which port number to bind the service on")
 	flag.StringVar(&apiVersion, "api-version", "1.37", "Specify which Docker API version to use (default: 1.37)")
+	flag.StringVar(&safeBrowsing, "safebrowsing", "", "Specify a file path containing your Google SafeBrowsing API key (default: disabled)")
 	flag.Parse()
 
 	if *debug {
@@ -69,6 +72,18 @@ func init() {
 	}
 	log.SetFormatter(&log.TextFormatter{ForceColors: true})
 	log.SetOutput(colorable.NewColorableStdout())
+
+	if safeBrowsing != "" {
+		if _, err := os.Stat(safeBrowsing); err == nil {
+			buf, _ := ioutil.ReadFile(safeBrowsing)
+			key := string(buf)
+			if key != "" {
+				phishdetect.SafeBrowsingKey = key
+			}
+		} else {
+			log.Warning("The specified Google SafeBrowsing API key file does not exist. Check disabled.")
+		}
+	}
 
 	templatesBox = packr.NewBox("templates")
 	staticBox = packr.NewBox("static")
