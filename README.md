@@ -1,4 +1,6 @@
-[![Go Report Card][goreportcard-badge]][goreportcard] [![GoDoc][godoc-badge]][godoc]
+[![Build Status](https://api.travis-ci.org/phishdetect/phishdetect.png?branch=master)](https://travis-ci.org/phishdetect/phishdetect)
+[![Go Report Card][goreportcard-badge]][goreportcard]
+[![GoDoc][godoc-badge]][godoc]
 
 # PhishDetect
 
