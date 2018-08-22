@@ -133,7 +133,7 @@ like the following and only allow you continue visiting the link after manual co
 
 First install the PhishDetect library dependency:
 
-    $ go get -u -d github.com/phishdetect/phishdetect/lib/...
+    $ go get -u -d github.com/phishdetect/phishdetect/...
 
 ### Analyzing a link statically
 
@@ -144,7 +144,7 @@ package main
 
 import (
     "fmt"
-    "github.com/phishdetect/phishdetect/lib"
+    "github.com/phishdetect/phishdetect"
 )
 
 func main() {
@@ -183,7 +183,7 @@ package main
 
 import (
     "fmt"
-    "github.com/phishdetect/phishdetect/lib"
+    "github.com/phishdetect/phishdetect"
 )
 
 func main() {
@@ -231,8 +231,8 @@ For more information, please refer to the [Godoc][godoc].
 
 PhishDetect is released under GNU Affero General Public License 3.0 and is copyrighted to Claudio Guarnieri.
 
-[goreportcard]: https://goreportcard.com/report/github.com/phishdetect/phishdetect/lib
-[goreportcard-badge]: https://goreportcard.com/badge/github.com/phishdetect/phishdetect/lib
-[godoc]: https://godoc.org/github.com/phishdetect/phishdetect/lib
-[godoc-badge]: https://godoc.org/phishdetect/phishdetect/lib?status.svg
+[goreportcard]: https://goreportcard.com/report/github.com/phishdetect/phishdetect
+[goreportcard-badge]: https://goreportcard.com/badge/github.com/phishdetect/phishdetect
+[godoc]: https://godoc.org/github.com/phishdetect/phishdetect
+[godoc-badge]: https://godoc.org/phishdetect/phishdetect?status.svg
 

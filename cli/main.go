@@ -19,8 +19,9 @@ package main
 import (
 	"flag"
 	"github.com/mattn/go-colorable"
-	"github.com/phishdetect/phishdetect/lib"
+	"github.com/phishdetect/phishdetect"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -39,11 +40,12 @@ func initLogging(debug *bool) {
 }
 
 func main() {
-	debug := flag.Bool("debug", false, "Enable debug logging")
-	tor := flag.Bool("tor", false, "Route connection through the Tor network")
+	debug := flag.Bool("debug", false, "Enable debug logging (default: disabled)")
+	tor := flag.Bool("tor", false, "Route connection through the Tor network (default: disabled)")
 	apiVersion := flag.String("api-version", "1.37", "Specify which Docker API version to use (default: 1.37)")
-	urlOnly := flag.Bool("url-only", false, "Only perform URL analysis")
-	screenPath := flag.String("screen", "", "Specify the file path to store the screenshot")
+	urlOnly := flag.Bool("url-only", false, "Only perform URL analysis (default: disabled)")
+	screenPath := flag.String("screen", "", "Specify the file path to store the screenshot (default: disabled)")
+	safeBrowsing := flag.String("safebrowsing", "", "Specify a file path containing your Google SafeBrowsing API key (default: disabled)")
 	flag.Parse()
 	args := flag.Args()
 
@@ -54,10 +56,23 @@ func main() {
 	log.Debug("Flags: Docker API Version: ", *apiVersion)
 	log.Debug("Flags: only URL analysis: ", *urlOnly)
 	log.Debug("Flags: screenshot path: ", *screenPath)
+	log.Debug("Flags: Google SafeBrowsing API key file: ", *safeBrowsing)
 	log.Debug("Flags: arguments: ", args)
 
 	if len(args) == 0 {
 		log.Fatal("You need to provide a valid URL to be analyzed!")
+	}
+
+	if *safeBrowsing != "" {
+		if _, err := os.Stat(*safeBrowsing); err == nil {
+			buf, _ := ioutil.ReadFile(*safeBrowsing)
+			key := string(buf)
+			if key != "" {
+				phishdetect.SafeBrowsingKey = key
+			}
+		} else {
+			log.Warning("The specified Google SafeBrowsing API key file does not exist. Check disabled.")
+		}
 	}
 
 	os.Setenv("DOCKER_API_VERSION", *apiVersion)
