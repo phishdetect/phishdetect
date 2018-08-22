@@ -20,7 +20,11 @@ import (
 	"encoding/base64"
 	"regexp"
 	"strings"
+	log "github.com/sirupsen/logrus"
+	"github.com/google/safebrowsing"
 )
+
+var SafeBrowsingKey string = ""
 
 func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 	lowSuspects := []string{
@@ -173,6 +177,35 @@ func checkB64Parameters(link *Link, page *Page, brands *Brands) bool {
 	return false
 }
 
+func checkGoogleSafeBrowsing(link *Link, page *Page, brands *Brands) bool {
+	if SafeBrowsingKey == "" {
+		return false
+	}
+
+	log.Debug("Using Google SafeBrowsing API key: ", SafeBrowsingKey)
+
+	sb, err := safebrowsing.NewSafeBrowser(safebrowsing.Config{
+		APIKey: SafeBrowsingKey,
+	})
+	if err != nil {
+		return false
+	}
+
+	threats, err := sb.LookupURLs([]string{link.URL})
+	if err != nil {
+		return false
+	}
+
+	if len(threats[0]) > 0 {
+		for _, threat := range threats {
+			log.Debug(threat)
+		}
+		return true
+	}
+
+	return false
+}
+
 // GetURLChecks returns a list of all the available URL checks.
 func GetURLChecks() []Check {
 	return []Check{
@@ -217,6 +250,12 @@ func GetURLChecks() []Check {
 			5,
 			"base64-parameters",
 			"The link might contain base64 encoded parameters (low confidence)",
+		},
+		{
+			checkGoogleSafeBrowsing,
+			100,
+			"google-safebrowsing",
+			"The link is listed in Google SafeBrowsing as malicious",
 		},
 	}
 }
