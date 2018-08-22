@@ -188,11 +188,13 @@ func checkGoogleSafeBrowsing(link *Link, page *Page, brands *Brands) bool {
 		APIKey: SafeBrowsingKey,
 	})
 	if err != nil {
+		log.Error(err.Error())
 		return false
 	}
 
 	threats, err := sb.LookupURLs([]string{link.URL})
 	if err != nil {
+		log.Error(err.Error())
 		return false
 	}
 
@@ -201,6 +203,8 @@ func checkGoogleSafeBrowsing(link *Link, page *Page, brands *Brands) bool {
 			log.Debug(threat)
 		}
 		return true
+	} else {
+		log.Debug("No Google SafeBrowsing threats found for this URL")
 	}
 
 	return false
