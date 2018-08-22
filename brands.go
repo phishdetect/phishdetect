@@ -17,7 +17,7 @@
 package phishdetect
 
 import (
-	"github.com/phishdetect/phishdetect/lib/brand"
+	"github.com/phishdetect/phishdetect/brand"
 )
 
 // Brands defines the attribute of our list of supported brands.

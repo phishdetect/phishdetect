@@ -19,7 +19,7 @@ package main
 import (
 	"flag"
 	"github.com/mattn/go-colorable"
-	"github.com/phishdetect/phishdetect/lib"
+	"github.com/phishdetect/phishdetect"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"

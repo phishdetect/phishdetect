@@ -26,7 +26,7 @@ import (
 	"github.com/gobuffalo/packr"
 	"github.com/gorilla/mux"
 	"github.com/mattn/go-colorable"
-	"github.com/phishdetect/phishdetect/lib"
+	"github.com/phishdetect/phishdetect"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
