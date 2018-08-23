@@ -1,5 +1,6 @@
 BUILD_FOLDER  = $(shell pwd)/build
 
+FLAGS_LINUX   = GOOS=linux
 FLAGS_DARWIN  = GOOS=darwin
 FLAGS_WINDOWS = GOOS=windows GOARCH=386 CC=i686-w64-mingw32-gcc CGO_ENABLED=1
 
@@ -29,10 +30,10 @@ linux:
 	@mkdir -p $(BUILD_FOLDER)/linux
 
 	@echo "[builder] Building Linux CLI executable"
-	@cd cli; go build --ldflags '-s -w' -o $(BUILD_FOLDER)/linux/phishdetect-cli
+	@cd cli; $(FLAGS_LINUX) go build --ldflags '-s -w' -o $(BUILD_FOLDER)/linux/phishdetect-cli
 
 	@echo "[builder] Building Linux Web executable"
-	@cd web; packr build --ldflags '-s -w' -o $(BUILD_FOLDER)/linux/phishdetect-web
+	@cd web; $(FLAGS_LINUX) packr build --ldflags '-s -w' -o $(BUILD_FOLDER)/linux/phishdetect-web
 
 	@echo "[builder] Done!"
 
@@ -40,10 +41,10 @@ darwin:
 	@mkdir -p $(BUILD_FOLDER)/darwin
 
 	@echo "[builder] Building Darwin CLI executable"
-	@cd cli; go build --ldflags '-s -w' -o $(BUILD_FOLDER)/darwin/phishdetect-cli
+	@cd cli; $(FLAGS_DARWIN) go build --ldflags '-s -w' -o $(BUILD_FOLDER)/darwin/phishdetect-cli
 
 	@echo "[builder] Building Linux Web executable"
-	@cd web; packr build --ldflags '-s -w' -o $(BUILD_FOLDER)/darwin/phishdetect-web
+	@cd web; $(FLAGS_DARWIN) packr build --ldflags '-s -w' -o $(BUILD_FOLDER)/darwin/phishdetect-web
 
 	@echo "[builder] Done!"
 
