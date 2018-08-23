@@ -10,10 +10,7 @@ lint:
 
 deps:
 	@echo "[deps] Installing dependencies..."
-	cd lib; go get -d -u ./...; cd ..
-	cd cli; go get -d -u ./...; cd ..
-	cd web; go get -d -u ./...; cd ..
-
+	go get -d -u ./...
 	go get -u github.com/gobuffalo/packr/...
 
 	@echo "[deps] Need to fix an issue with Docker client vendoring..."
