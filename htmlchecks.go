@@ -53,7 +53,7 @@ func checkEscapedText(link *Link, page *Page, brands *Brands) bool {
 			}
 			for _, variation := range variations {
 				entities := []string{}
-				for _, c := range keyword {
+				for _, c := range variation {
 					entities = append(entities, fmt.Sprintf("&#%d;", int(c)))
 				}
 				escaped := strings.Join(entities, "")
@@ -64,7 +64,7 @@ func checkEscapedText(link *Link, page *Page, brands *Brands) bool {
 				}
 
 				entitiesHex := []string{}
-				for _, c := range keyword {
+				for _, c := range variation {
 					entitiesHex = append(entitiesHex, fmt.Sprintf("&#%x;", int(c)))
 				}
 				escapedHex := strings.Join(entitiesHex, "")
