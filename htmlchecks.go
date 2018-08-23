@@ -363,6 +363,12 @@ func GetHTMLChecks() []Check {
 			"The page contains a form pointing to a PHP script",
 		},
 		{
+			checkMultiAuth,
+			20,
+			"multi-auth",
+			"The page appears to offer multiple sign-in options",
+		},
+		{
 			checkSuspiciousText,
 			25,
 			"suspicious-text",
@@ -379,12 +385,6 @@ func GetHTMLChecks() []Check {
 			25,
 			"encoded-text",
 			"The page is obfuscating brand words to evade detection",
-		},
-		{
-			checkMultiAuth,
-			20,
-			"multi-auth",
-			"The page appears to offer multiple sign-in options",
 		},
 	}
 }

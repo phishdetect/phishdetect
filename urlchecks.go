@@ -214,28 +214,16 @@ func checkGoogleSafeBrowsing(link *Link, page *Page, brands *Brands) bool {
 func GetURLChecks() []Check {
 	return []Check{
 		{
-			checkSuspiciousHostname,
-			30,
-			"suspicious-hostname",
-			"The domain contains suspicious words",
+			checkB64Parameters,
+			5,
+			"base64-parameters",
+			"The link might contain base64 encoded parameters (low confidence)",
 		},
 		{
 			checkSuspiciousTLD,
 			5,
 			"suspicious-tld",
 			"The domain uses a suspicious TLD",
-		},
-		{
-			checkSuspiciousBridges,
-			30,
-			"suspicious-bridges",
-			"The domain uses very suspicious patterns used for bad domains composition",
-		},
-		{
-			checkEncodedDomain,
-			50,
-			"encoded-domain",
-			"The domain contains special characters to mimic known brands",
 		},
 		{
 			checkExcessivePunct,
@@ -250,14 +238,26 @@ func GetURLChecks() []Check {
 			"The website is not using a secure transport layer (HTTPS)",
 		},
 		{
-			checkB64Parameters,
-			5,
-			"base64-parameters",
-			"The link might contain base64 encoded parameters (low confidence)",
+			checkSuspiciousHostname,
+			30,
+			"suspicious-hostname",
+			"The domain contains suspicious words",
+		},
+		{
+			checkSuspiciousBridges,
+			30,
+			"suspicious-bridges",
+			"The domain uses very suspicious patterns used for bad domains composition",
+		},
+		{
+			checkEncodedDomain,
+			50,
+			"encoded-domain",
+			"The domain contains special characters to mimic known brands",
 		},
 		{
 			checkGoogleSafeBrowsing,
-			100,
+			50,
 			"google-safebrowsing",
 			"The link is listed in Google SafeBrowsing as malicious",
 		},
