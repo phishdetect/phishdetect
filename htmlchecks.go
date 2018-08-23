@@ -45,26 +45,34 @@ func checkSuspiciousTitle(link *Link, page *Page, brands *Brands) bool {
 func checkEscapedText(link *Link, page *Page, brands *Brands) bool {
 	for _, brand := range brands.List {
 		for _, keyword := range brand.Original {
-			entities := []string{}
-			for _, c := range keyword {
-				entities = append(entities, fmt.Sprintf("&#%d;", int(c)))
+			// We do this because by default we would just check for "apple".
+			// While still not ideal, at least now we check for "apple" and "Apple".
+			variations := []string{
+				keyword,
+				strings.Title(keyword)
 			}
-			escaped := strings.Join(entities, "")
+			for _, variation := range variations {
+				entities := []string{}
+				for _, c := range keyword {
+					entities = append(entities, fmt.Sprintf("&#%d;", int(c)))
+				}
+				escaped := strings.Join(entities, "")
 
-			if TextContains(page.HTML, escaped) {
-				brand.Matches++
-				return true
-			}
+				if TextContains(page.HTML, escaped) {
+					brand.Matches++
+					return true
+				}
 
-			entitiesHex := []string{}
-			for _, c := range keyword {
-				entitiesHex = append(entitiesHex, fmt.Sprintf("&#%x;", int(c)))
-			}
-			escapedHex := strings.Join(entitiesHex, "")
+				entitiesHex := []string{}
+				for _, c := range keyword {
+					entitiesHex = append(entitiesHex, fmt.Sprintf("&#%x;", int(c)))
+				}
+				escapedHex := strings.Join(entitiesHex, "")
 
-			if TextContains(page.HTML, escapedHex) {
-				brand.Matches++
-				return true
+				if TextContains(page.HTML, escapedHex) {
+					brand.Matches++
+					return true
+				}
 			}
 		}
 	}
