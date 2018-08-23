@@ -49,7 +49,7 @@ func checkEscapedText(link *Link, page *Page, brands *Brands) bool {
 			// While still not ideal, at least now we check for "apple" and "Apple".
 			variations := []string{
 				keyword,
-				strings.Title(keyword)
+				strings.Title(keyword),
 			}
 			for _, variation := range variations {
 				entities := []string{}
