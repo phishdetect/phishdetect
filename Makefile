@@ -1,6 +1,7 @@
 BUILD_FOLDER  = $(shell pwd)/build
 
 FLAGS_LINUX   = GOOS=linux
+FLAGS_FREEBSD = GOOS=freebsd
 FLAGS_DARWIN  = GOOS=darwin
 FLAGS_WINDOWS = GOOS=windows GOARCH=386 CC=i686-w64-mingw32-gcc CGO_ENABLED=1
 
@@ -31,6 +32,17 @@ linux:
 
 	@echo "[builder] Building Linux Web executable"
 	@cd web; $(FLAGS_LINUX) packr build --ldflags '-s -w' -o $(BUILD_FOLDER)/linux/phishdetect-web
+
+	@echo "[builder] Done!"
+
+freebsd:
+	@mkdir -p $(BUILD_FOLDER)/freebsd
+
+	@echo "[builder] Building FreeBSD CLI executable"
+	@cd cli; $(FLAGS_FREEBSD) go build --ldflags '-s -w' -o $(BUILD_FOLDER)/freebsd/phishdetect-cli
+
+	@echo "[builder] Building FreeBSD Web executable"
+	@cd web; $(FLAGS_FREEBSD) packr build --ldflags '-s -w' -o $(BUILD_FOLDER)/freebsd/phishdetect-web
 
 	@echo "[builder] Done!"
 
