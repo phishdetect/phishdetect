@@ -70,6 +70,7 @@ func Google() *Brand {
 		"google.hk", "google.ua", "google.co.hu", "google.it.ao",
 		"google.com.pl", "google.com.ru", "google.ne.jp", "google.com.cn",
 		"chrome.com", "android.com", "google-analytics.com", "gmail.com",
+		"blog.google", "domains.google",
 	}
 	suspicious := []string{
 		"googlea", "googleb", "googlec", "googled", "googlee", "googlef",
