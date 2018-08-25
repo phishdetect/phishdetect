@@ -1,7 +1,7 @@
 BUILD_FOLDER  = $(shell pwd)/build
 
 FLAGS_LINUX   = GOOS=linux
-FLAGS_FREEBSD = GOOS=freebsd
+# FLAGS_FREEBSD = GOOS=freebsd
 FLAGS_DARWIN  = GOOS=darwin
 FLAGS_WINDOWS = GOOS=windows GOARCH=386 CC=i686-w64-mingw32-gcc CGO_ENABLED=1
 
