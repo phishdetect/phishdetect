@@ -30,16 +30,16 @@ linux:
 
 	@echo "[builder] Done!"
 
-freebsd:
-	@mkdir -p $(BUILD_FOLDER)/freebsd
+# freebsd:
+# 	@mkdir -p $(BUILD_FOLDER)/freebsd
 
-	@echo "[builder] Building FreeBSD CLI executable"
-	@cd cli; $(FLAGS_FREEBSD) go build --ldflags '-s -w' -o $(BUILD_FOLDER)/freebsd/phishdetect-cli
+# 	@echo "[builder] Building FreeBSD CLI executable"
+# 	@cd cli; $(FLAGS_FREEBSD) go build --ldflags '-s -w' -o $(BUILD_FOLDER)/freebsd/phishdetect-cli
 
-	@echo "[builder] Building FreeBSD Web executable"
-	@cd web; $(FLAGS_FREEBSD) packr build --ldflags '-s -w' -o $(BUILD_FOLDER)/freebsd/phishdetect-web
+# 	@echo "[builder] Building FreeBSD Web executable"
+# 	@cd web; $(FLAGS_FREEBSD) packr build --ldflags '-s -w' -o $(BUILD_FOLDER)/freebsd/phishdetect-web
 
-	@echo "[builder] Done!"
+# 	@echo "[builder] Done!"
 
 darwin:
 	@mkdir -p $(BUILD_FOLDER)/darwin
