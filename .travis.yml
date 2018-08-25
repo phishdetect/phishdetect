@@ -17,4 +17,4 @@ install:
 
 script:
   - env GO111MODULE=on make linux
-  - go test .
+  - env GO111MODULE=on go test .
