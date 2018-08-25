@@ -58,3 +58,66 @@ func TestDomainWhitelist(t *testing.T) {
 		}
 	}
 }
+
+func TestDomainWarnings(t *testing.T) {
+	url := "https://fake.google.com-domain.xyz"
+	expectedWarnings := []string{
+		"suspicious-tld",
+		"excessive-punct",
+		"suspicious-hostname",
+		"suspicious-bridges",
+	}
+
+	a := NewAnalysis(url, "")
+	a.AnalyzeURL()
+
+	counter := 0
+	for _, warning := range a.Warnings {
+		if SliceContains(expectedWarnings, warning.Name) {
+			counter++
+		}
+	}
+
+	if counter != len(expectedWarnings) {
+		t.Errorf("Failed to test URL warnings, got \"%d\" expected \"%d\"",
+			counter, len(expectedWarnings))
+	}
+}
+
+func TestHTMLWarnings(t *testing.T) {
+	url := "https://suspicious.domain"
+	html := `<html>
+<head>
+<title>Google Sign-In</title>
+</head>
+<body>
+<form method="POST" action="form.php">
+	<input type="password" name="password" />
+	<input type="hidden" name="hidden" value="hidden" />
+	<input type="submit" value="Login" />
+</form>
+</body>
+</html>`
+
+	expectedWarnings := []string{
+		"suspicious-title",
+		"password-input",
+		"hidden-input",
+		"php-form",
+	}
+
+	a := NewAnalysis(url, html)
+	a.AnalyzeHTML()
+
+	counter := 0
+	for _, warning := range a.Warnings {
+		if SliceContains(expectedWarnings, warning.Name) {
+			counter++
+		}
+	}
+
+	if counter != len(expectedWarnings) {
+		t.Errorf("Failed to test URL warnings, got \"%d\" expected \"%d\"",
+			counter, len(expectedWarnings))
+	}
+}
