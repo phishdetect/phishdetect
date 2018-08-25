@@ -10,19 +10,14 @@ lint:
 	@golint ./...
 
 deps:
-	@echo "[deps] Installing dependencies..."
-	go get -d -u ./...
+	@echo "[deps] Downloading modules..."
+	go mod download
 	go get -u github.com/gobuffalo/packr/...
 
 	@echo "[deps] Need to fix an issue with Docker client vendoring..."
 	rm -rf $(GOPATH)/src/github.com/docker/docker/vendor/github.com/docker/go-connections
 
 	@echo "[deps] Done!"
-
-image:
-	@echo "[image] Creating Docker image..."
-	cd docker; docker build . -t phishdetect
-	@echo "[image] Done!"
 
 linux:
 	@mkdir -p $(BUILD_FOLDER)/linux

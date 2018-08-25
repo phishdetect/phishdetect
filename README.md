@@ -37,6 +37,9 @@ Download the Docker image from Docker Hub using:
     $ docker pull phishdetect/phishdetect
 
 Once the Docker image is created you can proceed building the binaries.
+
+Firstly, make sure you have Go 1.11+ installed. We require Go 1.11 or later versions because of the native support for Go Modules, which we use to manage dependencies. If it isn't available for your operating system of choice, we recommend trying [gvm](https://github.com/moovweb/gvm).
+
 Proceed cloning the Git repository:
 
     $ git clone github.com/phishdetect/phishdetect.git
