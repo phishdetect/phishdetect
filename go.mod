@@ -27,7 +27,7 @@ require (
 	github.com/juju/testing v0.0.0-20180820040200-b0b89ba330f2 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/kr/pty v1.1.2 // indirect
-	github.com/mafredri/cdp v0.18.7
+	github.com/mafredri/cdp v0.18.8
 	github.com/mattn/go-colorable v0.0.9
 	github.com/mattn/go-isatty v0.0.3 // indirect
 	github.com/mattn/go-runewidth v0.0.3 // indirect
@@ -39,8 +39,8 @@ require (
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/stevvooe/resumable v0.0.0-20170302213456-2aaf90b2ceea // indirect
 	golang.org/x/crypto v0.0.0-20180820150726-614d502a4dac // indirect
-	golang.org/x/net v0.0.0-20180824152047-4bcd98cce591 // indirect
-	golang.org/x/sys v0.0.0-20180824143301-4910a1d54f87 // indirect
+	golang.org/x/net v0.0.0-20180826012351-8a410e7b638d // indirect
+	golang.org/x/sys v0.0.0-20180828065106-d99a578cf41b // indirect
 	golang.org/x/text v0.3.0 // indirect
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
