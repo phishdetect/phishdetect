@@ -17,7 +17,7 @@
 package main
 
 import (
-	"flag"
+	flag "github.com/spf13/pflag"
 	"github.com/mattn/go-colorable"
 	"github.com/phishdetect/phishdetect"
 	log "github.com/sirupsen/logrus"

@@ -36,6 +36,7 @@ require (
 	github.com/onsi/ginkgo v1.6.0 // indirect
 	github.com/onsi/gomega v1.4.1 // indirect
 	github.com/sirupsen/logrus v1.0.6
+	github.com/spf13/pflag v1.0.2
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/stevvooe/resumable v0.0.0-20170302213456-2aaf90b2ceea // indirect
 	golang.org/x/crypto v0.0.0-20180820150726-614d502a4dac // indirect

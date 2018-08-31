@@ -20,7 +20,7 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/hex"
-	"flag"
+	flag "github.com/spf13/pflag"
 	"fmt"
 	pongo "github.com/flosch/pongo2"
 	"github.com/gobuffalo/packr"

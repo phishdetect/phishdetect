@@ -168,17 +168,13 @@ Or by building the binary from the source base as explained earlier.
 
 Launch `phishdetect-cli -h` to view the help message:
 
-    Usage of build/linux/phishdetect-cli:
-      -api-version string
-            Specify which Docker API version to use (default: 1.37) (default "1.37")
-      -debug
-            Enable debug logging
-      -screen string
-            Specify the file path to store the screenshot
-      -tor
-            Route connection through the Tor network
-      -url-only
-            Only perform URL analysis
+    Usage of phishdetect-cli:
+          --api-version string    Specify which Docker API version to use (default: 1.37) (default "1.37")
+          --debug                 Enable debug logging (default: disabled)
+          --safebrowsing string   Specify a file path containing your Google SafeBrowsing API key (default: disabled)
+          --screen string         Specify the file path to store the screenshot (default: disabled)
+          --tor                   Route connection through the Tor network (default: disabled)
+          --url-only              Only perform URL analysis (default: disabled)
 
 Specify a URL and the preferred options and wait for the results to appear:
 
