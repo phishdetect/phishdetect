@@ -60,6 +60,6 @@ func TestNormalizeURL(t *testing.T) {
 	normalized = NormalizeURL(url)
 
 	if normalized != url {
-		t.Errorf("Normalizing correct URL filed, expected \"%s\" got \"%s\"", url, normalized)
+		t.Errorf("Normalizing correct URL failed, expected \"%s\" got \"%s\"", url, normalized)
 	}
 }
