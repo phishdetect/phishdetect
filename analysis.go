@@ -45,7 +45,7 @@ func NewAnalysis(url, html string) *Analysis {
 
 // AnalyzeURL performs all the available checks to be run on a URL or domain.
 func (a *Analysis) AnalyzeURL() error {
-	log.Info("Starting to analyze the URL...")
+	log.Debug("Starting to analyze the URL...")
 
 	link, err := NewLink(a.FinalURL)
 	if err != nil {
@@ -54,7 +54,7 @@ func (a *Analysis) AnalyzeURL() error {
 	for _, check := range GetURLChecks() {
 		log.Debug("Running URL check ", check.Name, " ...")
 		if check.Call(link, nil, a.Brands) {
-			log.Info("Matched ", check.Name)
+			log.Debug("Matched ", check.Name)
 			a.Score += check.Score
 			a.Warnings = append(a.Warnings, check)
 		}
@@ -67,7 +67,7 @@ func (a *Analysis) AnalyzeURL() error {
 
 // AnalyzeHTML performs all the available checks to be run on an HTML string.
 func (a *Analysis) AnalyzeHTML() error {
-	log.Info("Starting to analyze HTML...")
+	log.Debug("Starting to analyze HTML...")
 
 	link, err := NewLink(a.FinalURL)
 	if err != nil {
@@ -81,7 +81,7 @@ func (a *Analysis) AnalyzeHTML() error {
 	for _, check := range GetHTMLChecks() {
 		log.Debug("Running HTML check ", check.Name, " ...")
 		if check.Call(link, page, a.Brands) {
-			log.Info("Matched ", check.Name)
+			log.Debug("Matched ", check.Name)
 			a.Score += check.Score
 			a.Warnings = append(a.Warnings, check)
 		}

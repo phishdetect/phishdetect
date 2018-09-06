@@ -72,7 +72,7 @@ func (b *Browser) pickUserAgent() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	b.UserAgent = userAgents[rand.Intn(len(userAgents))]
 
-	log.Info("Using User-Agent: ", b.UserAgent)
+	log.Debug("Using User-Agent: ", b.UserAgent)
 }
 
 func (b *Browser) pickDebugPort() {
@@ -95,7 +95,7 @@ func (b *Browser) pickDebugPort() {
 
 	b.DebugPort = port
 
-	log.Info("Using debug port: ", b.DebugPort)
+	log.Debug("Using debug port: ", b.DebugPort)
 }
 
 func (b *Browser) startContainer() error {
@@ -105,7 +105,7 @@ func (b *Browser) startContainer() error {
 	envs := []string{fmt.Sprintf("USER_AGENT=%s", b.UserAgent)}
 	if b.UseTor {
 		envs = append(envs, "TOR=yes")
-		log.Info("Enabled route through the Tor network")
+		log.Debug("Enabled route through the Tor network")
 	}
 
 	config := &container.Config{
@@ -144,7 +144,7 @@ func (b *Browser) startContainer() error {
 		return err
 	}
 
-	log.Info("Started container with ID ", b.ContainerID)
+	log.Debug("Started container with ID ", b.ContainerID)
 
 	return nil
 }
@@ -170,7 +170,7 @@ func (b *Browser) killContainer() error {
 		return err
 	}
 
-	log.Info("Killed container with ID ", b.ContainerID)
+	log.Debug("Killed container with ID ", b.ContainerID)
 
 	return nil
 }
@@ -188,7 +188,7 @@ func (b *Browser) Run() error {
 
 	devt := devtool.New(fmt.Sprintf("http://127.0.0.1:%d", b.DebugPort))
 
-	log.Info("Attempting to connect to debug port...")
+	log.Debug("Attempting to connect to debug port...")
 
 	// TODO: We need to handle this better or it will fail after the count is
 	//		 over and the connection didn't succeed.
@@ -206,7 +206,7 @@ func (b *Browser) Run() error {
 		break
 	}
 
-	log.Info("Connection to debug port established!")
+	log.Debug("Connection to debug port established!")
 
 	conn, err := rpcc.DialContext(ctx, target.WebSocketDebuggerURL)
 	if err != nil {
@@ -312,7 +312,7 @@ func (b *Browser) Run() error {
 			if err = ioutil.WriteFile(b.ScreenshotPath, screenshot.Data, 0644); err != nil {
 				log.Warning(err)
 			} else {
-				log.Info("Saved screenshot at ", b.ScreenshotPath)
+				log.Debug("Saved screenshot at ", b.ScreenshotPath)
 			}
 		}
 	}
