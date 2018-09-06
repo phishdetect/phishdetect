@@ -20,7 +20,15 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"strconv"
+	"strings"
+	"time"
+
 	pongo "github.com/flosch/pongo2"
 	"github.com/gobuffalo/packr"
 	"github.com/gorilla/mux"
@@ -28,12 +36,6 @@ import (
 	"github.com/phishdetect/phishdetect"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"strconv"
-	"strings"
-	"time"
 )
 
 var (
@@ -51,6 +53,15 @@ var (
 	tmplRedirect *pongo.Template
 	tmplWarning  *pongo.Template
 )
+
+type AnalysisResults struct {
+	URL         string   `json:"url"`
+	URLFinal    string   `json:"url_final"`
+	Whitelisted bool     `json:"whitelisted"`
+	Brand       string   `json:"brand"`
+	Score       int      `json:"score"`
+	Warnings    []string `json:"warnings"`
+}
 
 const urlRegex string = "(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})"
 
@@ -125,6 +136,8 @@ func main() {
 	router.HandleFunc("/check/", check)
 	router.HandleFunc(fmt.Sprintf("/check/{url:%s}", urlRegex), check).Methods("GET", "POST")
 	router.HandleFunc("/analyze/", analyze).Methods("POST")
+
+	router.HandleFunc("/api/analyze/", apiAnalyze).Methods("POST")
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// http.ServeFile(w, r, "static/404.html")
@@ -330,4 +343,36 @@ func analyze(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func apiAnalyze(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	url := r.PostFormValue("url")
+	urlFinal := url
+	// urlNormalized := phishdetect.NormalizeURL(url)
+	// full, _ := strconv.ParseBool(r.PostFormValue("full"))
+
+	analysis := phishdetect.NewAnalysis(urlFinal, "")
+	err := analysis.AnalyzeURL()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	brand := analysis.Brands.GetBrand()
+
+	var warnings []string
+	for _, warning := range analysis.Warnings {
+		warnings = append(warnings, warning.Description)
+	}
+
+	results := AnalysisResults{
+		URL: url,
+		// URLFinal: urlFinal,
+		Whitelisted: analysis.Whitelisted,
+		Score:       analysis.Score,
+		Brand:       brand,
+		Warnings:    warnings,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(results)
 }
