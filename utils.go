@@ -39,7 +39,7 @@ func TextContains(text, pattern string) bool {
 // SliceContains checks whether a string is contained in a slice of strings.
 func SliceContains(slice []string, item string) bool {
 	for _, entry := range slice {
-		if TextContains(item, entry) {
+		if strings.ToLower(item) == strings.ToLower(entry) {
 			return true
 		}
 	}
