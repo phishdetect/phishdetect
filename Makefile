@@ -23,10 +23,13 @@ linux:
 	@mkdir -p $(BUILD_FOLDER)/linux
 
 	@echo "[builder] Building Linux CLI executable"
-	@cd cli; $(FLAGS_LINUX) go build --ldflags '-s -w' -o $(BUILD_FOLDER)/linux/phishdetect-cli
+	@cd cli; $(FLAGS_LINUX) go build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/linux/phishdetect-cli
 
 	@echo "[builder] Building Linux Web executable"
-	@cd web; $(FLAGS_LINUX) packr build --ldflags '-s -w' -o $(BUILD_FOLDER)/linux/phishdetect-web
+	@cd web; $(FLAGS_LINUX) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/linux/phishdetect-web
+
+	@echo "[builder] Building Linux API executable"
+	@cd api; $(FLAGS_LINUX) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/linux/phishdetect-api
 
 	@echo "[builder] Done!"
 
@@ -45,10 +48,13 @@ darwin:
 	@mkdir -p $(BUILD_FOLDER)/darwin
 
 	@echo "[builder] Building Darwin CLI executable"
-	@cd cli; $(FLAGS_DARWIN) go build --ldflags '-s -w' -o $(BUILD_FOLDER)/darwin/phishdetect-cli
+	@cd cli; $(FLAGS_DARWIN) go build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/darwin/phishdetect-cli
 
-	@echo "[builder] Building Linux Web executable"
-	@cd web; $(FLAGS_DARWIN) packr build --ldflags '-s -w' -o $(BUILD_FOLDER)/darwin/phishdetect-web
+	@echo "[builder] Building Darwin Web executable"
+	@cd web; $(FLAGS_DARWIN) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/darwin/phishdetect-web
+
+	@echo "[builder] Building Darwin API executable"
+	@cd api; $(FLAGS_DARWIN) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/darwin/phishdetect-api
 
 	@echo "[builder] Done!"
 
@@ -60,6 +66,9 @@ windows:
 
 	@echo "[builder] Building Windows Web executable"
 	@cd web; $(FLAGS_WINDOWS) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/windows/phishdetect-web.exe
+
+	@echo "[builder] Building Windows API executable"
+	@cd api; $(FLAGS_WINDOWS) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/windows/phishdetect-api.exe
 
 	@echo "[builder] Done!"
 
