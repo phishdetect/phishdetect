@@ -33,6 +33,7 @@ func NewBrands() *Brands {
 		List: []*brand.Brand{
 			brand.Amazon(),
 			brand.Apple(),
+			// brand.Coinbase(),
 			brand.Dropbox(),
 			brand.Facebook(),
 			brand.Google(),
