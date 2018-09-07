@@ -22,7 +22,8 @@ func Microsoft() *Brand {
 	original := []string{"microsoft", "microsoftonline", "onedrive"}
 	whitelist := []string{
 		"microsoft.com", "microsoftonline.com", "office.com", "live.com",
-		"onedrive.com", "s-microsoft.com", "sharepoint.com",
+		"onedrive.com", "s-microsoft.com", "sharepoint.com", "microsoft.us",
+		"msft.net",
 	}
 	suspicious := []string{
 		"microsofta", "microsoftb", "microsoftc", "microsoftd", "microsofte",
