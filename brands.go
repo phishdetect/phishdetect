@@ -34,6 +34,7 @@ func NewBrands() *Brands {
 			brand.Amazon(),
 			brand.Apple(),
 			// brand.Coinbase(),
+			// brand.Docusign(),
 			brand.Dropbox(),
 			brand.Facebook(),
 			brand.Google(),
