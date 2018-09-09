@@ -1,8 +1,7 @@
 BUILD_FOLDER  = $(shell pwd)/build
 
-FLAGS_LINUX   = GOOS=linux GOARCH=amd64
-# FLAGS_FREEBSD = GOOS=freebsd GOARCH=amd64
-FLAGS_DARWIN  = GOOS=darwin GOARCH=amd64
+FLAGS_LINUX   = GOOS=linux GOARCH=amd64 CGO_ENABLED=0
+FLAGS_DARWIN  = GOOS=darwin GOARCH=amd64 CGO_ENABLED=0
 FLAGS_WINDOWS = GOOS=windows GOARCH=386 CC=i686-w64-mingw32-gcc CGO_ENABLED=1
 
 lint:
@@ -32,17 +31,6 @@ linux:
 	@cd api; $(FLAGS_LINUX) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/linux/phishdetect-api
 
 	@echo "[builder] Done!"
-
-# freebsd:
-# 	@mkdir -p $(BUILD_FOLDER)/freebsd
-
-# 	@echo "[builder] Building FreeBSD CLI executable"
-# 	@cd cli; $(FLAGS_FREEBSD) go build --ldflags '-s -w' -o $(BUILD_FOLDER)/freebsd/phishdetect-cli
-
-# 	@echo "[builder] Building FreeBSD Web executable"
-# 	@cd web; $(FLAGS_FREEBSD) packr build --ldflags '-s -w' -o $(BUILD_FOLDER)/freebsd/phishdetect-web
-
-# 	@echo "[builder] Done!"
 
 darwin:
 	@mkdir -p $(BUILD_FOLDER)/darwin
