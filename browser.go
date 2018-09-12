@@ -28,6 +28,7 @@ import (
 	"github.com/mafredri/cdp/devtool"
 	"github.com/mafredri/cdp/protocol/dom"
 	"github.com/mafredri/cdp/protocol/page"
+	"github.com/mafredri/cdp/protocol/network"
 	"github.com/mafredri/cdp/rpcc"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -257,7 +258,7 @@ func (b *Browser) Run() error {
 			case <-requestWillBeSent.Ready():
 				event, err := requestWillBeSent.Recv()
 				if err == nil {
-					if event.Initiator.Type == "other" && *event.Type == page.ResourceTypeDocument {
+					if event.Initiator.Type == "other" && event.Type == network.ResourceTypeDocument {
 						log.Debug("Network request to ", event.DocumentURL)
 						b.addVisit(event.DocumentURL)
 					}
