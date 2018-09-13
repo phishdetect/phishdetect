@@ -60,7 +60,7 @@ func TestDomainWhitelist(t *testing.T) {
 }
 
 func TestDomainWarnings(t *testing.T) {
-	url := "https://fake.google.com-domain.xyz"
+	url := "https://fake.gooogle.com-domain.xyz"
 	expectedWarnings := []string{
 		"suspicious-tld",
 		"excessive-punct",
