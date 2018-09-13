@@ -48,6 +48,7 @@ func NewBrands() *Brands {
 			brand.RiseUp(),
 			brand.Skype(),
 			brand.Slack(),
+			// brand.Spotify(),
 			brand.Telegram(),
 			brand.Tutanota(),
 			brand.Twitter(),
