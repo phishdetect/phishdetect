@@ -19,7 +19,7 @@ package brand
 // Docusign brand properties.
 func Docusign() *Brand {
 	name := "docusign"
-	original := []string{"docusign",}
+	original := []string{"docusign"}
 	whitelist := []string{
 		"docusign.com", "docusign.net", "docusign.de", "docusign.fr",
 		"docusign.nl", "docusign.be", "docusign.se", "docusign.no",

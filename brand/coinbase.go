@@ -19,8 +19,8 @@ package brand
 // Coinbase brand properties.
 func Coinbase() *Brand {
 	name := "coinbase"
-	original := []string{"coinbase",}
-	whitelist := []string{"coinbase.com",}
+	original := []string{"coinbase"}
+	whitelist := []string{"coinbase.com"}
 	suspicious := []string{
 		"coinbasea", "coinbaseb",
 		"coinbasec", "coinbased", "coinbasee",
