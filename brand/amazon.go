@@ -25,7 +25,8 @@ func Amazon() *Brand {
 		"amazon.co.uk", "amazon.in", "amazon.ru", "amazon.nl", "amazon.com.mx",
 		"amazon.es", "amazon.com.au", "amazon.com.br", "ssl-images-amazon.com",
 		"amazon-adsystem.com", "assoc-amazon.com", "payments-amazon.com",
-		"media-amazon.com", "amazon.co.jp",
+		"media-amazon.com", "amazon.co.jp", "amazon.eu", "amazon-corp.com",
+		"amazon.cn",
 	}
 	suspicious := []string{
 		"amazona", "amazonb",
