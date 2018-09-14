@@ -13,13 +13,14 @@ RUN apt-add-repository "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ 
 RUN apt-get update
 RUN apt-get -qqy install google-chrome-stable
 
-#RUN groupadd -g 999 phished && useradd -r -u 999 -g phished phished
-RUN mkdir /data
-#RUN chown phished:phished /data
+RUN groupadd -r chrome && useradd -r -g chrome -G audio,video chrome \
+	&& mkdir -p /home/chrome && chown -R chrome:chrome /home/chrome
 
-ADD start.sh /usr/bin/
-RUN ["chmod", "+x", "/usr/bin/start.sh"]
+ADD start.sh /usr/local/bin/
+RUN ["chmod", "+x", "/usr/local/bin/start.sh"]
 
-ENV HOME=/data DEBUG_ADDRESS=0.0.0.0 DEBUG_PORT=9222
+USER chrome
 
-CMD ["/usr/bin/start.sh"]
+ENV DEBUG_ADDRESS=0.0.0.0 DEBUG_PORT=9222
+
+CMD ["/usr/local/bin/start.sh"]
