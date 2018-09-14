@@ -283,14 +283,28 @@ func checkIFrameWithPHP(link *Link, page *Page, brands *Brands) bool {
 }
 
 func checkMultiAuth(link *Link, page *Page, brands *Brands) bool {
+	// TODO: Hacky, replace with regexps.
 	patterns := []string{
 		"Sign in with Google",
 		"Sign in with Yahoo",
 		"Sign in with Outlook",
 		"Sign in with Twitter",
 		"Sign in with Facebook",
-		"Sign in with AOL",
 		"Sign in with other emails",
+		"Sign in with other email",
+		"Sign in with other mails",
+		"Sign in with other mail",
+		"Sign in with AOL",
+		"Login with Google",
+		"Login with Yahoo",
+		"Login with Outlook",
+		"Login with Twitter",
+		"Login with Facebook",
+		"Login with AOL",
+		"Login with other emails",
+		"Login with other email",
+		"Login with other mails",
+		"Login with other mail",
 	}
 
 	counter := 0
