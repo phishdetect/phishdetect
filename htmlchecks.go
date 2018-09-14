@@ -122,6 +122,7 @@ func checkSuspiciousText(link *Link, page *Page, brands *Brands) bool {
 		"Select Email Provider",
 		"Sign in with your email",
 		"Sign in with Gmail",
+		"Sign in to your account",
 		"Share files from Google Drive",
 		"A better way to share Documents",
 		"Sign in to view attachment",
@@ -144,10 +145,16 @@ func checkSuspiciousText(link *Link, page *Page, brands *Brands) bool {
 		"Dіsсοnnесt уοur еmаіl аddrеss",
 		"Sign in With Your Existing Email",
 		"Put your creative energy to work, with Dropbox",
+		"Your account or password is incorrect",
+		"Forgot my password",
 	}
 
 	for _, pattern := range patterns {
 		if TextContains(page.Text, pattern) {
+			return true
+		}
+
+		if TextContains(page.HTML, pattern) {
 			return true
 		}
 	}
