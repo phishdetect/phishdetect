@@ -46,6 +46,7 @@ func main() {
 	urlOnly := flag.Bool("url-only", false, "Only perform URL analysis (default: disabled)")
 	screenPath := flag.String("screen", "", "Specify the file path to store the screenshot (default: disabled)")
 	safeBrowsing := flag.String("safebrowsing", "", "Specify a file path containing your Google SafeBrowsing API key (default: disabled)")
+	container := flag.String("container", "phishdetect/phishdetect", "Specify a name for a docker image to use")
 	flag.Parse()
 	args := flag.Args()
 
@@ -85,7 +86,7 @@ func main() {
 		log.Debug("Instantiated url-only analysis.")
 		analysis = phishdetect.NewAnalysis(url, "")
 	} else {
-		browser = phishdetect.NewBrowser(phishdetect.NormalizeURL(url), *screenPath, *tor)
+		browser = phishdetect.NewBrowser(phishdetect.NormalizeURL(url), *screenPath, *tor, *container)
 		err := browser.Run()
 		if err != nil {
 			log.Fatal(err)

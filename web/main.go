@@ -251,7 +251,7 @@ func analyze(w http.ResponseWriter, r *http.Request) {
 		// Setting Docker API version.
 		os.Setenv("DOCKER_API_VERSION", apiVersion)
 		// Instantiate new browser and open the link.
-		browser := phishdetect.NewBrowser(urlNormalized, "", tor)
+		browser := phishdetect.NewBrowser(urlNormalized, "", tor, "")
 		err = browser.Run()
 		if err != nil {
 			log.Error(err)

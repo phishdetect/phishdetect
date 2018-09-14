@@ -49,15 +49,21 @@ type Browser struct {
 	UseTor         bool
 	DebugPort      int
 	UserAgent      string
+	ImageName      string
 	ContainerID    string
 }
 
 // NewBrowser instantiates a new Browser struct.
-func NewBrowser(url string, screenshotPath string, useTor bool) *Browser {
+func NewBrowser(url string, screenshotPath string, useTor bool, imageName string) *Browser {
+	if imageName == "" {
+		imageName = "phishdetect/phishdetect"
+	}
+
 	return &Browser{
 		URL:            url,
 		ScreenshotPath: screenshotPath,
 		UseTor:         useTor,
+		ImageName:      imageName,
 	}
 }
 
@@ -110,7 +116,7 @@ func (b *Browser) startContainer() error {
 	}
 
 	config := &container.Config{
-		Image: "phishdetect/phishdetect",
+		Image: b.ImageName,
 		Env:   envs,
 		ExposedPorts: nat.PortSet{
 			"9222/tcp": struct{}{},
