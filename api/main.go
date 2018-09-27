@@ -31,6 +31,8 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
+// AnalysisResults contains all the information we want to return through the
+// apiAnalyze API.
 type AnalysisResults struct {
 	URL         string   `json:"url"`
 	URLFinal    string   `json:"url_final"`

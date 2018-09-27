@@ -18,13 +18,15 @@ package phishdetect
 
 import (
 	"encoding/base64"
-	"github.com/google/safebrowsing"
-	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
+
+	"github.com/google/safebrowsing"
+	log "github.com/sirupsen/logrus"
 )
 
-var SafeBrowsingKey string = ""
+// SafeBrowsingKey contains the API key to use Google SafeBrowsing API.
+var SafeBrowsingKey string
 
 func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 	lowSuspects := []string{
@@ -203,9 +205,9 @@ func checkGoogleSafeBrowsing(link *Link, page *Page, brands *Brands) bool {
 			log.Debug(threat)
 		}
 		return true
-	} else {
-		log.Debug("No Google SafeBrowsing threats found for this URL")
 	}
+
+	log.Debug("No Google SafeBrowsing threats found for this URL")
 
 	return false
 }

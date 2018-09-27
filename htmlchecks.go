@@ -18,9 +18,10 @@ package phishdetect
 
 import (
 	"fmt"
-	"github.com/mozillazg/go-unidecode"
 	"regexp"
 	"strings"
+
+	"github.com/mozillazg/go-unidecode"
 )
 
 func checkSuspiciousTitle(link *Link, page *Page, brands *Brands) bool {

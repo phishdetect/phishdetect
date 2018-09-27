@@ -17,13 +17,14 @@
 package main
 
 import (
+	"io/ioutil"
+	"os"
+	"strings"
+
 	"github.com/mattn/go-colorable"
 	"github.com/phishdetect/phishdetect"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
-	"io/ioutil"
-	"os"
-	"strings"
 )
 
 var (

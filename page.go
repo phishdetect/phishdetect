@@ -18,9 +18,10 @@ package phishdetect
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/anaskhan96/soup"
 	"jaytaylor.com/html2text"
-	"strings"
 )
 
 // Page contains information on the HTML page.

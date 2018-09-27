@@ -18,11 +18,12 @@ package phishdetect
 
 import (
 	"errors"
+	"net"
+	"strings"
+
 	"github.com/bobesa/go-domain-util/domainutil"
 	"github.com/goware/urlx"
 	log "github.com/sirupsen/logrus"
-	"net"
-	"strings"
 )
 
 // Link defines details of a parsed URL.

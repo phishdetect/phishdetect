@@ -18,6 +18,7 @@ package phishdetect
 
 import (
 	"errors"
+
 	log "github.com/sirupsen/logrus"
 )
 

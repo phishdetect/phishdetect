@@ -17,8 +17,9 @@
 package phishdetect
 
 import (
-	"github.com/goware/urlx"
 	"strings"
+
+	"github.com/goware/urlx"
 )
 
 // TextContains will determine if a substring is present in a string.
