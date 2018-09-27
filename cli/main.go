@@ -40,12 +40,12 @@ func initLogging(debug *bool) {
 }
 
 func main() {
-	debug := flag.Bool("debug", false, "Enable debug logging (default: disabled)")
-	tor := flag.Bool("tor", false, "Route connection through the Tor network (default: disabled)")
-	apiVersion := flag.String("api-version", "1.37", "Specify which Docker API version to use (default: 1.37)")
-	urlOnly := flag.Bool("url-only", false, "Only perform URL analysis (default: disabled)")
-	screenPath := flag.String("screen", "", "Specify the file path to store the screenshot (default: disabled)")
-	safeBrowsing := flag.String("safebrowsing", "", "Specify a file path containing your Google SafeBrowsing API key (default: disabled)")
+	debug := flag.Bool("debug", false, "Enable debug logging")
+	tor := flag.Bool("tor", false, "Route connection through the Tor network")
+	apiVersion := flag.String("api-version", "1.37", "Specify which Docker API version to use")
+	urlOnly := flag.Bool("url-only", false, "Only perform URL analysis")
+	screenPath := flag.String("screen", "", "Specify the file path to store the screenshot")
+	safeBrowsing := flag.String("safebrowsing", "", "Specify a file path containing your Google SafeBrowsing API key")
 	container := flag.String("container", "phishdetect/phishdetect", "Specify a name for a docker image to use")
 	flag.Parse()
 	args := flag.Args()
