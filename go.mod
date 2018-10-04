@@ -12,7 +12,7 @@ require (
 	github.com/docker/go-units v0.3.3 // indirect
 	github.com/flosch/pongo2 v0.0.0-20180809100617-24195e6d38b0
 	github.com/gobuffalo/genny v0.0.0-20180911185118-5ca23a895a78 // indirect
-	github.com/gobuffalo/packr v1.13.5
+	github.com/gobuffalo/packr v1.13.7
 	github.com/gobuffalo/release v1.0.15 // indirect
 	github.com/google/go-cmp v0.2.0 // indirect
 	github.com/google/safebrowsing v0.0.0-20171128203709-fe6951d7ef01
@@ -34,11 +34,11 @@ require (
 	github.com/olekukonko/tablewriter v0.0.0-20180912035003-be2c049b30cc // indirect
 	github.com/onsi/gomega v1.4.2 // indirect
 	github.com/sirupsen/logrus v1.0.6
-	github.com/spf13/pflag v1.0.2
+	github.com/spf13/pflag v1.0.3
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/stevvooe/resumable v0.0.0-20180830230917-22b14a53ba50 // indirect
 	golang.org/x/crypto v0.0.0-20180910181607-0e37d006457b // indirect
-	golang.org/x/net v0.0.0-20180911220305-26e67e76b6c3 // indirect
+	golang.org/x/net v0.0.0-20181003013248-f5e5bdd77824 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce // indirect
 	jaytaylor.com/html2text v0.0.0-20180606194806-57d518f124b0
 )

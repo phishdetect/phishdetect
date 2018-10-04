@@ -17,11 +17,12 @@
 package main
 
 import (
-	"os"
-	"io/ioutil"
-	"fmt"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -31,6 +32,11 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
+type AnalysisRequest struct {
+	URL  string `json:"url"`
+	HTML string `json:"html"`
+}
+
 // AnalysisResults contains all the information we want to return through the
 // apiAnalyze API.
 type AnalysisResults struct {
@@ -39,6 +45,7 @@ type AnalysisResults struct {
 	Whitelisted bool     `json:"whitelisted"`
 	Brand       string   `json:"brand"`
 	Score       int      `json:"score"`
+	Screenshot  string   `json:"screenshot"`
 	Warnings    []string `json:"warnings"`
 }
 
@@ -85,7 +92,9 @@ func main() {
 	router := mux.NewRouter()
 	router.StrictSlash(true)
 	router.Use(loggingMiddleware)
-	router.HandleFunc("/api/analyze/", apiAnalyze).Methods("POST")
+	router.HandleFunc("/api/analyze/link/", apiAnalyzeLink).Methods("POST")
+	router.HandleFunc("/api/analyze/domain/", apiAnalyzeDomain).Methods("POST")
+	router.HandleFunc("/api/analyze/html/", apiAnalyzeHTML).Methods("POST")
 
 	hostPort := fmt.Sprintf("127.0.0.1:%s", portNumber)
 	srv := &http.Server{
@@ -100,16 +109,61 @@ func main() {
 	log.Fatal(srv.ListenAndServe())
 }
 
-func apiAnalyze(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	url := r.PostFormValue("url")
-	urlFinal := url
-	// urlNormalized := phishdetect.NormalizeURL(url)
-	// full, _ := strconv.ParseBool(r.PostFormValue("full"))
-
-	analysis := phishdetect.NewAnalysis(urlFinal, "")
-	err := analysis.AnalyzeURL()
+func validateURL(url string) bool {
+	linkTest, err := phishdetect.NewLink(url)
 	if err != nil {
+		return false
+	}
+
+	if linkTest.Scheme != "" && linkTest.Scheme != "http" && linkTest.Scheme != "https" {
+		return false
+	}
+
+	return true
+}
+
+func apiAnalyzeLink(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var req AnalysisRequest
+	err := decoder.Decode(&req)
+	if err != nil {
+		// Couldn't parse request.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	urlNormalized := phishdetect.NormalizeURL(req.URL)
+	urlFinal := urlNormalized
+
+	var html string
+	var screenshot string
+
+	if !validateURL(urlNormalized) {
+		// Invalid URL.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	// Setting Docker API version.
+	os.Setenv("DOCKER_API_VERSION", apiVersion)
+	// Instantiate new browser and open the link.
+	browser := phishdetect.NewBrowser(urlNormalized, "", false, "")
+	err = browser.Run()
+	if err != nil {
+		// Browser launch failed.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	html = browser.HTML
+	urlFinal = browser.FinalURL
+	screenshot = fmt.Sprintf("data:image/png;base64,%s", browser.ScreenshotData)
+
+	analysis := phishdetect.NewAnalysis(urlFinal, html)
+	err = analysis.AnalyzeHTML()
+	if err != nil {
+		// Analysis failed.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	err = analysis.AnalyzeURL()
+	if err != nil {
+		// Analysis failed.
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	brand := analysis.Brands.GetBrand()
@@ -120,11 +174,117 @@ func apiAnalyze(w http.ResponseWriter, r *http.Request) {
 	}
 
 	results := AnalysisResults{
-		URL: url,
-		// URLFinal: urlFinal,
+		URL:         req.URL,
+		URLFinal:    urlFinal,
 		Whitelisted: analysis.Whitelisted,
 		Score:       analysis.Score,
 		Brand:       brand,
+		Screenshot:  screenshot,
+		Warnings:    warnings,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(results)
+}
+
+func apiAnalyzeDomain(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var req AnalysisRequest
+	err := decoder.Decode(&req)
+	if err != nil {
+		// Couldn't parse request.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	urlNormalized := phishdetect.NormalizeURL(req.URL)
+	urlFinal := urlNormalized
+
+	if !validateURL(urlNormalized) {
+		// Invalid URL.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	analysis := phishdetect.NewAnalysis(urlFinal, "")
+	err = analysis.AnalyzeURL()
+	if err != nil {
+		// Analysis failed.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	brand := analysis.Brands.GetBrand()
+
+	var warnings []string
+	for _, warning := range analysis.Warnings {
+		warnings = append(warnings, warning.Description)
+	}
+
+	results := AnalysisResults{
+		URL:         req.URL,
+		URLFinal:    urlFinal,
+		Whitelisted: analysis.Whitelisted,
+		Score:       analysis.Score,
+		Brand:       brand,
+		Screenshot:  "",
+		Warnings:    warnings,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(results)
+}
+
+func apiAnalyzeHTML(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var req AnalysisRequest
+	err := decoder.Decode(&req)
+	if err != nil {
+		// Couldn't parse request.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	url := req.URL
+	urlFinal := url
+
+	if !validateURL(url) {
+		// Invalid URL.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	if req.HTML == "" {
+		// Invalid HTML.
+		http.Error(w, "Invalid HTML", http.StatusInternalServerError)
+	}
+
+	htmlData, err := base64.StdEncoding.DecodeString(req.HTML)
+	if err != nil {
+		// Invalid HTML.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	html := string(htmlData)
+
+	analysis := phishdetect.NewAnalysis(urlFinal, html)
+	err = analysis.AnalyzeHTML()
+	if err != nil {
+		// Analysis failed.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	err = analysis.AnalyzeURL()
+	if err != nil {
+		// Analysis failed.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	brand := analysis.Brands.GetBrand()
+
+	var warnings []string
+	for _, warning := range analysis.Warnings {
+		warnings = append(warnings, warning.Description)
+	}
+
+	results := AnalysisResults{
+		URL:         url,
+		URLFinal:    urlFinal,
+		Whitelisted: analysis.Whitelisted,
+		Score:       analysis.Score,
+		Brand:       brand,
+		Screenshot:  "",
 		Warnings:    warnings,
 	}
 

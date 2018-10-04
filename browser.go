@@ -33,8 +33,8 @@ import (
 	"github.com/mafredri/cdp"
 	"github.com/mafredri/cdp/devtool"
 	"github.com/mafredri/cdp/protocol/dom"
-	"github.com/mafredri/cdp/protocol/page"
 	"github.com/mafredri/cdp/protocol/network"
+	"github.com/mafredri/cdp/protocol/page"
 	"github.com/mafredri/cdp/rpcc"
 	log "github.com/sirupsen/logrus"
 )
