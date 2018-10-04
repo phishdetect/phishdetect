@@ -131,6 +131,8 @@ func apiAnalyzeLink(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
+	log.Info("Received request to dynamically analyze link: ", req.URL)
+
 	urlNormalized := phishdetect.NormalizeURL(req.URL)
 	urlFinal := urlNormalized
 
@@ -196,6 +198,8 @@ func apiAnalyzeDomain(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
+	log.Info("Received request to statically analyze domain: ", req.URL)
+
 	urlNormalized := phishdetect.NormalizeURL(req.URL)
 	urlFinal := urlNormalized
 
@@ -239,6 +243,8 @@ func apiAnalyzeHTML(w http.ResponseWriter, r *http.Request) {
 		// Couldn't parse request.
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+
+	log.Info("Received request to statically analyze HTML from URL: ", req.URL)
 
 	url := req.URL
 	urlFinal := url
