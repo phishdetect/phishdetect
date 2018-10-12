@@ -25,10 +25,7 @@ linux:
 	@cd cli; $(FLAGS_LINUX) go build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/linux/phishdetect-cli
 
 	@echo "[builder] Building Linux Web executable"
-	@cd web; $(FLAGS_LINUX) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/linux/phishdetect-web
-
-	@echo "[builder] Building Linux API executable"
-	@cd api; $(FLAGS_LINUX) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/linux/phishdetect-api
+	@cd node; $(FLAGS_LINUX) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/linux/phishdetect-node
 
 	@echo "[builder] Done!"
 
@@ -39,10 +36,7 @@ darwin:
 	@cd cli; $(FLAGS_DARWIN) go build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/darwin/phishdetect-cli
 
 	@echo "[builder] Building Darwin Web executable"
-	@cd web; $(FLAGS_DARWIN) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/darwin/phishdetect-web
-
-	@echo "[builder] Building Darwin API executable"
-	@cd api; $(FLAGS_DARWIN) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/darwin/phishdetect-api
+	@cd node; $(FLAGS_DARWIN) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/darwin/phishdetect-node
 
 	@echo "[builder] Done!"
 
@@ -53,10 +47,7 @@ windows:
 	@cd cli; $(FLAGS_WINDOWS) go build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/windows/phishdetect-cli.exe
 
 	@echo "[builder] Building Windows Web executable"
-	@cd web; $(FLAGS_WINDOWS) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/windows/phishdetect-web.exe
-
-	@echo "[builder] Building Windows API executable"
-	@cd api; $(FLAGS_WINDOWS) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/windows/phishdetect-api.exe
+	@cd node; $(FLAGS_WINDOWS) packr build --ldflags '-s -w -extldflags "-static"' -o $(BUILD_FOLDER)/windows/phishdetect-node.exe
 
 	@echo "[builder] Done!"
 

@@ -20,18 +20,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
-	"time"
 
-	"github.com/gorilla/mux"
-	"github.com/mattn/go-colorable"
 	"github.com/phishdetect/phishdetect"
 	log "github.com/sirupsen/logrus"
-	flag "github.com/spf13/pflag"
 )
 
+// AnalysisRequest contains the information required to start an analysis.
 type AnalysisRequest struct {
 	URL  string `json:"url"`
 	HTML string `json:"html"`
@@ -49,79 +45,6 @@ type AnalysisResults struct {
 	Warnings    []string `json:"warnings"`
 }
 
-var (
-	portNumber   string
-	apiVersion   string
-	safeBrowsing string
-)
-
-func init() {
-	debug := flag.Bool("debug", false, "Enable debug logging")
-	flag.StringVar(&portNumber, "port", "6745", "Specify which port number to bind the service on")
-	flag.StringVar(&apiVersion, "api-version", "1.37", "Specify which Docker API version to use (default: 1.37)")
-	flag.StringVar(&safeBrowsing, "safebrowsing", "", "Specify a file path containing your Google SafeBrowsing API key (default: disabled)")
-	flag.Parse()
-
-	if *debug {
-		log.SetLevel(log.DebugLevel)
-	}
-	log.SetFormatter(&log.TextFormatter{ForceColors: true})
-	log.SetOutput(colorable.NewColorableStdout())
-
-	if safeBrowsing != "" {
-		if _, err := os.Stat(safeBrowsing); err == nil {
-			buf, _ := ioutil.ReadFile(safeBrowsing)
-			key := string(buf)
-			if key != "" {
-				phishdetect.SafeBrowsingKey = key
-			}
-		} else {
-			log.Warning("The specified Google SafeBrowsing API key file does not exist. Check disabled.")
-		}
-	}
-}
-
-func loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Debug(r.RequestURI)
-		next.ServeHTTP(w, r)
-	})
-}
-
-func main() {
-	router := mux.NewRouter()
-	router.StrictSlash(true)
-	router.Use(loggingMiddleware)
-	router.HandleFunc("/api/analyze/link/", apiAnalyzeLink).Methods("POST")
-	router.HandleFunc("/api/analyze/domain/", apiAnalyzeDomain).Methods("POST")
-	router.HandleFunc("/api/analyze/html/", apiAnalyzeHTML).Methods("POST")
-
-	hostPort := fmt.Sprintf("127.0.0.1:%s", portNumber)
-	srv := &http.Server{
-		Handler:      router,
-		Addr:         hostPort,
-		WriteTimeout: 2 * time.Minute,
-		ReadTimeout:  2 * time.Minute,
-	}
-
-	log.Info("Starting server on ", hostPort, " and waiting for requests...")
-
-	log.Fatal(srv.ListenAndServe())
-}
-
-func validateURL(url string) bool {
-	linkTest, err := phishdetect.NewLink(url)
-	if err != nil {
-		return false
-	}
-
-	if linkTest.Scheme != "" && linkTest.Scheme != "http" && linkTest.Scheme != "https" {
-		return false
-	}
-
-	return true
-}
-
 func apiAnalyzeLink(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var req AnalysisRequest
@@ -131,7 +54,7 @@ func apiAnalyzeLink(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	log.Info("Received request to dynamically analyze link: ", req.URL)
+	log.Debug("Received request to dynamically analyze link: ", req.URL)
 
 	urlNormalized := phishdetect.NormalizeURL(req.URL)
 	urlFinal := urlNormalized
@@ -198,7 +121,7 @@ func apiAnalyzeDomain(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	log.Info("Received request to statically analyze domain: ", req.URL)
+	log.Debug("Received request to statically analyze domain: ", req.URL)
 
 	urlNormalized := phishdetect.NormalizeURL(req.URL)
 	urlFinal := urlNormalized
@@ -244,7 +167,7 @@ func apiAnalyzeHTML(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	log.Info("Received request to statically analyze HTML from URL: ", req.URL)
+	log.Debug("Received request to statically analyze HTML from URL: ", req.URL)
 
 	url := req.URL
 	urlFinal := url

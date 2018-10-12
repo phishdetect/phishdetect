@@ -17,135 +17,20 @@
 package main
 
 import (
-	"crypto/sha1"
 	"encoding/base64"
-	"encoding/hex"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	pongo "github.com/flosch/pongo2"
-	"github.com/gobuffalo/packr"
 	"github.com/gorilla/mux"
-	"github.com/mattn/go-colorable"
 	"github.com/phishdetect/phishdetect"
 	log "github.com/sirupsen/logrus"
-	flag "github.com/spf13/pflag"
 )
 
-var (
-	portNumber   string
-	apiVersion   string
-	safeBrowsing string
-
-	templatesBox packr.Box
-	staticBox    packr.Box
-
-	tmplIndex    *pongo.Template
-	tmplError    *pongo.Template
-	tmplSubmit   *pongo.Template
-	tmplCheck    *pongo.Template
-	tmplRedirect *pongo.Template
-	tmplWarning  *pongo.Template
-)
-
-const urlRegex string = "(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})"
-
-func encodeSHA1(target string) string {
-	h := sha1.New()
-	h.Write([]byte(target))
-	return hex.EncodeToString(h.Sum(nil))
-}
-
-func init() {
-	debug := flag.Bool("debug", false, "Enable debug logging")
-	flag.StringVar(&portNumber, "port", "7856", "Specify which port number to bind the service on")
-	flag.StringVar(&apiVersion, "api-version", "1.37", "Specify which Docker API version to use (default: 1.37)")
-	flag.StringVar(&safeBrowsing, "safebrowsing", "", "Specify a file path containing your Google SafeBrowsing API key (default: disabled)")
-	flag.Parse()
-
-	if *debug {
-		log.SetLevel(log.DebugLevel)
-	}
-	log.SetFormatter(&log.TextFormatter{ForceColors: true})
-	log.SetOutput(colorable.NewColorableStdout())
-
-	if safeBrowsing != "" {
-		if _, err := os.Stat(safeBrowsing); err == nil {
-			buf, _ := ioutil.ReadFile(safeBrowsing)
-			key := string(buf)
-			if key != "" {
-				phishdetect.SafeBrowsingKey = key
-			}
-		} else {
-			log.Warning("The specified Google SafeBrowsing API key file does not exist. Check disabled.")
-		}
-	}
-
-	templatesBox = packr.NewBox("templates")
-	staticBox = packr.NewBox("static")
-
-	tmplIndex = pongo.Must(pongo.FromString(templatesBox.String("index.html")))
-	tmplError = pongo.Must(pongo.FromString(templatesBox.String("error.html")))
-	tmplSubmit = pongo.Must(pongo.FromString(templatesBox.String("submit.html")))
-	tmplCheck = pongo.Must(pongo.FromString(templatesBox.String("check.html")))
-	tmplRedirect = pongo.Must(pongo.FromString(templatesBox.String("redirect.html")))
-	tmplWarning = pongo.Must(pongo.FromString(templatesBox.String("warning.html")))
-}
-
-func loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Debug(r.RequestURI)
-		next.ServeHTTP(w, r)
-	})
-}
-
-func errorPage(w http.ResponseWriter, message string) {
-	err := tmplError.ExecuteWriter(pongo.Context{
-		"message": message,
-	}, w)
-	if err != nil {
-		log.Error(err)
-		http.Error(w, "Some unexpected error occurred! :-(", http.StatusInternalServerError)
-	}
-	return
-}
-
-func main() {
-	fs := http.FileServer(staticBox)
-
-	router := mux.NewRouter()
-	router.StrictSlash(true)
-	router.Use(loggingMiddleware)
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
-	router.HandleFunc("/", index)
-	router.HandleFunc("/check/", check)
-	router.HandleFunc(fmt.Sprintf("/check/{url:%s}", urlRegex), check).Methods("GET", "POST")
-	router.HandleFunc("/analyze/", analyze).Methods("POST")
-
-	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// http.ServeFile(w, r, "static/404.html")
-		log.Warning(r.RequestURI)
-	})
-
-	hostPort := fmt.Sprintf("127.0.0.1:%s", portNumber)
-	srv := &http.Server{
-		Handler:      router,
-		Addr:         hostPort,
-		WriteTimeout: 2 * time.Minute,
-		ReadTimeout:  2 * time.Minute,
-	}
-
-	log.Info("Starting server on ", hostPort, " and waiting for requests...")
-
-	log.Fatal(srv.ListenAndServe())
-}
-
-func index(w http.ResponseWriter, r *http.Request) {
+func interfaceIndex(w http.ResponseWriter, r *http.Request) {
 	err := tmplIndex.ExecuteWriter(nil, w)
 	if err != nil {
 		log.Error(err)
@@ -153,7 +38,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func check(w http.ResponseWriter, r *http.Request) {
+func interfaceCheck(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	urlEncoded := vars["url"]
 
@@ -218,7 +103,7 @@ func check(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func analyze(w http.ResponseWriter, r *http.Request) {
+func interfaceAnalyze(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	url := r.PostFormValue("url")
 	urlSHA1 := encodeSHA1(url)
@@ -235,24 +120,15 @@ func analyze(w http.ResponseWriter, r *http.Request) {
 
 	// If there is no specified HTML string, it means we need to open the link.
 	if htmlEncoded == "" {
-		// We do some validation checks for the URL to avoid potential file
-		// disclosure issues.
-		linkTest, err := phishdetect.NewLink(urlNormalized)
-		if err != nil {
-			log.Error(err)
-			errorPage(w, "Something failed parsing the link. It might be invalid.")
-			return
-		}
-		if linkTest.Scheme != "" && linkTest.Scheme != "http" && linkTest.Scheme != "https" {
-			errorPage(w, "I only support HTTP links.")
-			return
+		if !validateURL(url) {
+			errorPage(w, "You have submitted an invalid link.")
 		}
 
 		// Setting Docker API version.
 		os.Setenv("DOCKER_API_VERSION", apiVersion)
 		// Instantiate new browser and open the link.
 		browser := phishdetect.NewBrowser(urlNormalized, "", tor, "")
-		err = browser.Run()
+		err := browser.Run()
 		if err != nil {
 			log.Error(err)
 			errorPage(w, "Something failed while trying to launch the containerized browser. The URL might be invalid.")
