@@ -18,6 +18,20 @@ deps:
 
 	@echo "[deps] Done!"
 
+debug:
+	@mkdir -p $(BUILD_FOLDER)/debug
+
+	@echo "[builder] Building Debug CLI executable"
+	@cd cli; $(FLAGS_LINUX) go build --ldflags '-linkmode=internal' -o $(BUILD_FOLDER)/debug/phishdetect-cli
+
+	@echo "[builder] Building Debug Web executable"
+	@cd web; $(FLAGS_LINUX) packr build --ldflags '-linkmode=internal' -o $(BUILD_FOLDER)/debug/phishdetect-web
+
+	@echo "[builder] Building Debug API executable"
+	@cd api; $(FLAGS_LINUX) packr build --ldflags '-linkmode=internal' -o $(BUILD_FOLDER)/debug/phishdetect-api
+
+	@echo "[builder] Done!"
+
 linux:
 	@mkdir -p $(BUILD_FOLDER)/linux
 
