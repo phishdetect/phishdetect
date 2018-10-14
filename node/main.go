@@ -110,17 +110,22 @@ func main() {
 	router := mux.NewRouter()
 	router.StrictSlash(true)
 	router.Use(loggingMiddleware)
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
+
 	// Graphical interface routes.
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 	router.HandleFunc("/", interfaceIndex)
 	router.HandleFunc("/check/", interfaceCheck)
 	router.HandleFunc(fmt.Sprintf("/check/{url:%s}", urlRegex), interfaceCheck).Methods("GET", "POST")
 	router.HandleFunc("/analyze/", interfaceAnalyze).Methods("POST")
+
 	// REST API routes.
 	router.HandleFunc("/api/analyze/link/", apiAnalyzeLink).Methods("POST")
 	router.HandleFunc("/api/analyze/domain/", apiAnalyzeDomain).Methods("POST")
 	router.HandleFunc("/api/analyze/html/", apiAnalyzeHTML).Methods("POST")
 	router.HandleFunc("/api/indicators/fetch/", apiIndicatorsFetch).Methods("GET")
+	// router.HandleFunc("/api/indicators/add/", apiIndicatorsAdd).Methods("POST")
+	// router.HandleFunc("/api/events/fetch/", apiEventsFetch).Methods("POST")
+	// router.HandleFunc("/api/events/add/", apiEventsAdd).Methods("POST")
 
 	router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// http.ServeFile(w, r, "static/404.html")

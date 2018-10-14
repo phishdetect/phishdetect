@@ -29,7 +29,7 @@ type Indicators struct {
 }
 
 func apiIndicatorsFetch(w http.ResponseWriter, r *http.Request) {
-	log.Info("Received request to fetch indicators")
+	log.Debug("Received request to fetch indicators")
 
 	indicators := Indicators{
 		Senders: []string{"0AD6FDDB0A6CDE372FD895DB5E1B97B1EF986BE414C6890C5D7089EE80399B1E"},
