@@ -13,8 +13,8 @@ matrix:
 #   -docker
 
 install:
- - env GO111MODULE=on make deps
+  - env GO111MODULE=on make deps
 
 script:
- - env GO111MODULE=on make linux
+  - env GO111MODULE=on make linux
   - env GO111MODULE=on go test .
