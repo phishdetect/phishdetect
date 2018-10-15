@@ -10,11 +10,11 @@ matrix:
   fast_finish: true
 
 # services:
-# 	-docker
+#   -docker
 
-install:
-  - env GO111MODULE=on make deps
+#install:
+#  - env GO111MODULE=on make deps
 
 script:
-  - env GO111MODULE=on make linux
+#  - env GO111MODULE=on make linux
   - env GO111MODULE=on go test .
