@@ -1,6 +1,7 @@
 module "https://github.com/phishdetect/phishdetect"
 
 require (
+	github.com/Microsoft/go-winio v0.4.11 // indirect
 	github.com/PuerkitoBio/purell v1.1.0 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/anaskhan96/soup v1.0.1
