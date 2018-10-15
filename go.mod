@@ -1,4 +1,4 @@
-module "https://github.com/phishdetect/phishdetect"
+module github.com/phishdetect/phishdetect
 
 require (
 	github.com/Microsoft/go-winio v0.4.11 // indirect
@@ -15,11 +15,14 @@ require (
 	github.com/gorilla/websocket v1.4.0 // indirect
 	github.com/goware/urlx v0.0.0-20171129014730-06d8eeb3ce17
 	github.com/mafredri/cdp v0.19.2
+	github.com/mattn/go-colorable v0.0.9
+	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/mattn/go-runewidth v0.0.3 // indirect
 	github.com/mozillazg/go-unidecode v0.1.0
 	github.com/olekukonko/tablewriter v0.0.0-20180912035003-be2c049b30cc // indirect
 	github.com/pkg/errors v0.8.0 // indirect
 	github.com/sirupsen/logrus v1.1.1
+	github.com/spf13/pflag v1.0.3
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	golang.org/x/net v0.0.0-20181011144130-49bb7cea24b1 // indirect
 	golang.org/x/text v0.3.0 // indirect
