@@ -44,16 +44,15 @@ func NewAnalysis(url, html string) *Analysis {
 	}
 }
 
-// AnalyzeURL performs all the available checks to be run on a URL or domain.
-func (a *Analysis) AnalyzeURL() error {
+func (a *Analysis) analyzeLink(checks []Check) error {
 	log.Debug("Starting to analyze the URL...")
 
 	link, err := NewLink(a.FinalURL)
 	if err != nil {
-		return errors.New("An error occurred parsing the link, it might be invalid.")
+		return errors.New("An error occurred parsing the domain, it might be invalid.")
 	}
-	for _, check := range GetURLChecks() {
-		log.Debug("Running URL check ", check.Name, " ...")
+	for _, check := range checks {
+		log.Debug("Running domain check ", check.Name, " ...")
 		if check.Call(link, nil, a.Brands) {
 			log.Debug("Matched ", check.Name)
 			a.Score += check.Score
@@ -64,6 +63,16 @@ func (a *Analysis) AnalyzeURL() error {
 	a.Whitelisted = a.Brands.IsDomainWhitelisted(link.TopDomain, "")
 
 	return nil
+}
+
+// AnalyzeDomain performs all the available checks to be run on a URL or domain.
+func (a *Analysis) AnalyzeDomain() error {
+	return a.analyzeLink(GetDomainChecks())
+}
+
+// AnalyzeURL performs all the available checks to be run on a URL or domain.
+func (a *Analysis) AnalyzeURL() error {
+	return a.analyzeLink(GetURLChecks())
 }
 
 // AnalyzeHTML performs all the available checks to be run on an HTML string.

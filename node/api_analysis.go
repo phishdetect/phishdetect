@@ -45,6 +45,52 @@ type AnalysisResults struct {
 	Warnings    []string `json:"warnings"`
 }
 
+func apiAnalyzeDomain(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var req AnalysisRequest
+	err := decoder.Decode(&req)
+	if err != nil {
+		// Couldn't parse request.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	log.Debug("Received request to statically analyze domain: ", req.URL)
+
+	urlNormalized := phishdetect.NormalizeURL(req.URL)
+	urlFinal := urlNormalized
+
+	if !validateURL(urlNormalized) {
+		// Invalid URL.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	analysis := phishdetect.NewAnalysis(urlFinal, "")
+	err = analysis.AnalyzeDomain()
+	if err != nil {
+		// Analysis failed.
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	brand := analysis.Brands.GetBrand()
+
+	var warnings []string
+	for _, warning := range analysis.Warnings {
+		warnings = append(warnings, warning.Description)
+	}
+
+	results := AnalysisResults{
+		URL:         req.URL,
+		URLFinal:    urlFinal,
+		Whitelisted: analysis.Whitelisted,
+		Score:       analysis.Score,
+		Brand:       brand,
+		Screenshot:  "",
+		Warnings:    warnings,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(results)
+}
+
 func apiAnalyzeLink(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var req AnalysisRequest
@@ -105,52 +151,6 @@ func apiAnalyzeLink(w http.ResponseWriter, r *http.Request) {
 		Score:       analysis.Score,
 		Brand:       brand,
 		Screenshot:  screenshot,
-		Warnings:    warnings,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(results)
-}
-
-func apiAnalyzeDomain(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var req AnalysisRequest
-	err := decoder.Decode(&req)
-	if err != nil {
-		// Couldn't parse request.
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
-	log.Debug("Received request to statically analyze domain: ", req.URL)
-
-	urlNormalized := phishdetect.NormalizeURL(req.URL)
-	urlFinal := urlNormalized
-
-	if !validateURL(urlNormalized) {
-		// Invalid URL.
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-
-	analysis := phishdetect.NewAnalysis(urlFinal, "")
-	err = analysis.AnalyzeURL()
-	if err != nil {
-		// Analysis failed.
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-	brand := analysis.Brands.GetBrand()
-
-	var warnings []string
-	for _, warning := range analysis.Warnings {
-		warnings = append(warnings, warning.Description)
-	}
-
-	results := AnalysisResults{
-		URL:         req.URL,
-		URLFinal:    urlFinal,
-		Whitelisted: analysis.Whitelisted,
-		Score:       analysis.Score,
-		Brand:       brand,
-		Screenshot:  "",
 		Warnings:    warnings,
 	}
 

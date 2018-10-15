@@ -212,15 +212,9 @@ func checkGoogleSafeBrowsing(link *Link, page *Page, brands *Brands) bool {
 	return false
 }
 
-// GetURLChecks returns a list of all the available URL checks.
-func GetURLChecks() []Check {
+// GetDomainChecks returns a list of only the checks that work for domain names.
+func GetDomainChecks() []Check {
 	return []Check{
-		{
-			checkB64Parameters,
-			5,
-			"base64-parameters",
-			"The link might contain base64 encoded parameters (low confidence)",
-		},
 		{
 			checkSuspiciousTLD,
 			5,
@@ -232,12 +226,6 @@ func GetURLChecks() []Check {
 			20,
 			"excessive-punct",
 			"The domain has suspicious amount of dots and dashes",
-		},
-		{
-			checkNoTLS,
-			20,
-			"no-tls",
-			"The website is not using a secure transport layer (HTTPS)",
 		},
 		{
 			checkSuspiciousHostname,
@@ -264,4 +252,25 @@ func GetURLChecks() []Check {
 			"The link is listed in Google SafeBrowsing as malicious",
 		},
 	}
+}
+
+// GetURLChecks returns a list of all the available URL checks.
+func GetURLChecks() []Check {
+	checks := GetDomainChecks()
+	checks = append(checks, []Check{
+		{
+			checkB64Parameters,
+			5,
+			"base64-parameters",
+			"The link might contain base64 encoded parameters (low confidence)",
+		},
+		{
+			checkNoTLS,
+			20,
+			"no-tls",
+			"The website is not using a secure transport layer (HTTPS)",
+		},
+	}...)
+
+	return checks
 }
