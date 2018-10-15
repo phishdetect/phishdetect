@@ -11,7 +11,6 @@ lint:
 deps:
 	@echo "[deps] Downloading modules..."
 	go mod download
-	go get -u github.com/gobuffalo/packr/...
 
 	@echo "[deps] Need to fix an issue with Docker client vendoring..."
 	rm -rf $(GOPATH)/src/github.com/docker/docker/vendor/github.com/docker/go-connections

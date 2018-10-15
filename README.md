@@ -217,7 +217,7 @@ You can install PhishDetect's web interface by simply launching:
 
 Or by building the binary from the source base as explained earlier.
 
-Once it is running, you can either access it from `http://127.0.0.1:7856/check/` (mostly for testing and debug purposes) and enter the URL you wish to analyze. Otherwise, you can interact with it through the Browser Extension. 
+Once it is running, you can either access it from `http://127.0.0.1:7856/check/` (mostly for testing and debug purposes) and enter the URL you wish to analyze. Otherwise, you can interact with it through the Browser Extension.
 
 After a few seconds, if the analyzed URL is not found to be suspicious, you are brought to a redirect page
 that will show you a result similar to the following and after 30 seconds redirect you to the original URL.
