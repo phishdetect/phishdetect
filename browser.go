@@ -259,6 +259,7 @@ func (b *Browser) Run() error {
 	log.Debug("Started loading on frame ID ", nav.FrameID)
 
 	// Monitor for URL visits.
+	stopMonitor := make(chan bool)
 	go func() {
 		for true {
 			select {
@@ -278,6 +279,8 @@ func (b *Browser) Run() error {
 						b.addVisit(event.Frame.URL)
 					}
 				}
+			case <-stopMonitor:
+				return
 			}
 		}
 	}()
@@ -286,6 +289,7 @@ func (b *Browser) Run() error {
 	if err != nil {
 		log.Error(err)
 	}
+	stopMonitor <-true
 	log.Debug("DOMContentEventFired. Waiting for few seconds to let page finish loading...")
 	time.Sleep(BrowserWaitTime * time.Second)
 
