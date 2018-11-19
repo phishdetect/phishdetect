@@ -23,7 +23,7 @@ func Microsoft() *Brand {
 	whitelist := []string{
 		"microsoft.com", "microsoftonline.com", "office.com", "live.com",
 		"onedrive.com", "s-microsoft.com", "sharepoint.com", "microsoft.us",
-		"msft.net",
+		"msft.net", "microsoft-int.com",
 	}
 	suspicious := []string{
 		"microsofta", "microsoftb",
