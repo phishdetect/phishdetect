@@ -10,6 +10,7 @@ PhishDetect is a library and a platform to detect potential phishing pages. It a
 
 PhishDetect can take HTML strings as input, but it can also just be provided with an URL which will then be opened through a dedicated Docker container which automatically instruments a Google Chrome browser, whose behavior is monitored while navigating to the suspicious link.
 
+
 ## Table of Contents
 
    * [PhishDetect](#phishdetect)
@@ -21,6 +22,7 @@ PhishDetect can take HTML strings as input, but it can also just be provided wit
       * [Known Issues](#known-issues)
       * [License](#license)
 
+
 ## Building
 
 Install Docker Community Edition for [Windows](https://download.docker.com/win/stable/Docker%20for%20Windows%20Installer.exe), [Mac](https://download.docker.com/mac/stable/Docker.dmg) or [Linux](https://docs.docker.com/install/linux/docker-ce/ubuntu/).
@@ -29,38 +31,13 @@ Download the Docker image from Docker Hub using:
 
     $ docker pull phishdetect/phishdetect
 
-Once the Docker image is created you can proceed building the binaries.
-
-Firstly, make sure you have Go 1.11+ installed. We require Go 1.11 or later versions because of the native support for Go Modules, which we use to manage dependencies. If it isn't available for your operating system of choice, we recommend trying [gvm](https://github.com/moovweb/gvm).
-
-Proceed cloning the Git repository:
-
-    $ git clone github.com/phishdetect/phishdetect.git
-
-Move to directory you just cloned and proceed with downloading the depedencies:
-
-    $ make deps
-
-In order to build binaries for GNU/Linux:
-
-    $ make linux
-
-In order to build binaries for Mac:
-
-    $ make darwin
-
-In order to build binaries for Windows (this will require MingW to be installed):
-
-    $ go get github.com/Microsoft/go-winio
-    $ make windows
-
-Once the compilation is completed, you will find two binaries in the `build/<linux/darwin/windows>/` folder. The first is a command-line interface, named `phishdetect-cli` and the second is the web interface, named `phishdetect-web`. Both are stand-alone binaries: they can be copied and run directly with no additional files required.
 
 ## Using PhishDetect as a library
 
 First install the PhishDetect library dependency:
 
     $ go get -u -d github.com/phishdetect/phishdetect/...
+
 
 ### Analyzing a link statically
 
@@ -100,6 +77,7 @@ func main() {
     }
 }
 ```
+
 
 ### Analyzing a link dynamically
 
@@ -153,11 +131,35 @@ For more information, please refer to the [Godoc][godoc].
 
 ## Using PhishDetect CLI
 
-You can install PhishDetect's command-line interface by simply launching:
+Firstly, make sure you have Go 1.11+ installed. We require Go 1.11 or later versions because of the native support for Go Modules, which we use to manage dependencies. If it isn't available for your operating system of choice, we recommend trying [gvm](https://github.com/moovweb/gvm).
+
+Now you can either install PhishDetect's command-line interface by simply launching:
 
     go get github.com/phishdetect/phishdetect/cli
 
-Or by building the binary from the source base as explained earlier.
+Or build the binary from the source code. In order to do so, proceed cloning the Git repository:
+
+    $ git clone github.com/phishdetect/phishdetect.git
+
+Move to directory you just cloned and proceed with downloading the depedencies:
+
+    $ make deps
+
+In order to build binaries for GNU/Linux:
+
+    $ make linux
+
+In order to build binaries for Mac:
+
+    $ make darwin
+
+In order to build binaries for Windows (this will require MingW to be installed):
+
+    $ go get github.com/Microsoft/go-winio
+    $ make windows
+
+Once the compilation is completed, you will find the command-line interface, named `phishdetect-cli`, in the `build/<linux/darwin/windows>/` folder
+
 
 Launch `phishdetect-cli -h` to view the help message:
 
@@ -204,6 +206,7 @@ Specify a URL and the preferred options and wait for the results to appear:
 ## License
 
 PhishDetect is released under GNU Affero General Public License 3.0 and is copyrighted to Claudio Guarnieri.
+
 
 [goreportcard]: https://goreportcard.com/report/github.com/phishdetect/phishdetect
 [goreportcard-badge]: https://goreportcard.com/badge/github.com/phishdetect/phishdetect
