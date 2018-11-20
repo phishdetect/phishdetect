@@ -31,12 +31,14 @@ Download the Docker image from Docker Hub using:
 
     $ docker pull phishdetect/phishdetect
 
+Now you can download the PhishDetect library:
+
+    $ go get -u github.com/phishdetect/phishdetect
+
+For ease of versioning, you should consider using Go 1.11+ Modules in your own project.
+
 
 ## Using PhishDetect as a library
-
-First install the PhishDetect library dependency:
-
-    $ go get -u -d github.com/phishdetect/phishdetect/...
 
 
 ### Analyzing a link statically
