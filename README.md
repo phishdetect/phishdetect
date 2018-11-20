@@ -6,15 +6,9 @@
 
 **NOTE: This project is experimental. It is not to be used yet, particularly with at-risk users.**
 
-PhishDetect is a library and a platform to detect potential phishing pages.
-It attempts doing so by identifying suspicious and malicious properties both in
-the domain names and URL provided, as well as in the HTML content of the page
-opened.
+PhishDetect is a library and a platform to detect potential phishing pages. It attempts doing so by identifying suspicious and malicious properties both in the domain names and URL provided, as well as in the HTML content of the page opened.
 
-PhishDetect can take HTML strings as input, but it can also just be provided
-with an URL which will then be opened through a dedicated Docker container which
-automatically instruments a Google Chrome browser, whose behavior is monitored
-while navigating to the suspicious link.
+PhishDetect can take HTML strings as input, but it can also just be provided with an URL which will then be opened through a dedicated Docker container which automatically instruments a Google Chrome browser, whose behavior is monitored while navigating to the suspicious link.
 
 ## Table of Contents
 
@@ -207,31 +201,6 @@ Specify a URL and the preferred options and wait for the results to appear:
     INFO[0014]      - The domain contains suspicious words       name=suspicious-hostname score=30
     INFO[0014]      - The website is not using a secure transport layer (HTTPS)  name=no-tls score=20
 
-## Using PhishDetect Web Interface
-
-The Web interface is primarily intended to be used in conjunction with the [Browser Extension](https://github.com/phishdetect/phishdetect-extension), but can also be used manually.
-
-You can install PhishDetect's web interface by simply launching:
-
-    go get github.com/phishdetect/phishdetect/web
-
-Or by building the binary from the source base as explained earlier.
-
-Once it is running, you can either access it from `http://127.0.0.1:7856/check/` (mostly for testing and debug purposes) and enter the URL you wish to analyze. Otherwise, you can interact with it through the Browser Extension.
-
-After a few seconds, if the analyzed URL is not found to be suspicious, you are brought to a redirect page
-that will show you a result similar to the following and after 30 seconds redirect you to the original URL.
-
-![screenshot1](https://phishdetect.io/help/how-to-use/redirect.png)
-
-In the case PhishDetect identifies suspicious elements in the analyzed page, it will show you a warning page
-like the following and only allow you continue visiting the link after manual confirmation.
-
-![screenshot2](https://phishdetect.io/help/how-to-use/warning.png)
-
-## Known Issues
-
-- Using the service in localhost through the Mozilla Firefox browser on Linux has issues and it will likely not work. Other browsers seem to work fine.
 
 ## License
 
