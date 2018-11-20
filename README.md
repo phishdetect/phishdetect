@@ -18,7 +18,6 @@ PhishDetect can take HTML strings as input, but it can also just be provided wit
          * [Analyzing a link statically](#analyzing-a-link-statically)
          * [Analyzing a link dynamically](#analyzing-a-link-dynamically)
       * [Using PhishDetect CLI](#using-phishdetect-cli)
-      * [Using PhishDetect Web Interface](#using-phishdetect-web-interface)
       * [Known Issues](#known-issues)
       * [License](#license)
 
