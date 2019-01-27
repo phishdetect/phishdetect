@@ -167,7 +167,7 @@ func checkB64Parameters(link *Link, page *Page, brands *Brands) bool {
 	for _, value := range link.Parameters {
 		// We skip strings that are too short, because they could significantly
 		// raise false positives.
-		if len(value) <= 5 {
+		if len(value) <= 8 {
 			continue
 		}
 		_, err := base64.StdEncoding.DecodeString(value)
