@@ -18,9 +18,9 @@ package brand
 
 // Brand defines the attributes of a brand.
 type Brand struct {
-	Name       string
-	Original   []string
-	Whitelist  []string
-	Suspicious []string
-	Matches    int
+	Name       string   `json:"name",yaml:"name"`
+	Original   []string `json:"original",yaml:"original"`
+	Whitelist  []string `json:"whitelist",yaml:"whitelist"`
+	Suspicious []string `json:"suspicious",yaml:"whitelist"`
+	Matches    int      `json:"matches",yaml:"matches"`
 }
