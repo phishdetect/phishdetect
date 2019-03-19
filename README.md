@@ -18,7 +18,7 @@ PhishDetect can take HTML strings as input, but it can also just be provided wit
       * [Using PhishDetect as a library](#using-phishdetect-as-a-library)
          * [Analyzing a link statically](#analyzing-a-link-statically)
          * [Analyzing a link dynamically](#analyzing-a-link-dynamically)
-         * [Adding new Brands to the Analysis list)#adding-new-brands-to-the-analysis-list)
+         * [Adding new Brands to the Analysis list)#adding-new-brands-to-the-existing-list)
       * [Using PhishDetect CLI](#using-phishdetect-cli)
       * [Known Issues](#known-issues)
       * [License](#license)
@@ -132,7 +132,7 @@ func main() {
 For more information, please refer to the [Godoc][godoc].
 
 
-### Adding new Brands to the Analysis list
+### Adding new Brands to the existing list
 
 PhishDetect comes pre-compiled with a fixed set of brands. You might want to load custom ones from external sources. You can easily do so when creating a new `Analysis`.
 
