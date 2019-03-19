@@ -18,7 +18,7 @@ PhishDetect can take HTML strings as input, but it can also just be provided wit
       * [Using PhishDetect as a library](#using-phishdetect-as-a-library)
          * [Analyzing a link statically](#analyzing-a-link-statically)
          * [Analyzing a link dynamically](#analyzing-a-link-dynamically)
-         * [Adding new Brands to the Analysis list)#adding-new-brands-to-the-existing-list)
+         * [Adding new Brands to the existing list](#adding-new-brands-to-the-existing-list)
       * [Using PhishDetect CLI](#using-phishdetect-cli)
       * [Known Issues](#known-issues)
       * [License](#license)
