@@ -289,7 +289,7 @@ func (b *Browser) Run() error {
 	if err != nil {
 		log.Error(err)
 	}
-	stopMonitor <-true
+	stopMonitor <- true
 	log.Debug("DOMContentEventFired. Waiting for few seconds to let page finish loading...")
 	time.Sleep(BrowserWaitTime * time.Second)
 
