@@ -58,6 +58,11 @@ func NewBrands() *Brands {
 	}
 }
 
+// AddBrand adds a new brand to the list.
+func (b *Brands) AddBrand(brand *brand.Brand) {
+	b.List = append(b.List, brand)
+}
+
 // GetBrand determines which among the marked brands is most likely
 // the one impersonated by the page.
 func (b *Brands) GetBrand() string {

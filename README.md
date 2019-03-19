@@ -18,6 +18,7 @@ PhishDetect can take HTML strings as input, but it can also just be provided wit
       * [Using PhishDetect as a library](#using-phishdetect-as-a-library)
          * [Analyzing a link statically](#analyzing-a-link-statically)
          * [Analyzing a link dynamically](#analyzing-a-link-dynamically)
+         * [Adding new Brands to the Analysis list)#adding-new-brands-to-the-analysis-list)
       * [Using PhishDetect CLI](#using-phishdetect-cli)
       * [Known Issues](#known-issues)
       * [License](#license)
@@ -129,6 +130,35 @@ func main() {
 ```
 
 For more information, please refer to the [Godoc][godoc].
+
+
+### Adding new Brands to the Analysis list
+
+PhishDetect comes pre-compiled with a fixed set of brands. You might want to load custom ones from external sources. You can easily do so when creating a new `Analysis`.
+
+```
+import (
+    "github.com/phishdetect/phishdetect"
+    "github.com/phishdetect/phishdetect/brand"
+)
+
+func main() {
+    // We create a new Brand.
+    myBrand := brand.Brand{
+        Name:       "MyBrand",
+        Original:   []string{"MyBrand", "MyBrandProduct"},
+        Whitelist:  []string{"mybrand.com", "mybrand.net", "mybrand.org"},
+        Suspicious: []string{"mybland.com", "mybrend.com", "mgbrand.com"},
+    }
+
+    // We instantiate a new analysis.
+    a := phishdetect.NewAnalysis("example.com", "")
+    // We access the list of brands from the current analysis and add a new one.
+    a.Brands.AddBrand(myBrand)
+    // Finally, we analyze the domain.
+    a.AnalyzeURL()
+}
+```
 
 
 ## Using PhishDetect CLI
