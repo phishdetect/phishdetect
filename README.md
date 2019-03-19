@@ -136,7 +136,7 @@ For more information, please refer to the [Godoc][godoc].
 
 PhishDetect comes pre-compiled with a fixed set of brands. You might want to load custom ones from external sources. You can easily do so when creating a new `Analysis`.
 
-```
+```go
 import (
     "github.com/phishdetect/phishdetect"
     "github.com/phishdetect/phishdetect/brand"
