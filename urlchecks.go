@@ -104,7 +104,7 @@ func checkSuspiciousTLD(link *Link, page *Page, brands *Brands) bool {
 }
 
 func checkSuspiciousBridges(link *Link, page *Page, brands *Brands) bool {
-	suspects := []string{".com-", ".com."}
+	suspects := []string{".com-"}
 
 	for _, suspect := range suspects {
 		if strings.Contains(link.Domain, suspect) {
