@@ -92,7 +92,7 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 func checkSuspiciousTLD(link *Link, page *Page, brands *Brands) bool {
 	suspects := []string{".ga", ".gq", ".ml", ".cf", ".tk", ".xyz", "cc", ".gb",
 		".info", ".biz", ".cm", ".online", ".support", ".click", ".pro", ".icu",
-		".live"}
+		".live", ".services"}
 
 	for _, suspect := range suspects {
 		if strings.HasSuffix(link.Domain, suspect) {
