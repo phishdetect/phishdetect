@@ -38,19 +38,21 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 		"credential",
 		"drive",
 		"login",
-		"mails", "rnail",
+		"mail", "mails", "rnail",
 		"managment",
 		"password",
 		"permission", "permision",
 		"recovery", "recover",
 		"register",
 		"secure", "safe",
+		"session",
 		"signin",
 		"support", "suport",
 		"unlock",
 		"update",
 		"verify", "verification", "everivcation", "verifications", "veryfication", "veryfications",
 		"wallet",
+		"weblogin",
 	}
 
 	normalized := strings.Replace(link.Domain, ".", "|", -1)
@@ -89,7 +91,8 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 
 func checkSuspiciousTLD(link *Link, page *Page, brands *Brands) bool {
 	suspects := []string{".ga", ".gq", ".ml", ".cf", ".tk", ".xyz", "cc", ".gb",
-		".info", ".biz", ".cm", ".online", ".support", ".click", ".pro", ".icu"}
+		".info", ".biz", ".cm", ".online", ".support", ".click", ".pro", ".icu",
+		".live"}
 
 	for _, suspect := range suspects {
 		if strings.HasSuffix(link.Domain, suspect) {
@@ -101,7 +104,7 @@ func checkSuspiciousTLD(link *Link, page *Page, brands *Brands) bool {
 }
 
 func checkSuspiciousBridges(link *Link, page *Page, brands *Brands) bool {
-	suspects := []string{".com-"}
+	suspects := []string{".com-", ".com."}
 
 	for _, suspect := range suspects {
 		if strings.Contains(link.Domain, suspect) {
