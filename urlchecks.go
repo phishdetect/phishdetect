@@ -22,8 +22,8 @@ import (
 	"strings"
 
 	"github.com/google/safebrowsing"
-	"github.com/texttheater/golang-levenshtein/levenshtein"
 	log "github.com/sirupsen/logrus"
+	"github.com/texttheater/golang-levenshtein/levenshtein"
 )
 
 // SafeBrowsingKey contains the API key to use Google SafeBrowsing API.

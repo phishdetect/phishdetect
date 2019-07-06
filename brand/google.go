@@ -19,7 +19,7 @@ package brand
 // Google brand properties.
 func Google() *Brand {
 	name := "google"
-	original := []string{"google", "gmail",}
+	original := []string{"google", "gmail"}
 	whitelist := []string{
 		"google.com", "google.ad", "google.ae", "google.com.af",
 		"google.com.ag", "google.com.ai", "google.al", "google.am",

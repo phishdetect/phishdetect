@@ -20,7 +20,7 @@ package brand
 func Microsoft() *Brand {
 	name := "microsoft"
 	original := []string{"microsoft", "microsoftonline", "onedrive", "sharepoint",
-		"outlook",}
+		"outlook"}
 	whitelist := []string{
 		"microsoft.com", "microsoftonline.com", "office.com", "live.com",
 		"onedrive.com", "s-microsoft.com", "sharepoint.com", "microsoft.us",
