@@ -88,7 +88,7 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 				// Then we check for any word within a certain edit distance.
 				// This should normally be covered in the brand.Suspicious list,
 				// but just in case we perform some additional test.
-				if len(word) > 4 && len(original) > 4 {
+				if len(word) > 5 && len(original) > 5 {
 					distance := levenshtein.DistanceForStrings([]rune(word),
 						[]rune(original), levenshtein.DefaultOptions)
 
@@ -130,7 +130,7 @@ func checkSuspiciousTLD(link *Link, page *Page, brands *Brands) bool {
 }
 
 func checkSuspiciousBridges(link *Link, page *Page, brands *Brands) bool {
-	suspects := []string{".com-", ".net-", ".org-"}
+	suspects := []string{".com-", ".org-"}
 
 	for _, suspect := range suspects {
 		if strings.Contains(link.Domain, suspect) {
