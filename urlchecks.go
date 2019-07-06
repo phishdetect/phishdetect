@@ -32,7 +32,8 @@ var SafeBrowsingKey string
 func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 	lowSuspects := []string{
 		"auth",
-		"authorize", 
+		"authorize",
+		"authorization",
 		"authenticate",
 		"authentication",
 		"account",
@@ -46,13 +47,14 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 		"drive",
 		"login",
 		"mails",
-		"managment",
+		"management",
 		"password",
 		"permission",
 		"recover",
 		"register",
 		"safe",
 		"secure",
+		"security",
 		"session",
 		"signin",
 		"support",
@@ -121,12 +123,12 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 			}
 
 			// Check for any variation.
-			if len(suspect) >= 5 && len(word) >= 5  {
+			if len(suspect) >= 5 && len(word) >= 5 {
 				distance := levenshtein.DistanceForStrings([]rune(word),
 					[]rune(suspect), levenshtein.DefaultOptions)
 
 				// Anything above 2 edit distance, we consider a false positve.
-				if distance == 1 || (distance == 2 && len(word) >= 7) {
+				if distance == 1 || (distance == 2 && len(word) >= 7 && len(suspect) >= 7) {
 					low++
 					break
 				}
@@ -142,11 +144,39 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 }
 
 func checkSuspiciousTLD(link *Link, page *Page, brands *Brands) bool {
-	suspects := []string{".bank", ".biz", ".cc", ".center", ".cf", ".click",
-		".club", ".download", ".ga", ".gb", ".gdn", ".gq", ".icu", ".info",
-		".live", ".ml", ".online", ".pro", ".pw", ".science", ".services",
-		".stream", ".support", ".tech", ".tk", ".top", ".vip", ".win", ".xin",
-		".xyz"}
+	suspects := []string{
+		".bank",
+		".biz",
+		".cc",
+		".center",
+		".cf",
+		".click",
+		".club",
+		".download",
+		".ga",
+		".gb",
+		".gdn",
+		".gq",
+		".icu",
+		".info",
+		".live",
+		".ml",
+		".mobi",
+		".online",
+		".pro",
+		".pw",
+		".science",
+		".services",
+		".stream",
+		".support",
+		".tech",
+		".tk",
+		".top",
+		".vip",
+		".win",
+		".xin",
+		".xyz",
+	}
 
 	for _, suspect := range suspects {
 		if strings.HasSuffix(link.Domain, suspect) {
