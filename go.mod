@@ -22,5 +22,6 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/pflag v1.0.3
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
+	github.com/texttheater/golang-levenshtein v0.0.0-20180516184445-d188e65d659e
 	jaytaylor.com/html2text v0.0.0-20190408195923-01ec452cbe43
 )

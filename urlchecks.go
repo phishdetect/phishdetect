@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/google/safebrowsing"
+	"github.com/texttheater/golang-levenshtein/levenshtein"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -64,16 +65,39 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 
 	for _, word := range words {
 		for _, brand := range brands.List {
+			// We check if a word in the domain is among any brand's
+			// list of suspicious words.
 			if SliceContains(brand.Suspicious, word) {
-				// A suspicious brand name in the domain should have more weight than
-				// anything.
+				// A suspicious brand name in the domain should have more
+				// weight than anything.
 				brand.Matches += 10
 				return true
-			} else if SliceContains(brand.Original, word) {
-				// A brand name in a domain should have more weight than a brand name in the
-				// page HTML.
-				brand.Matches += 3
-				high++
+			}
+
+			// If no obvious suspicious word is found, we do some additional
+			// checks ...
+			for _, original := range brand.Original {
+				// First we check if there is a clean brand name in the domain.
+				if strings.ToLower(word) == strings.ToLower(original) {
+					// A brand name in a domain should have more weight
+					// than a brand name in the page HTML.
+					brand.Matches += 3
+					high++
+				}
+
+				// Then we check for any word within a certain edit distance.
+				// This should normally be covered in the brand.Suspicious list,
+				// but just in case we perform some additional test.
+				if len(word) > 4 && len(original) > 4 {
+					distance := levenshtein.DistanceForStrings([]rune(word),
+						[]rune(original), levenshtein.DefaultOptions)
+
+					// We treat any distance higher than 1 as a false positive.
+					if distance == 1 {
+						brand.Matches += 5
+						high++
+					}
+				}
 			}
 		}
 
