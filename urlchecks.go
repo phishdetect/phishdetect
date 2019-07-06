@@ -246,7 +246,7 @@ func GetDomainChecks() []Check {
 	return []Check{
 		{
 			checkSuspiciousTLD,
-			5,
+			10,
 			"suspicious-tld",
 			"The domain uses a suspicious TLD",
 		},
@@ -257,16 +257,16 @@ func GetDomainChecks() []Check {
 			"The domain has suspicious amount of dots and dashes",
 		},
 		{
+			checkSuspiciousBridges,
+			25,
+			"suspicious-bridges",
+			"The domain uses very suspicious patterns used for bad domains composition",
+		},
+		{
 			checkSuspiciousHostname,
 			30,
 			"suspicious-hostname",
 			"The domain contains suspicious words",
-		},
-		{
-			checkSuspiciousBridges,
-			30,
-			"suspicious-bridges",
-			"The domain uses very suspicious patterns used for bad domains composition",
 		},
 		{
 			checkEncodedDomain,
@@ -295,7 +295,7 @@ func GetURLChecks() []Check {
 		},
 		{
 			checkNoTLS,
-			20,
+			15,
 			"no-tls",
 			"The website is not using a secure transport layer (HTTPS)",
 		},
