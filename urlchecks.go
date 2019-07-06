@@ -31,27 +31,35 @@ var SafeBrowsingKey string
 
 func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 	lowSuspects := []string{
-		"auth", "authorize", "authenticate", "authentication",
-		"account", "myaccount",
+		"auth",
+		"authorize", 
+		"authenticate",
+		"authentication",
+		"account",
+		"myaccount",
+		"activate",
 		"activation",
 		"apps",
 		"confirm",
+		"confirmation",
 		"credential",
 		"drive",
 		"login",
-		"mails", "rnail",
+		"mails",
 		"managment",
 		"password",
-		"permission", "permision",
-		"recovery", "recover",
+		"permission",
+		"recover",
 		"register",
-		"secure", "safe",
+		"safe",
+		"secure",
 		"session",
 		"signin",
-		"support", "suport",
+		"support",
 		"unlock",
 		"update",
-		"verify", "verification", "everivcation", "verifications", "veryfication", "veryfications",
+		"verify",
+		"verification",
 		"wallet",
 		"weblogin",
 	}
@@ -64,6 +72,7 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 	low := 0
 
 	for _, word := range words {
+		// First we check any potential words related to brands.
 		for _, brand := range brands.List {
 			// We check if a word in the domain is among any brand's
 			// list of suspicious words.
@@ -83,12 +92,13 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 					// than a brand name in the page HTML.
 					brand.Matches += 3
 					high++
+					break
 				}
 
 				// Then we check for any word within a certain edit distance.
 				// This should normally be covered in the brand.Suspicious list,
 				// but just in case we perform some additional test.
-				if len(word) > 5 && len(original) > 5 {
+				if len(original) >= 5 && len(word) >= 5 {
 					distance := levenshtein.DistanceForStrings([]rune(word),
 						[]rune(original), levenshtein.DefaultOptions)
 
@@ -96,13 +106,31 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 					if distance == 1 {
 						brand.Matches += 5
 						high++
+						break
 					}
 				}
 			}
 		}
 
-		if SliceContains(lowSuspects, word) {
-			low++
+		// Then we check generic words.
+		for _, suspect := range lowSuspects {
+			// Check for any direct match.
+			if strings.ToLower(word) == strings.ToLower(suspect) {
+				low++
+				break
+			}
+
+			// Check for any variation.
+			if len(suspect) >= 5 && len(word) >= 5  {
+				distance := levenshtein.DistanceForStrings([]rune(word),
+					[]rune(suspect), levenshtein.DefaultOptions)
+
+				// Anything above 2 edit distance, we consider a false positve.
+				if distance == 1 || (distance == 2 && len(word) >= 7) {
+					low++
+					break
+				}
+			}
 		}
 	}
 
