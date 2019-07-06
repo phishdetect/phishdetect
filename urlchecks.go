@@ -246,7 +246,7 @@ func GetDomainChecks() []Check {
 	return []Check{
 		{
 			checkSuspiciousTLD,
-			10,
+			5,
 			"suspicious-tld",
 			"The domain uses a suspicious TLD",
 		},
