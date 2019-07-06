@@ -19,11 +19,12 @@ package brand
 // Microsoft brand properties.
 func Microsoft() *Brand {
 	name := "microsoft"
-	original := []string{"microsoft", "microsoftonline", "onedrive"}
+	original := []string{"microsoft", "microsoftonline", "onedrive", "sharepoint",
+		"outlook",}
 	whitelist := []string{
 		"microsoft.com", "microsoftonline.com", "office.com", "live.com",
 		"onedrive.com", "s-microsoft.com", "sharepoint.com", "microsoft.us",
-		"msft.net", "microsoft-int.com",
+		"msft.net", "microsoft-int.com", "outlook.com",
 	}
 	suspicious := []string{
 		"microsofta", "microsoftb",
