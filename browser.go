@@ -189,6 +189,7 @@ func (b *Browser) Run() error {
 	if err != nil {
 		return err
 	}
+	defer b.killContainer()
 
 	timeout := BrowserTimeout * time.Minute
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -327,12 +328,6 @@ func (b *Browser) Run() error {
 				log.Debug("Saved screenshot at ", b.ScreenshotPath)
 			}
 		}
-	}
-
-	// Now we terminate the Docker container.
-	err = b.killContainer()
-	if err != nil {
-		log.Warning(err)
 	}
 
 	return nil
