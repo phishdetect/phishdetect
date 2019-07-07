@@ -139,6 +139,8 @@ func (b *Browser) startContainer() error {
 	if err != nil {
 		return err
 	}
+	defer cli.Close()
+
 	ctx := context.Background()
 
 	resp, err := cli.ContainerCreate(ctx, config, hostConfig, nil, "")
