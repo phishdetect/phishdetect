@@ -173,6 +173,8 @@ func (b *Browser) killContainer() error {
 	if err != nil {
 		return err
 	}
+	defer cli.Close()
+
 	ctx := context.Background()
 
 	err = cli.ContainerKill(ctx, b.ContainerID, "")
