@@ -101,6 +101,14 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 				// This should normally be covered in the brand.Suspicious list,
 				// but just in case we perform some additional test.
 				if len(original) >= 5 && len(word) >= 5 {
+					// We skip if the word is among those that with an edit
+					// distance of 1 could cause too many false positives.
+					// e.g. "icloud" => "cloud".
+					exclude := []string{"cloud"}
+					if SliceContains(exclude, word) {
+						continue
+					}
+
 					distance := levenshtein.DistanceForStrings([]rune(word),
 						[]rune(original), levenshtein.DefaultOptions)
 
