@@ -165,6 +165,7 @@ func checkSuspiciousTLD(link *Link, page *Page, brands *Brands) bool {
 		".ga",
 		".gb",
 		".gdn",
+		".gg",
 		".gq",
 		".icu",
 		".info",
