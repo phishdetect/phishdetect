@@ -23,7 +23,7 @@ func Spotify() *Brand {
 	whitelist := []string{
 		"spotify.com", "spotify.org", "spotify.it", "spotify.de", "spotify.fr",
 		"spotify.nl", "spotify.es", "spotify.se", "spotify.no", "spotify.fi",
-		"spotify.ru", "spotify.lt", "spotify.be", "spotify.pt",
+		"spotify.ru", "spotify.lt", "spotify.be", "spotify.pt", "spotify.net",
 	}
 	suspicious := []string{
 		"spotifya", "spotifyb",
