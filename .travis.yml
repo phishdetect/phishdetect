@@ -16,7 +16,8 @@ matrix:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install automake libtool make gcc
-  - tar -zxf yara-3.10.0.tar.gz
+  - wget https://github.com/VirusTotal/yara/archive/v3.10.0.tar.gz
+  - tar -zxf v3.10.0.tar.gz
   - cd yara-3.10.0
   - ./bootstrap.sh
   - ./configure
