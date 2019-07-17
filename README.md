@@ -19,6 +19,7 @@ PhishDetect can take HTML strings as input, but it can also just be provided wit
          * [Analyzing a link statically](#analyzing-a-link-statically)
          * [Analyzing a link dynamically](#analyzing-a-link-dynamically)
          * [Adding new Brands to the existing list](#adding-new-brands-to-the-existing-list)
+         * [Adding Yara rules to the HTML classifier](#adding-yara-rules-to-the-html-classifier)
       * [Using PhishDetect CLI](#using-phishdetect-cli)
       * [Known Issues](#known-issues)
       * [License](#license)
@@ -163,6 +164,23 @@ func main() {
 ```
 
 
+### Adding Yara rules to the HTML classifier
+
+If you want to scan the visited page's HTML with Yara rules of your own, you just need to initialize PhishDetect's scanner using `phishdetect.InitializeYara()` and by providing the path (as a `string`) to either a Yara rule file or a folder containing Yara rule files (with `.yar` or `.yara` extensions).
+
+For example:
+
+```go
+err := phishdetect.InitializeYara(rulesPath)
+if err != nil {
+    log.Error("I failed to initialize the Yara scanner: ", err.Error())
+}
+```
+
+This needs to be done only once (perhaps in your program's `init()` function). All following analysis will make use of the same initialized scanner.
+
+
+
 ## Using PhishDetect CLI
 
 Firstly, make sure you have Go 1.11+ installed. We require Go 1.11 or later versions because of the native support for Go Modules, which we use to manage dependencies. If it isn't available for your operating system of choice, we recommend trying [gvm](https://github.com/moovweb/gvm).
@@ -182,7 +200,6 @@ Move to directory you just cloned and proceed with downloading the depedencies:
 In order to build binaries for GNU/Linux:
 
     $ make
-    $ make darwin
 
 Once the compilation is completed, you will find the command-line interface in the `build/` folder.
 
