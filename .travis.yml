@@ -25,6 +25,7 @@ before_install:
   - sudo make install
 
 install:
+  - cd -
   - env GO111MODULE=on make deps
 
 script:
