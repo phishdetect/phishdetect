@@ -151,7 +151,10 @@ func main() {
 
 	if yaraPath != "" {
 		if _, err := os.Stat(yaraPath); err == nil {
-			phishdetect.YaraRulesPath = yaraPath
+			err = phishdetect.InitializeYara(yaraPath)
+			if err != nil {
+				log.Warning("Failed to initialize Yara scanner: ", err.Error())
+			}
 		} else {
 			log.Warning("The specified path to the Yara rules does not exist")
 		}

@@ -18,19 +18,11 @@ package phishdetect
 
 import (
 	"fmt"
-	"os"
-	"path"
-	"path/filepath"
 	"regexp"
 	"strings"
 
-	"github.com/hillu/go-yara"
 	"github.com/mozillazg/go-unidecode"
-	log "github.com/sirupsen/logrus"
 )
-
-// YaraRulesPath can be set to provide a path to Yara rules.
-var YaraRulesPath string
 
 // checkSuspiciousTitle determines if the page title contains any references
 // to any brand's name.
@@ -371,70 +363,12 @@ func checkMultiAuth(link *Link, page *Page, brands *Brands) bool {
 }
 
 func checkYaraRules(link *Link, page *Page, brands *Brands) bool {
-	if YaraRulesPath == "" {
+	if YaraRules == nil {
 		return false
 	}
 
-	defer yara.Finalize()
-
-	compiler, err := yara.NewCompiler()
+	matches, err := YaraRules.ScanMem([]byte(page.HTML), 0, 30)
 	if err != nil {
-		log.Error(err.Error())
-		return false
-	}
-	defer compiler.Destroy()
-
-	rulesStat, err := os.Stat(YaraRulesPath)
-	if err != nil {
-		log.Error(err.Error())
-		return false
-	}
-
-	switch mode := rulesStat.Mode(); {
-	case mode.IsDir():
-		log.Debug("The specified Yara rules path is a folder, looping through files...")
-		err = filepath.Walk(YaraRulesPath, func(filePath string, fileInfo os.FileInfo, err error) error {
-			fileName := fileInfo.Name()
-
-			// Check if the file has extension .yar or .yara.
-			if (path.Ext(fileName) == ".yar") || (path.Ext(fileName) == ".yara") {
-				log.Debug("Adding rule ", filePath)
-
-				// Open the rule file and add it to the Yara compiler.
-				rulesFile, _ := os.Open(filePath)
-				defer rulesFile.Close()
-
-				err = compiler.AddFile(rulesFile, "")
-				if err != nil {
-					log.Warning(err.Error())
-					return nil
-				}
-			}
-			return nil
-		})
-	case mode.IsRegular():
-		log.Debug("Compiling Yara rule ", YaraRulesPath)
-
-		rulesFile, _ := os.Open(YaraRulesPath)
-		defer rulesFile.Close()
-
-		err = compiler.AddFile(rulesFile, "")
-		if err != nil {
-			log.Error(err.Error())
-			return false
-		}
-	}
-
-	// Collect and compile Yara rules.
-	rules, err := compiler.GetRules()
-	if err != nil {
-		log.Error(err.Error())
-		return false
-	}
-
-	matches, err := rules.ScanMem([]byte(page.HTML), 0, 30)
-	if err != nil {
-		log.Error(err.Error())
 		return false
 	}
 
