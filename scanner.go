@@ -17,8 +17,8 @@
 package phishdetect
 
 import (
-	"os"
 	"errors"
+	"os"
 	"path"
 	"path/filepath"
 
