@@ -17,16 +17,16 @@
 package phishdetect
 
 import (
-	"os"
 	"fmt"
+	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
 
 	"github.com/hillu/go-yara"
-	log "github.com/sirupsen/logrus"
 	"github.com/mozillazg/go-unidecode"
+	log "github.com/sirupsen/logrus"
 )
 
 // YaraRulesPath can be set to provide a path to Yara rules.
@@ -45,7 +45,8 @@ func checkSuspiciousTitle(link *Link, page *Page, brands *Brands) bool {
 		expr := fmt.Sprintf("(?i)%s", strings.Join(brand.Original, "|"))
 		regex, _ := regexp.Compile(expr)
 		if regex.MatchString(title) {
-			brand.Matches++
+			// Having the brand name in the title is a stronger indication.
+			brand.Matches += 3
 			return true
 		}
 	}

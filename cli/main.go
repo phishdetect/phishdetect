@@ -31,19 +31,22 @@ import (
 )
 
 var (
-	analysis *phishdetect.Analysis
-	browser  *phishdetect.Browser
+	analysis     *phishdetect.Analysis
+	browser      *phishdetect.Browser
 	customBrands []*brand.Brand
+
+	debug        bool
+	tor          bool
+	apiVersion   string
+	urlOnly      bool
+	screenPath   string
+	safeBrowsing string
+	container    string
+	brandsPath   string
+	yaraPath     string
+	htmlPath     string
+	args         []string
 )
-
-func initLogging(debug *bool) {
-	if *debug {
-		log.SetLevel(log.DebugLevel)
-	}
-	log.SetFormatter(&log.TextFormatter{ForceColors: true})
-	log.SetOutput(colorable.NewColorableStdout())
-}
-
 
 func compileBrands(brandsPath string) []*brand.Brand {
 	if brandsPath == "" {
@@ -92,38 +95,51 @@ func loadBrands(analysis phishdetect.Analysis) {
 	return
 }
 
-func main() {
-	debug := flag.Bool("debug", false, "Enable debug logging")
-	tor := flag.Bool("tor", false, "Route connection through the Tor network")
-	apiVersion := flag.String("api-version", "1.37", "Specify which Docker API version to use")
-	urlOnly := flag.Bool("url-only", false, "Only perform URL analysis")
-	screenPath := flag.String("screen", "", "Specify the file path to store the screenshot")
-	safeBrowsing := flag.String("safebrowsing", "", "Specify a file path containing your Google SafeBrowsing API key")
-	container := flag.String("container", "phishdetect/phishdetect", "Specify a name for a docker image to use")
-	brandsPath := flag.String("brands", "", "Specify a folder containing YAML files with Brand specifications")
+func initLogging() {
+	if debug {
+		log.SetLevel(log.DebugLevel)
+	}
+	log.SetFormatter(&log.TextFormatter{ForceColors: true})
+	log.SetOutput(colorable.NewColorableStdout())
+}
+
+func init() {
+	flag.BoolVar(&debug, "debug", false, "Enable debug logging")
+	flag.BoolVar(&tor, "tor", false, "Route connection through the Tor network")
+	flag.StringVar(&apiVersion, "api-version", "1.37", "Specify which Docker API version to use")
+	flag.BoolVar(&urlOnly, "url-only", false, "Only perform URL analysis")
+	flag.StringVar(&screenPath, "screen", "", "Specify the file path to store the screenshot")
+	flag.StringVar(&safeBrowsing, "safebrowsing", "", "Specify a file path containing your Google SafeBrowsing API key")
+	flag.StringVar(&container, "container", "phishdetect/phishdetect", "Specify a name for a docker image to use")
+	flag.StringVar(&brandsPath, "brands", "", "Specify a folder containing YAML files with Brand specifications")
+	flag.StringVar(&yaraPath, "yara", "", "Specify a path to a file or folder contaning Yara rules")
+	flag.StringVar(&htmlPath, "html", "", "Specify a path to save the HTML from the visited page")
 	flag.Parse()
-	args := flag.Args()
+	args = flag.Args()
 
-	initLogging(debug)
+	initLogging()
 
-	log.Debug("Flags: enable debug logs: ", *debug)
-	log.Debug("Flags: enable Tor routing: ", *tor)
-	log.Debug("Flags: Docker API Version: ", *apiVersion)
-	log.Debug("Flags: only URL analysis: ", *urlOnly)
-	log.Debug("Flags: screenshot path: ", *screenPath)
-	log.Debug("Flags: Google SafeBrowsing API key file: ", *safeBrowsing)
-	log.Debug("Flags: Brands path: ", *brandsPath)
+	log.Debug("Flags: enable debug logs: ", debug)
+	log.Debug("Flags: enable Tor routing: ", tor)
+	log.Debug("Flags: Docker API Version: ", apiVersion)
+	log.Debug("Flags: only URL analysis: ", urlOnly)
+	log.Debug("Flags: screenshot path: ", screenPath)
+	log.Debug("Flags: Google SafeBrowsing API key file: ", safeBrowsing)
+	log.Debug("Flags: Brands path: ", brandsPath)
+	log.Debug("Flags: Yara rules path: ", yaraPath)
 	log.Debug("Flags: arguments: ", args)
 
 	if len(args) == 0 {
 		log.Fatal("You need to provide a valid URL to be analyzed!")
 	}
+}
 
-	customBrands = compileBrands(*brandsPath)
+func main() {
+	customBrands = compileBrands(brandsPath)
 
-	if *safeBrowsing != "" {
-		if _, err := os.Stat(*safeBrowsing); err == nil {
-			buf, _ := ioutil.ReadFile(*safeBrowsing)
+	if safeBrowsing != "" {
+		if _, err := os.Stat(safeBrowsing); err == nil {
+			buf, _ := ioutil.ReadFile(safeBrowsing)
 			key := string(buf)
 			if key != "" {
 				phishdetect.SafeBrowsingKey = key
@@ -133,18 +149,26 @@ func main() {
 		}
 	}
 
-	os.Setenv("DOCKER_API_VERSION", *apiVersion)
+	if yaraPath != "" {
+		if _, err := os.Stat(yaraPath); err == nil {
+			phishdetect.YaraRulesPath = yaraPath
+		} else {
+			log.Warning("The specified path to the Yara rules does not exist")
+		}
+	}
+
+	os.Setenv("DOCKER_API_VERSION", apiVersion)
 
 	url := args[0]
 
 	log.Info("Analyzing URL ", url)
 
-	if *urlOnly {
+	if urlOnly {
 		log.Debug("Instantiated url-only analysis.")
 		analysis = phishdetect.NewAnalysis(url, "")
 		loadBrands(*analysis)
 	} else {
-		browser = phishdetect.NewBrowser(phishdetect.NormalizeURL(url), *screenPath, *tor, *container)
+		browser = phishdetect.NewBrowser(phishdetect.NormalizeURL(url), screenPath, tor, container)
 		err := browser.Run()
 		if err != nil {
 			log.Fatal(err)
@@ -158,6 +182,15 @@ func main() {
 			log.Fatal("An error occurred visiting the link. The website might be offline.")
 		}
 
+		if htmlPath != "" {
+			err = ioutil.WriteFile(htmlPath, []byte(browser.HTML), 0644)
+			if err != nil {
+				log.Error(err.Error())
+			} else {
+				log.Info("Saved HTML page at ", htmlPath)
+			}
+		}
+
 		if browser.FinalURL != "" {
 			analysis.FinalURL = browser.FinalURL
 			log.Debug("Going to use final URL for analysis ", analysis.FinalURL)
@@ -167,7 +200,7 @@ func main() {
 	analysis.AnalyzeURL()
 	brand := analysis.Brands.GetBrand()
 
-	if !*urlOnly {
+	if !urlOnly {
 		log.Info("Visits:")
 		for _, visit := range browser.Visits {
 			log.Info("\t- ", visit)
@@ -177,6 +210,7 @@ func main() {
 	log.Info("Whitelisted: ", analysis.Whitelisted)
 	log.Info("Final score: ", analysis.Score)
 
+	log.Info("Brand: ", brand)
 	log.Debug("All brands scores:")
 	for _, brand := range analysis.Brands.List {
 		if brand.Matches == 0 {
@@ -186,7 +220,6 @@ func main() {
 		log.Debug("\t- ", brand.Name, ": ", brand.Matches)
 	}
 
-	log.Info("Brand: ", brand)
 	log.Info("Warnings:")
 	for _, warning := range analysis.Warnings {
 		log.WithFields(log.Fields{"name": warning.Name, "score": warning.Score}).

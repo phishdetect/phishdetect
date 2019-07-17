@@ -49,7 +49,7 @@ func (a *Analysis) analyzeLink(checks []Check) error {
 
 	link, err := NewLink(a.FinalURL)
 	if err != nil {
-		return errors.New("An error occurred parsing the domain, it might be invalid.")
+		return errors.New("An error occurred parsing the domain, it might be invalid")
 	}
 	for _, check := range checks {
 		log.Debug("Running domain check ", check.Name, " ...")
@@ -81,7 +81,7 @@ func (a *Analysis) AnalyzeHTML() error {
 
 	link, err := NewLink(a.FinalURL)
 	if err != nil {
-		return errors.New("An error occurred parsing the link. It might be invalid.")
+		return errors.New("An error occurred parsing the link: it might be invalid")
 	}
 	page, err := NewPage(a.HTML)
 	if err != nil {

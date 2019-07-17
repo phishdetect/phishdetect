@@ -32,6 +32,8 @@ Download the Docker image from Docker Hub using:
 
     $ docker pull phishdetect/phishdetect
 
+You will also need to install Yara and its library. In order to do so, please follow the instructions provided by the official [Yara Project documentation](https://yara.readthedocs.org/en/latest/gettingstarted.html#compiling-and-installing-yara).
+
 Now you can download the PhishDetect library:
 
     $ go get -u github.com/phishdetect/phishdetect
@@ -179,29 +181,24 @@ Move to directory you just cloned and proceed with downloading the depedencies:
 
 In order to build binaries for GNU/Linux:
 
-    $ make linux
-
-In order to build binaries for Mac:
-
+    $ make
     $ make darwin
 
-In order to build binaries for Windows (this will require MingW to be installed):
-
-    $ go get github.com/Microsoft/go-winio
-    $ make windows
-
-Once the compilation is completed, you will find the command-line interface, named `phishdetect-cli`, in the `build/<linux/darwin/windows>/` folder
-
+Once the compilation is completed, you will find the command-line interface in the `build/` folder.
 
 Launch `phishdetect-cli -h` to view the help message:
 
     Usage of phishdetect-cli:
-          --api-version string    Specify which Docker API version to use (default: 1.37) (default "1.37")
-          --debug                 Enable debug logging (default: disabled)
-          --safebrowsing string   Specify a file path containing your Google SafeBrowsing API key (default: disabled)
-          --screen string         Specify the file path to store the screenshot (default: disabled)
-          --tor                   Route connection through the Tor network (default: disabled)
-          --url-only              Only perform URL analysis (default: disabled)
+          --api-version string    Specify which Docker API version to use (default "1.37")
+          --brands string         Specify a folder containing YAML files with Brand specifications
+          --container string      Specify a name for a docker image to use (default "phishdetect/phishdetect")
+          --debug                 Enable debug logging
+          --html string           Specify a path to save the HTML from the visited page
+          --safebrowsing string   Specify a file path containing your Google SafeBrowsing API key
+          --screen string         Specify the file path to store the screenshot
+          --tor                   Route connection through the Tor network
+          --url-only              Only perform URL analysis
+          --yara string           Specify a path to a file or folder contaning Yara rules
 
 Specify a URL and the preferred options and wait for the results to appear:
 
