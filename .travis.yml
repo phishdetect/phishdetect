@@ -23,6 +23,7 @@ before_install:
   - ./configure
   - make
   - sudo make install
+  - sudo ldconfig
 
 install:
   - cd -
