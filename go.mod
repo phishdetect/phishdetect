@@ -12,6 +12,7 @@ require (
 	github.com/google/safebrowsing v0.0.0-20190318180502-92a16cf6d028
 	github.com/gorilla/websocket v1.4.0 // indirect
 	github.com/goware/urlx v0.2.0
+	github.com/hillu/go-yara v1.1.0
 	github.com/mafredri/cdp v0.23.3
 	github.com/mattn/go-colorable v0.1.2
 	github.com/mattn/go-runewidth v0.0.4 // indirect
