@@ -177,6 +177,7 @@ func checkSuspiciousTLD(link *Link, page *Page, brands *Brands) bool {
 		".pw",
 		".science",
 		".services",
+		".site",
 		".stream",
 		".support",
 		".tech",
