@@ -86,17 +86,17 @@ func (b *Brands) GetBrand() string {
 	return ""
 }
 
-// IsDomainWhitelisted checks if the specified domain is in any of the whitelists
+// IsDomainSafelisted checks if the specified domain is in any of the safelists
 // of the supported brands.
-func (b *Brands) IsDomainWhitelisted(domain, brandName string) bool {
+func (b *Brands) IsDomainSafelisted(domain, brandName string) bool {
 	for _, brand := range b.List {
 		if brandName != "" && brandName != brand.Name {
 			continue
 		}
 
-		for _, whitelist := range brand.Whitelist {
-			if domain == whitelist {
-				// Because the domain seems whitelisted, we just add a large value
+		for _, safelist := range brand.Safelist {
+			if domain == safelist {
+				// Because the domain seems safelisted, we just add a large value
 				// to the Matches attribute, to make sure we brand the domain right.
 				brand.Matches += 100
 				return true

@@ -20,7 +20,7 @@ package brand
 func Telegram() *Brand {
 	name := "telegram"
 	original := []string{"telegram"}
-	whitelist := []string{"telegram.com", "telegram.org"}
+	safelist := []string{"telegram.com", "telegram.org"}
 	suspicious := []string{
 		"telegrama", "telegramb",
 		"telegramc", "telegramd", "telegrame",
@@ -956,7 +956,7 @@ func Telegram() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

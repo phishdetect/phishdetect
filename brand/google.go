@@ -20,7 +20,7 @@ package brand
 func Google() *Brand {
 	name := "google"
 	original := []string{"google", "gmail"}
-	whitelist := []string{
+	safelist := []string{
 		"google.com", "google.ad", "google.ae", "google.com.af",
 		"google.com.ag", "google.com.ai", "google.al", "google.am",
 		"google.co.ao", "google.com.ar", "google.as", "google.at",
@@ -964,7 +964,7 @@ func Google() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

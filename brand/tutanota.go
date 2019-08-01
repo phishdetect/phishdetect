@@ -20,7 +20,7 @@ package brand
 func Tutanota() *Brand {
 	name := "tutanota"
 	original := []string{"tutanota"}
-	whitelist := []string{"tutanota.com", "tutanota.de", "tuta.io", "tutao.de"}
+	safelist := []string{"tutanota.com", "tutanota.de", "tuta.io", "tutao.de"}
 	suspicious := []string{
 		"tutanotaa", "tutanotab",
 		"tutanotac", "tutanotad", "tutanotae",
@@ -923,7 +923,7 @@ func Tutanota() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

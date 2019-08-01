@@ -29,7 +29,7 @@ type Analysis struct {
 	HTML        string
 	Warnings    []Check
 	Score       int
-	Whitelisted bool
+	Safelisted bool
 	Brands      *Brands
 }
 
@@ -60,7 +60,7 @@ func (a *Analysis) analyzeLink(checks []Check) error {
 		}
 	}
 
-	a.Whitelisted = a.Brands.IsDomainWhitelisted(link.TopDomain, "")
+	a.Safelisted = a.Brands.IsDomainSafelisted(link.TopDomain, "")
 
 	return nil
 }

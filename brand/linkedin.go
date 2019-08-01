@@ -20,7 +20,7 @@ package brand
 func Linkedin() *Brand {
 	name := "linkedin"
 	original := []string{"linkedin"}
-	whitelist := []string{"linkedin.com", "linked.in"}
+	safelist := []string{"linkedin.com", "linked.in"}
 	suspicious := []string{
 		"linkedina", "linkedinb",
 		"linkedinc", "linkedind", "linkedine",
@@ -844,7 +844,7 @@ func Linkedin() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

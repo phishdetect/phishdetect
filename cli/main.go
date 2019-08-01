@@ -210,7 +210,7 @@ func main() {
 		}
 		log.Info("Final URL: ", browser.FinalURL)
 	}
-	log.Info("Whitelisted: ", analysis.Whitelisted)
+	log.Info("Safelisted: ", analysis.Safelisted)
 	log.Info("Final score: ", analysis.Score)
 
 	log.Info("Brand: ", brand)

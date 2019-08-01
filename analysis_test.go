@@ -39,8 +39,8 @@ func TestBrandDetection(t *testing.T) {
 	}
 }
 
-func TestDomainWhitelist(t *testing.T) {
-	domainsWhitelist := map[string]bool{
+func TestDomainSafelist(t *testing.T) {
+	domainsSafelist := map[string]bool{
 		"https://www.yahoo.com":      true,
 		"https://www.google.com":     true,
 		"https://www.onedrive.com":   true,
@@ -48,13 +48,13 @@ func TestDomainWhitelist(t *testing.T) {
 		"http://not-real-google.com": false,
 	}
 
-	for url, expectedWhitelist := range domainsWhitelist {
+	for url, expectedSafelist := range domainsSafelist {
 		a := NewAnalysis(url, "")
 		a.AnalyzeURL()
 
-		if a.Whitelisted != expectedWhitelist {
-			t.Errorf("Failed to identify whitelisted domain, got \"%v\" expected \"%v\"",
-				a.Whitelisted, expectedWhitelist)
+		if a.Safelisted != expectedSafelist {
+			t.Errorf("Failed to identify safelisted domain, got \"%v\" expected \"%v\"",
+				a.Safelisted, expectedSafelist)
 		}
 	}
 }

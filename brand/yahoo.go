@@ -20,7 +20,7 @@ package brand
 func Yahoo() *Brand {
 	name := "yahoo"
 	original := []string{"yahoo"}
-	whitelist := []string{
+	safelist := []string{
 		"yahoo.com", "ymail.com", "rocketmail.com", "yahoo.co.uk", "yahoo.fr",
 		"yahoo.com.br", "yahoo.co.in", "yahoo.ca", "yahoo.com.ar", "yahoo.com.cn",
 		"yahoo.com.mx", "yahoo.co.kr", "yahoo.co.nz", "yahoo.com.hk",
@@ -517,7 +517,7 @@ func Yahoo() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

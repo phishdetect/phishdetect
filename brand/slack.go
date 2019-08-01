@@ -20,7 +20,7 @@ package brand
 func Slack() *Brand {
 	name := "slack"
 	original := []string{"slack"}
-	whitelist := []string{"slack.com"}
+	safelist := []string{"slack.com"}
 	suspicious := []string{
 		// "slqck", "slabk", "slaak",
 		// "slagk", "slakk", "slask",
@@ -208,7 +208,7 @@ func Slack() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

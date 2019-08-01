@@ -20,7 +20,7 @@ package brand
 func Docusign() *Brand {
 	name := "docusign"
 	original := []string{"docusign"}
-	whitelist := []string{
+	safelist := []string{
 		"docusign.com", "docusign.net", "docusign.de", "docusign.fr",
 		"docusign.nl", "docusign.be", "docusign.se", "docusign.no",
 		"docusign.fi", "docusign.pt", "docusign.lt", "docusign.in",
@@ -696,7 +696,7 @@ func Docusign() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

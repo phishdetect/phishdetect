@@ -20,7 +20,7 @@ package brand
 func Facebook() *Brand {
 	name := "facebook"
 	original := []string{"facebook"}
-	whitelist := []string{"facebook.com", "fbcdn.net", "fb.me", "fbsbx.com"}
+	safelist := []string{"facebook.com", "fbcdn.net", "fb.me", "fbsbx.com"}
 	suspicious := []string{
 		"facebooka", "facebookb",
 		"facebookc", "facebookd", "facebooke",
@@ -1105,7 +1105,7 @@ func Facebook() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

@@ -20,7 +20,7 @@ package brand
 func RiseUp() *Brand {
 	name := "riseup"
 	original := []string{"riseup"}
-	whitelist := []string{"riseup.net"}
+	safelist := []string{"riseup.net"}
 	suspicious := []string{
 		"riseupa", "riseupb",
 		"riseupc", "riseupd", "riseupe",
@@ -381,7 +381,7 @@ func RiseUp() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

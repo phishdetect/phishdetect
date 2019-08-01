@@ -20,7 +20,7 @@ package brand
 func Apple() *Brand {
 	name := "apple"
 	original := []string{"apple", "appleid", "icloud", "itunes"}
-	whitelist := []string{
+	safelist := []string{
 		"apple.com", "icloud.com", "mac.com", "airport.com", "applecomputer.com",
 		"appleimac.com", "imac.com", "iphone.com", "iphone.org", "ipod.com",
 		"itunes.com", "applemusic.com",
@@ -310,7 +310,7 @@ func Apple() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

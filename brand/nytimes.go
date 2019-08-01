@@ -20,7 +20,7 @@ package brand
 func NYTimes() *Brand {
 	name := "nytimes"
 	original := []string{"nytimes", "newyorktimes", "nytco"}
-	whitelist := []string{
+	safelist := []string{
 		"nytimes.com", "newyorktimes.com", "nytco.com", "nyt.net",
 	}
 	suspicious := []string{
@@ -2002,7 +2002,7 @@ func NYTimes() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

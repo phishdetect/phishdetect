@@ -66,9 +66,9 @@ func main() {
     // Retrieve the name of the the impersonated brand.
     brand := a.Brands.GetBrand()
 
-    // If the domain is recognized as whitelisted, this
+    // If the domain is recognized as safelisted, this
     // will show as true, otherwise as false.
-    fmt.Println(a.Whitelisted)
+    fmt.Println(a.Safelisted)
     // This is a total numeric value that is the sum of
     // all the score values of the warnings that were
     // matched during the analysis.
@@ -150,7 +150,7 @@ func main() {
     myBrand := brand.Brand{
         Name:       "MyBrand",
         Original:   []string{"MyBrand", "MyBrandProduct"},
-        Whitelist:  []string{"mybrand.com", "mybrand.net", "mybrand.org"},
+        Safelist:  []string{"mybrand.com", "mybrand.net", "mybrand.org"},
         Suspicious: []string{"mybland.com", "mybrend.com", "mgbrand.com"},
     }
 
@@ -239,7 +239,7 @@ Specify a URL and the preferred options and wait for the results to appear:
     INFO[0014]      - http://[REDACTED].com/Login
     INFO[0014]      - http://[REDACTED].com/Login/
     INFO[0014] Final URL: http://[REDACTED].com/Login/
-    INFO[0014] Whitelisted: false
+    INFO[0014] Safelisted: false
     INFO[0014] Final score: 90
     INFO[0014] Brand: tutanota
     INFO[0014] Warnings:

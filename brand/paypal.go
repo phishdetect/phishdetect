@@ -20,7 +20,7 @@ package brand
 func PayPal() *Brand {
 	name := "paypal"
 	original := []string{"paypal"}
-	whitelist := []string{
+	safelist := []string{
 		"paypal.com", "paypal.com", "paypal.com.au", "paypal.at", "paypal.be",
 		"paypal.ca", "paypal.fr", "paypal.de", "paypal.com.hk", "paypal.it",
 		"paypal.com.mx", "paypal.nl", "paypal.pl", "paypal.com.sg", "paypal.es",
@@ -517,7 +517,7 @@ func PayPal() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

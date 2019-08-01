@@ -20,7 +20,7 @@ package brand
 func WhatsApp() *Brand {
 	name := "whatsapp"
 	original := []string{"whatsapp"}
-	whitelist := []string{"whatsapp.com", "whatsapp.org", "whatsapp.net"}
+	safelist := []string{"whatsapp.com", "whatsapp.org", "whatsapp.net"}
 	suspicious := []string{
 		"whatsappa", "whatsappb",
 		"whatsappc", "whatsappd", "whatsappe",
@@ -731,7 +731,7 @@ func WhatsApp() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

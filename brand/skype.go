@@ -20,7 +20,7 @@ package brand
 func Skype() *Brand {
 	name := "skype"
 	original := []string{"skype"}
-	whitelist := []string{"skype.com", "skype.net", "skype.org"}
+	safelist := []string{"skype.com", "skype.net", "skype.org"}
 	suspicious := []string{
 		"skypea", "skypeb",
 		"skypec", "skyped", "skypee",
@@ -217,7 +217,7 @@ func Skype() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

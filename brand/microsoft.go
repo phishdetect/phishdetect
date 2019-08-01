@@ -21,7 +21,7 @@ func Microsoft() *Brand {
 	name := "microsoft"
 	original := []string{"microsoft", "microsoftonline", "onedrive", "sharepoint",
 		"outlook"}
-	whitelist := []string{
+	safelist := []string{
 		"microsoft.com", "microsoftonline.com", "office.com", "live.com",
 		"onedrive.com", "s-microsoft.com", "sharepoint.com", "microsoft.us",
 		"msft.net", "microsoft-int.com", "outlook.com",
@@ -1902,7 +1902,7 @@ func Microsoft() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

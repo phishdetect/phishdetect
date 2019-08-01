@@ -20,7 +20,7 @@ package brand
 func Instagram() *Brand {
 	name := "instagram"
 	original := []string{"instagram"}
-	whitelist := []string{"instagram.com"}
+	safelist := []string{"instagram.com"}
 	suspicious := []string{
 		"instagrama", "instagramb",
 		"instagramc", "instagramd", "instagrame",
@@ -1031,7 +1031,7 @@ func Instagram() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

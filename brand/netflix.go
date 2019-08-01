@@ -20,7 +20,7 @@ package brand
 func Netflix() *Brand {
 	name := "netflix"
 	original := []string{"netflix"}
-	whitelist := []string{
+	safelist := []string{
 		"netflix.adult", "netflix.af", "netflix.ag", "netflix.ai",
 		"netflix.asia", "netflix.at", "netflix-australia.com", "netflix.ax",
 		"netflix.berlin", "netflix.bg", "netflix.bi", "netflix.buzz",
@@ -340,7 +340,7 @@ func Netflix() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

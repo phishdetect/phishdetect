@@ -20,7 +20,7 @@ package brand
 func Twitter() *Brand {
 	name := "twitter"
 	original := []string{"twitter"}
-	whitelist := []string{"twitter.com", "ads-twitter.com"}
+	safelist := []string{"twitter.com", "ads-twitter.com"}
 	suspicious := []string{
 		"twittera", "twitterb",
 		"twitterc", "twitterd", "twittere",
@@ -435,7 +435,7 @@ func Twitter() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

@@ -20,7 +20,7 @@ package brand
 func Coinbase() *Brand {
 	name := "coinbase"
 	original := []string{"coinbase"}
-	whitelist := []string{"coinbase.com"}
+	safelist := []string{"coinbase.com"}
 	suspicious := []string{
 		"coinbasea", "coinbaseb",
 		"coinbasec", "coinbased", "coinbasee",
@@ -851,7 +851,7 @@ func Coinbase() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

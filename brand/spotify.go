@@ -20,7 +20,7 @@ package brand
 func Spotify() *Brand {
 	name := "spotify"
 	original := []string{"spotify"}
-	whitelist := []string{
+	safelist := []string{
 		"spotify.com", "spotify.org", "spotify.it", "spotify.de", "spotify.fr",
 		"spotify.nl", "spotify.es", "spotify.se", "spotify.no", "spotify.fi",
 		"spotify.ru", "spotify.lt", "spotify.be", "spotify.pt", "spotify.net",
@@ -367,7 +367,7 @@ func Spotify() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

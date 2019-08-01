@@ -20,7 +20,7 @@ package brand
 func ProtonMail() *Brand {
 	name := "protonmail"
 	original := []string{"protonmail"}
-	whitelist := []string{"protonmail.com", "protonmail.ch"}
+	safelist := []string{"protonmail.com", "protonmail.ch"}
 	suspicious := []string{
 		"protonmaila", "protonmailb",
 		"protonmailc", "protonmaild", "protonmaile",
@@ -1257,7 +1257,7 @@ func ProtonMail() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

@@ -20,7 +20,7 @@ package brand
 func Dropbox() *Brand {
 	name := "dropbox"
 	original := []string{"dropbox"}
-	whitelist := []string{
+	safelist := []string{
 		"db.tt", "dropbox.com", "dropboxapi.com", "dropboxbusiness.com",
 		"dropboxdocs.com", "dropboxforums.com", "dropboxforum.com",
 		"dropboxinsiders.com", "dropboxmail.com", "dropboxpartners.com",
@@ -667,7 +667,7 @@ func Dropbox() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }

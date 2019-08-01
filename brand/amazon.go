@@ -20,7 +20,7 @@ package brand
 func Amazon() *Brand {
 	name := "amazon"
 	original := []string{"amazon"}
-	whitelist := []string{
+	safelist := []string{
 		"amazon.com", "amazon.fr", "amazon.it", "amazon.de", "amazon.ca",
 		"amazon.co.uk", "amazon.in", "amazon.ru", "amazon.nl", "amazon.com.mx",
 		"amazon.es", "amazon.com.au", "amazon.com.br", "ssl-images-amazon.com",
@@ -618,7 +618,7 @@ func Amazon() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Whitelist:  whitelist,
+		Safelist:  safelist,
 		Suspicious: suspicious,
 	}
 }
