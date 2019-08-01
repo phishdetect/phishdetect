@@ -24,13 +24,13 @@ import (
 
 // Analysis contains information on the outcome of the URL and/or HTML analysis.
 type Analysis struct {
-	URL         string
-	FinalURL    string
-	HTML        string
-	Warnings    []Check
-	Score       int
+	URL        string
+	FinalURL   string
+	HTML       string
+	Warnings   []Check
+	Score      int
 	Safelisted bool
-	Brands      *Brands
+	Brands     *Brands
 }
 
 // NewAnalysis instantiates a new Analysis struct.

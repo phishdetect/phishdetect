@@ -1105,7 +1105,7 @@ func Facebook() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
-		Safelist:  safelist,
+		Safelist:   safelist,
 		Suspicious: suspicious,
 	}
 }
