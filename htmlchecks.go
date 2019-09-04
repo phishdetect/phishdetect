@@ -312,7 +312,7 @@ func checkIFrameWithPHP(link *Link, page *Page, brands *Brands) bool {
 			continue
 		}
 
-		src := strings.ToLower(attrs["src"])
+		src := strings.Split(strings.ToLower(attrs["src"]), "?")[0]
 		if strings.HasSuffix(src, ".php") {
 			return true
 		}
