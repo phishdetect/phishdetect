@@ -293,7 +293,7 @@ func checkPHPFormAction(link *Link, page *Page, brands *Brands) bool {
 			continue
 		}
 
-		action := strings.ToLower(attrs["action"])
+		action := strings.Split(strings.ToLower(attrs["action"]), "?")[0]
 		if strings.HasSuffix(action, ".php") {
 			return true
 		}
