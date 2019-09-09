@@ -373,6 +373,21 @@ func checkYaraRules(link *Link, page *Page, brands *Brands) bool {
 	}
 
 	if len(matches) > 0 {
+		for _, match := range matches {
+			// If the rule does not containd a "brand" meta value, we skip.
+			matchBrand, ok := match.Meta["brand"]
+			if ok == false {
+				continue
+			}
+			for _, brand := range brands.List {
+				// If we have a match on an existing brand, we increase the
+				// Matches value.
+				if brand.Name == strings.ToLower(matchBrand.(string)) {
+					brand.Matches += 50
+					break
+				}
+			}
+		}
 		return true
 	}
 
