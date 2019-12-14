@@ -247,6 +247,12 @@ func (b *Browser) Run() error {
 	}
 	defer dialogOpening.Close()
 
+	downloadWillBegin, err := cli.Page.DownloadWillBegin(ctx)
+	if err != nil {
+		return err
+	}
+	defer downloadWillBegin.Close()
+
 	requestWillBeSent, err := cli.Network.RequestWillBeSent(ctx)
 	if err != nil {
 		return err
@@ -286,6 +292,10 @@ func (b *Browser) Run() error {
 				log.Debug("Browser is opening a JavaScript alert")
 				dialogArgs := page.NewHandleJavaScriptDialogArgs(true)
 				cli.Page.HandleJavaScriptDialog(ctx, dialogArgs)
+			case <-downloadWillBegin.Ready():
+				log.Debug("Browser is being offered a download")
+				downloadArgs := page.NewSetDownloadBehaviorArgs("deny")
+				cli.Page.SetDownloadBehavior(ctx, downloadArgs)
 			case <-frameNavigated.Ready():
 				event, err := frameNavigated.Recv()
 				if err == nil {
