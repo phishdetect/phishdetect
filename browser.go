@@ -241,6 +241,12 @@ func (b *Browser) Run() error {
 	}
 	defer frameNavigated.Close()
 
+	dialogOpening, err := cli.Page.JavascriptDialogOpening(ctx)
+	if err != nil {
+		return err
+	}
+	defer dialogOpening.Close()
+
 	requestWillBeSent, err := cli.Network.RequestWillBeSent(ctx)
 	if err != nil {
 		return err
@@ -276,6 +282,10 @@ func (b *Browser) Run() error {
 						b.addVisit(event.DocumentURL)
 					}
 				}
+			case <-dialogOpening.Ready():
+				log.Debug("Browser is opening a JavaScript alert")
+				dialogArgs := page.NewHandleJavaScriptDialogArgs(true)
+				cli.Page.HandleJavaScriptDialog(ctx, dialogArgs)
 			case <-frameNavigated.Ready():
 				event, err := frameNavigated.Recv()
 				if err == nil {

@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/anaskhan96/soup v1.1.1
 	github.com/bobesa/go-domain-util v0.0.0-20180815122459-1d708c097a6a
+	github.com/chromedp/chromedp v0.5.2 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.4.0
@@ -24,6 +25,7 @@ require (
 	github.com/spf13/pflag v1.0.3
 	github.com/ssor/bom v0.0.0-20170718123548-6386211fdfcf // indirect
 	github.com/texttheater/golang-levenshtein v0.0.0-20180516184445-d188e65d659e
+	golang.org/x/sys v0.0.0-20191210023423-ac6580df4449 // indirect
 	gopkg.in/yaml.v2 v2.2.2
 	jaytaylor.com/html2text v0.0.0-20190408195923-01ec452cbe43
 )
