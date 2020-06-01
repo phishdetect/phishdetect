@@ -21,6 +21,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/hillu/go-yara"
 	"github.com/mozillazg/go-unidecode"
 )
 
@@ -367,7 +368,8 @@ func checkYaraRules(link *Link, page *Page, brands *Brands) bool {
 		return false
 	}
 
-	matches, err := YaraRules.ScanMem([]byte(page.HTML), 0, 30)
+	var matches yara.MatchRules
+	err := YaraRules.ScanMem([]byte(page.HTML), 0, 30, &matches)
 	if err != nil {
 		return false
 	}
@@ -375,14 +377,20 @@ func checkYaraRules(link *Link, page *Page, brands *Brands) bool {
 	if len(matches) > 0 {
 		for _, match := range matches {
 			// If the rule does not containd a "brand" meta value, we skip.
-			matchBrand, ok := match.Meta["brand"]
-			if ok == false {
+			matchBrand := ""
+			for _, meta := range match.Metas {
+				if (meta.Identifier == "brand") {
+					matchBrand = meta.Value.(string)
+					break
+				}
+			}
+			if matchBrand == "" {
 				continue
 			}
 			for _, brand := range brands.List {
 				// If we have a match on an existing brand, we increase the
 				// Matches value.
-				if brand.Name == strings.ToLower(matchBrand.(string)) {
+				if brand.Name == strings.ToLower(matchBrand) {
 					brand.Matches += 50
 					break
 				}
