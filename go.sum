@@ -28,8 +28,9 @@ github.com/gorilla/websocket v1.4.0 h1:WDFjx/TMzVgy9VdMMQi2K2Emtwi2QcUQsztZ/zLaH
 github.com/gorilla/websocket v1.4.0/go.mod h1:E7qHFY5m1UJ88s3WnNqhKjPHQ0heANvMoAMk2YaljkQ=
 github.com/goware/urlx v0.2.0 h1:E4bW8qSmhUgJ7Z5qY93mfN+IiUPXi66iua1Wza0wP7I=
 github.com/goware/urlx v0.2.0/go.mod h1:h8uwbJy68o+tQXCGZNa9D73WN8n0r9OBae5bUnLcgjw=
-github.com/hillu/go-yara v1.2.3-0.20200518212313-9cc0bc27f86c h1:l9HkDFycJwvtYNet6Cri8I4cBtDd89bchY95telZ4rY=
-github.com/hillu/go-yara v1.2.3-0.20200518212313-9cc0bc27f86c/go.mod h1:KLxCsvD3F8cgVK866UDHi961qbzP+twKjhNdDsuz/2M=
+github.com/hillu/go-yara v1.3.0 h1:d9HklhWmCY9M/2dnFxYbNXDOFDid3HPGw53hdVk4Urg=
+github.com/hillu/go-yara/v4 v4.0.2 h1:haSCAkF3rPODgm7jWqqaeP+5bUo9C2GAYrUOG5yQ8fQ=
+github.com/hillu/go-yara/v4 v4.0.2/go.mod h1:rkb/gSAoO8qcmj+pv6fDZN4tOa3N7R+qqGlEkzT4iys=
 github.com/knq/sysutil v0.0.0-20191005231841-15668db23d08/go.mod h1:dFWs1zEqDjFtnBXsd1vPOZaLsESovai349994nHx3e0=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/mafredri/cdp v0.23.3 h1:tqpZsezUug2C3XtL3+9KImpaXxSFuU22u5UNJPZSc3Y=

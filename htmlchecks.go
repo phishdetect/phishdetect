@@ -21,7 +21,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/hillu/go-yara"
+	"github.com/hillu/go-yara/v4"
 	"github.com/mozillazg/go-unidecode"
 )
 
