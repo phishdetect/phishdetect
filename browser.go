@@ -24,6 +24,7 @@ import (
 	"math/rand"
 	"net"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/docker/docker/api/types"
@@ -304,8 +305,15 @@ func (b *Browser) Run() error {
 					break
 				}
 
+				var resourceURL string
+				if strings.HasPrefix(event.Response.URL, "data:") {
+					resourceURL = "<data object>"
+				} else {
+					resourceURL = event.Response.URL
+				}
+
 				log.Debug("Received response with status ", event.Response.Status,
-					" and type ", event.Type.String(), " at URL: ", event.Response.URL)
+					" and type ", event.Type.String(), " at URL: ", resourceURL)
 
 				rsrc := Resource{
 					URL:  event.Response.URL,
