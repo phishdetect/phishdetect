@@ -63,3 +63,9 @@ func TestNormalizeURL(t *testing.T) {
 		t.Errorf("Normalizing correct URL failed, expected \"%s\" got \"%s\"", url, normalized)
 	}
 }
+
+func TestGetSHA256Hash(t *testing.T) {
+	if GetSHA256Hash("phishdetect") != "02340d4cf82168b7f82cb686822835e72ee882ac3a3dc9855e4a25b59681f818" {
+		t.Errorf("GetSHA256Hash is not returning the correct hash for the provided string")
+	}
+}
