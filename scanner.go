@@ -26,8 +26,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// YaraRules will contain compiled Yara rules provided by InitializeYara.
 var YaraRules *yara.Rules
 
+// InitializeYara will load any rule files found at the specified path
+// and compile them into a Rules object.
 func InitializeYara(yaraRulesPath string) error {
 	if yaraRulesPath == "" {
 		return errors.New("No Yara rules file or directory specified")
