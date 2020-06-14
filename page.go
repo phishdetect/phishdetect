@@ -64,6 +64,6 @@ func (p *Page) GetInputs(inputType string) []soup.Root {
 }
 
 // GetEntities returns any HTML entity of the specified type.
-func (p *Page) GetEntities(entity string) []soup.Root {
-	return p.Soup.FindAll(entity)
+func (p *Page) GetEntities(entityType string) []soup.Root {
+	return p.Soup.FindAll(entityType)
 }

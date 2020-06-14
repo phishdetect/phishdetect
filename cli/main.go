@@ -210,6 +210,14 @@ func main() {
 		}
 		log.Info("Final URL: ", browser.FinalURL)
 	}
+
+	for _, resource := range browser.Resources {
+		log.Info("Resource of type ", resource.Type, " at URL ", resource.URL)
+		if resource.SHA256 != "" {
+			log.Info("\twith hash ", resource.SHA256)
+		}
+	}
+
 	log.Info("Safelisted: ", analysis.Safelisted)
 	log.Info("Final score: ", analysis.Score)
 

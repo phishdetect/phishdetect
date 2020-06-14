@@ -379,7 +379,7 @@ func checkYaraRules(link *Link, page *Page, brands *Brands) bool {
 			// If the rule does not containd a "brand" meta value, we skip.
 			matchBrand := ""
 			for _, meta := range match.Metas {
-				if (meta.Identifier == "brand") {
+				if meta.Identifier == "brand" {
 					matchBrand = meta.Value.(string)
 					break
 				}

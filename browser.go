@@ -39,11 +39,20 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Resource contains details of a resource that was fetched.
+type Resource struct {
+	URL     string
+	Type    string
+	SHA256  string
+	Content string
+}
+
 // Browser is a struct containing details over a browser navigation to a URL.
 type Browser struct {
 	URL            string
 	FinalURL       string
 	Visits         []string
+	Resources      []Resource
 	HTML           string
 	ScreenshotPath string
 	ScreenshotData string
@@ -159,15 +168,6 @@ func (b *Browser) startContainer() error {
 	return nil
 }
 
-func (b *Browser) addVisit(url string) {
-	for _, visit := range b.Visits {
-		if visit == url {
-			return
-		}
-	}
-	b.Visits = append(b.Visits, url)
-}
-
 func (b *Browser) killContainer() error {
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -187,6 +187,15 @@ func (b *Browser) killContainer() error {
 	return nil
 }
 
+func (b *Browser) addVisit(url string) {
+	for _, visit := range b.Visits {
+		if visit == url {
+			return
+		}
+	}
+	b.Visits = append(b.Visits, url)
+}
+
 // Run launches our browser and navigates to the specified URL.
 func (b *Browser) Run() error {
 	err := b.startContainer()
@@ -204,7 +213,7 @@ func (b *Browser) Run() error {
 	log.Debug("Attempting to connect to debug port...")
 
 	// TODO: We need to handle this better or it will fail after the count is
-	//		 over and the connection didn't succeed.
+	//       over and the connection didn't succeed.
 	var target *devtool.Target
 	for i := 0; i < 120; i++ {
 		target, err = devt.Get(ctx, devtool.Page)
@@ -234,30 +243,31 @@ func (b *Browser) Run() error {
 		return err
 	}
 	defer domContent.Close()
-
 	frameNavigated, err := cli.Page.FrameNavigated(ctx)
 	if err != nil {
 		return err
 	}
 	defer frameNavigated.Close()
-
 	dialogOpening, err := cli.Page.JavascriptDialogOpening(ctx)
 	if err != nil {
 		return err
 	}
 	defer dialogOpening.Close()
-
 	downloadWillBegin, err := cli.Page.DownloadWillBegin(ctx)
 	if err != nil {
 		return err
 	}
 	defer downloadWillBegin.Close()
-
 	requestWillBeSent, err := cli.Network.RequestWillBeSent(ctx)
 	if err != nil {
 		return err
 	}
 	defer requestWillBeSent.Close()
+	responseReceived, err := cli.Network.ResponseReceived(ctx)
+	if err != nil {
+		return err
+	}
+	defer responseReceived.Close()
 
 	if err = cli.Page.Enable(ctx); err != nil {
 		return err
@@ -278,7 +288,7 @@ func (b *Browser) Run() error {
 	// Monitor for URL visits.
 	stopMonitor := make(chan bool)
 	go func() {
-		for true {
+		for {
 			select {
 			case <-requestWillBeSent.Ready():
 				event, err := requestWillBeSent.Recv()
@@ -288,6 +298,30 @@ func (b *Browser) Run() error {
 						b.addVisit(event.DocumentURL)
 					}
 				}
+			case <-responseReceived.Ready():
+				event, err := responseReceived.Recv()
+				if err != nil {
+					break
+				}
+
+				log.Debug("Received response with status ", event.Response.Status,
+					" and type ", event.Type.String(), " at URL: ", event.Response.URL)
+
+				rsrc := Resource{
+					URL:  event.Response.URL,
+					Type: event.Type.String(),
+				}
+
+				// We only retrieve the content of scripts.
+				if event.Type == "Script" {
+					resp, err := cli.Network.GetResponseBody(ctx, &network.GetResponseBodyArgs{RequestID: event.RequestID})
+					if err == nil {
+						rsrc.Content = fmt.Sprintf("%s", resp.Body)
+						rsrc.SHA256 = GetSHA256Hash(rsrc.Content)
+					}
+				}
+
+				b.Resources = append(b.Resources, rsrc)
 			case <-dialogOpening.Ready():
 				log.Debug("Browser is opening a JavaScript alert")
 				dialogArgs := page.NewHandleJavaScriptDialogArgs(true)

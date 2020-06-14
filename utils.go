@@ -17,6 +17,8 @@
 package phishdetect
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"strings"
 
 	"github.com/goware/urlx"
@@ -58,4 +60,11 @@ func NormalizeURL(url string) string {
 	}
 
 	return normalized
+}
+
+// GetSHA256Hash retrieves a SHA256 hash of a string.
+func GetSHA256Hash(text string) string {
+	hasher := sha256.New()
+	hasher.Write([]byte(text))
+	return hex.EncodeToString(hasher.Sum(nil))
 }
