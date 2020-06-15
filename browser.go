@@ -323,11 +323,13 @@ func (b *Browser) Run() error {
 				}
 
 				// We only retrieve the content of scripts.
-				if event.Type == "Script" {
+				if event.Type == "Script" && event.Response.Status == 200 {
 					resp, err := cli.Network.GetResponseBody(ctx, &network.GetResponseBodyArgs{RequestID: event.RequestID})
 					if err == nil {
 						rsrc.Content = fmt.Sprintf("%s", resp.Body)
-						rsrc.SHA256 = GetSHA256Hash(rsrc.Content)
+						if rsrc.Content != "" {
+							rsrc.SHA256 = GetSHA256Hash(rsrc.Content)
+						}
 					}
 				}
 
