@@ -42,6 +42,7 @@ import (
 
 // Resource contains details of a resource that was fetched.
 type Resource struct {
+	Status  int
 	URL     string
 	Type    string
 	SHA256  string
@@ -316,8 +317,9 @@ func (b *Browser) Run() error {
 					" and type ", event.Type.String(), " at URL: ", resourceURL)
 
 				rsrc := Resource{
-					URL:  event.Response.URL,
-					Type: event.Type.String(),
+					Status: event.Response.Status,
+					URL:    event.Response.URL,
+					Type:   event.Type.String(),
 				}
 
 				// We only retrieve the content of scripts.
