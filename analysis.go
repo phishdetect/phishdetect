@@ -22,12 +22,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Warning is a converstion of Check containing only results.
+type Warning struct {
+	Score       int
+	Name        string
+	Description string
+}
+
 // Analysis contains information on the outcome of the URL and/or HTML analysis.
 type Analysis struct {
 	URL        string
 	FinalURL   string
 	HTML       string
-	Warnings   []Check
+	Warnings   []Warning
 	Score      int
 	Safelisted bool
 	Brands     *Brands
@@ -56,7 +63,11 @@ func (a *Analysis) analyzeLink(checks []Check) error {
 		if check.Call(link, nil, a.Brands) {
 			log.Debug("Matched ", check.Name)
 			a.Score += check.Score
-			a.Warnings = append(a.Warnings, check)
+			a.Warnings = append(a.Warnings, Warning{
+				Score:       check.Score,
+				Name:        check.Name,
+				Description: check.Description,
+			})
 		}
 	}
 
@@ -93,7 +104,11 @@ func (a *Analysis) AnalyzeHTML() error {
 		if check.Call(link, page, a.Brands) {
 			log.Debug("Matched ", check.Name)
 			a.Score += check.Score
-			a.Warnings = append(a.Warnings, check)
+			a.Warnings = append(a.Warnings, Warning{
+				Score:       check.Score,
+				Name:        check.Name,
+				Description: check.Description,
+			})
 		}
 	}
 
