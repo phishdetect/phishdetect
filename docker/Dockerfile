@@ -5,7 +5,7 @@ LABEL maintainer "Claudio Guarnieri"
 EXPOSE 9222
 
 RUN apt-get update
-RUN apt-get -qqy install wget ca-certificates apt-transport-https gnupg2 software-properties-common tor
+RUN apt-get -qqy install wget ca-certificates apt-transport-https gnupg2 software-properties-common tor fonts-dejavu fonts-noto xfonts-base
 
 RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
 RUN apt-add-repository "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
