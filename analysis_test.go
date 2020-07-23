@@ -59,6 +59,27 @@ func TestDomainSafelist(t *testing.T) {
 	}
 }
 
+func TestDangerousLinks(t *testing.T) {
+	dangerousLinks := map[string]bool{
+		"https://script.google.com/macros/": true,
+		"https://script.google.com":         true,
+		"https://sites.google.com/site/":    true,
+		"https://site.google.com/":          false,
+		"https://www.google.com":            false,
+		"https://account.google.com/":       false,
+	}
+
+	for url, expectedResult := range dangerousLinks {
+		a := NewAnalysis(url, "")
+		a.AnalyzeURL()
+
+		if a.Dangerous != expectedResult {
+			t.Errorf("Failed to detect dangerous link %s, got \"%v\" expected \"%v\"",
+				url, a.Dangerous, expectedResult)
+		}
+	}
+}
+
 func TestDomainWarnings(t *testing.T) {
 	url := "https://fake.gooogle.com-domain.xyz"
 	expectedWarnings := []string{

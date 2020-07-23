@@ -20,6 +20,7 @@ package brand
 type Brand struct {
 	Name       string   `json:"name",yaml:"name"`
 	Original   []string `json:"original",yaml:"original"`
+	Dangerous  []string `json:"dangerous",yaml:"dangerous"`
 	Safelist   []string `json:"safelist",yaml:"safelist"`
 	Suspicious []string `json:"suspicious",yaml:"suspicious"`
 	Matches    int      `json:"matches",yaml:"matches"`

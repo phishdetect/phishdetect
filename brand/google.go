@@ -72,6 +72,10 @@ func Google() *Brand {
 		"chrome.com", "android.com", "google-analytics.com", "gmail.com",
 		"blog.google", "domains.google", "google.org", "ai.google", "withgoogle.com",
 	}
+	dangerous := []string{
+		`^(?:https?:\/\/)script.google.com\/*`, `^(?:https?:\/\/)sites.google.com\/*`,
+		`^(?:https?:\/\/)accounts.google.com\/signin\/oauth\/*`,
+	}
 	suspicious := []string{
 		"googlea", "googleb",
 		"googlec", "googled", "googlee",
@@ -964,6 +968,7 @@ func Google() *Brand {
 	return &Brand{
 		Name:       name,
 		Original:   original,
+		Dangerous:  dangerous,
 		Safelist:   safelist,
 		Suspicious: suspicious,
 	}

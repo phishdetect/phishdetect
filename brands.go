@@ -17,6 +17,8 @@
 package phishdetect
 
 import (
+	"regexp"
+
 	"github.com/phishdetect/phishdetect/brand"
 )
 
@@ -99,6 +101,25 @@ func (b *Brands) IsDomainSafelisted(domain, brandName string) bool {
 				// Because the domain seems safelisted, we just add a large value
 				// to the Matches attribute, to make sure we brand the domain right.
 				brand.Matches += 100
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+// IsLinkDangerous checks if the specified link matches a brand's dangerous
+// regexp.
+func (b *Brands) IsLinkDangerous(link, brandName string) bool {
+	for _, brand := range b.List {
+		if brandName != "" && brandName != brand.Name {
+			continue
+		}
+
+		for _, dangerous := range brand.Dangerous {
+			match, _ := regexp.MatchString(dangerous, NormalizeURL(link))
+			if match {
 				return true
 			}
 		}

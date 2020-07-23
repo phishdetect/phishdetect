@@ -37,6 +37,7 @@ type Analysis struct {
 	Warnings   []Warning
 	Score      int
 	Safelisted bool
+	Dangerous  bool
 	Brands     *Brands
 }
 
@@ -72,6 +73,11 @@ func (a *Analysis) analyzeLink(checks []Check) error {
 	}
 
 	a.Safelisted = a.Brands.IsDomainSafelisted(link.TopDomain, "")
+	// If the domain is marked as safelisted, we check if the link matches
+	// any dangerous pattern.
+	if a.Safelisted {
+		a.Dangerous = a.Brands.IsLinkDangerous(link.URL, "")
+	}
 
 	return nil
 }
