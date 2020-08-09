@@ -24,21 +24,21 @@ import (
 
 // Warning is a converstion of Check containing only results.
 type Warning struct {
-	Score       int
-	Name        string
-	Description string
+	Score       int    `json:"score"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 // Analysis contains information on the outcome of the URL and/or HTML analysis.
 type Analysis struct {
-	URL        string
-	FinalURL   string
-	HTML       string
-	Warnings   []Warning
-	Score      int
-	Safelisted bool
-	Dangerous  bool
-	Brands     *Brands
+	URL        string    `json:"url"`
+	FinalURL   string    `json:"final_url"`
+	HTML       string    `json:"html"`
+	Warnings   []Warning `json:"warnings"`
+	Score      int       `json:"score"`
+	Safelisted bool      `json:"safelisted"`
+	Dangerous  bool      `json:"dangerous"`
+	Brands     *Brands   `json:"brands"`
 }
 
 // NewAnalysis instantiates a new Analysis struct.
