@@ -45,6 +45,7 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 		"confirmation",
 		"credential",
 		"drive",
+		"https",
 		"login",
 		"mails",
 		"management",
