@@ -75,6 +75,7 @@ func Google() *Brand {
 	dangerous := []string{
 		`^(?:https?:\/\/)script.google.com\/*`, `^(?:https?:\/\/)sites.google.com\/*`,
 		`^(?:https?:\/\/)accounts.google.com\/signin\/oauth\/*`,
+		`^(?:https?:\/\/)docs.google.com\/forms\/*`,
 	}
 	suspicious := []string{
 		"googlea", "googleb",
