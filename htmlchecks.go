@@ -232,6 +232,23 @@ func checkDecrypt(link *Link, page *Page, brands *Brands) bool {
 	return false
 }
 
+// checkDocumentWrite determines whether the page is being built dynamically
+// using document.write() JavaScript function (which is rather atypical for
+// legitimate modern web tech).
+func checkDocumentWrite(link *Link, page *Page, brands *Brands) bool {
+	exprs := []string{
+		"(?i)document\\.write\\(",
+	}
+	for _, expr := range exprs {
+		regex, _ := regexp.Compile(expr)
+		if regex.MatchString(page.HTML) {
+			return true
+		}
+	}
+
+	return false
+}
+
 // checkNoIndexRobots determines if the page has any meta tags to disable
 // archiving and indexing by search engines.
 func checkNoIndexRobots(link *Link, page *Page, brands *Brands) bool {
@@ -429,6 +446,12 @@ func GetHTMLChecks() []Check {
 			"noindex",
 			"The page explicitly forbids search sites to index it",
 		},
+		{
+			checkDocumentWrite,
+			10,
+			"document-write",
+			"The page is being dynamically generated with suspicious JavaScript functions",
+		}
 		{
 			checkIFrameWithPHP,
 			15,
