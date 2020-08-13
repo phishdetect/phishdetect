@@ -179,7 +179,7 @@ func main() {
 
 		analysis = phishdetect.NewAnalysis(url, browser.HTML)
 		loadBrands(*analysis)
-		analysis.AnalyzeHTML()
+		analysis.AnalyzePage(browser.Resources)
 
 		if strings.HasPrefix(browser.FinalURL, "chrome-error://") {
 			log.Fatal("An error occurred visiting the link. The website might be offline.")

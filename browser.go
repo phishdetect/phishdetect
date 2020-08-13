@@ -296,7 +296,7 @@ func (b *Browser) Run() error {
 				event, err := requestWillBeSent.Recv()
 				if err == nil {
 					if event.Initiator.Type == "other" && event.Type == network.ResourceTypeDocument {
-						log.Debug("Network request to ", event.DocumentURL)
+						log.Debug("Received request to visit Document at ", event.DocumentURL)
 						b.addVisit(event.DocumentURL)
 					}
 				}
@@ -314,7 +314,7 @@ func (b *Browser) Run() error {
 				}
 
 				log.Debug("Received response with status ", event.Response.Status,
-					" and type ", event.Type.String(), " at URL: ", resourceURL)
+					" for resource of type ", event.Type.String(), " at URL: ", resourceURL)
 
 				rsrc := Resource{
 					Status: event.Response.Status,

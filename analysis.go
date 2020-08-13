@@ -92,15 +92,14 @@ func (a *Analysis) AnalyzeURL() error {
 	return a.analyzeLink(GetURLChecks())
 }
 
-// AnalyzeHTML performs all the available checks to be run on an HTML string.
-func (a *Analysis) AnalyzeHTML() error {
+func (a *Analysis) analyzeHTML(resources []Resource) error {
 	log.Debug("Starting to analyze HTML...")
 
 	link, err := NewLink(a.FinalURL)
 	if err != nil {
 		return errors.New("An error occurred parsing the link: it might be invalid")
 	}
-	page, err := NewPage(a.HTML)
+	page, err := NewPage(a.HTML, resources)
 	if err != nil {
 		return err
 	}
@@ -119,4 +118,15 @@ func (a *Analysis) AnalyzeHTML() error {
 	}
 
 	return nil
+}
+
+// AnalyzeHTML performs all the available checks to be run on an HTML string.
+func (a *Analysis) AnalyzeHTML() error {
+	return a.analyzeHTML([]Resource{})
+}
+
+// AnalyzePage performs all the available checks to be run on an HTML string
+// as well as the provided list of resources (e.g. downloaded scripts).
+func (a *Analysis) AnalyzePage(resources []Resource) error {
+	return a.analyzeHTML(resources)
 }

@@ -224,8 +224,17 @@ func checkDecrypt(link *Link, page *Page, brands *Brands) bool {
 	}
 	for _, expr := range exprs {
 		regex, _ := regexp.Compile(expr)
+
+		// First we check the DOM HTML.
 		if regex.MatchString(page.HTML) {
 			return true
+		}
+
+		// Then we check downloaded resources.
+		for _, resource := range page.Resources {
+			if regex.MatchString(resource.Content) {
+				return true
+			}
 		}
 	}
 
@@ -241,8 +250,17 @@ func checkDocumentWrite(link *Link, page *Page, brands *Brands) bool {
 	}
 	for _, expr := range exprs {
 		regex, _ := regexp.Compile(expr)
+
+		// First we check the DOM HTML.
 		if regex.MatchString(page.HTML) {
 			return true
+		}
+
+		// Then we check downloaded resources.
+		for _, resource := range page.Resources {
+			if regex.MatchString(resource.Content) {
+				return true
+			}
 		}
 	}
 
@@ -451,7 +469,7 @@ func GetHTMLChecks() []Check {
 			10,
 			"document-write",
 			"The page is being dynamically generated with suspicious JavaScript functions",
-		}
+		},
 		{
 			checkIFrameWithPHP,
 			15,

@@ -26,13 +26,14 @@ import (
 
 // Page contains information on the HTML page.
 type Page struct {
-	HTML string
-	Soup soup.Root
-	Text string
+	HTML      string
+	Soup      soup.Root
+	Text      string
+	Resources []Resource
 }
 
 // NewPage instantiates a new Page struct.
-func NewPage(html string) (*Page, error) {
+func NewPage(html string, resources []Resource) (*Page, error) {
 	if strings.TrimSpace(html) == "" {
 		return nil, fmt.Errorf("No valid HTML provided")
 	}
@@ -43,9 +44,10 @@ func NewPage(html string) (*Page, error) {
 	})
 
 	return &Page{
-		HTML: html,
-		Soup: soup,
-		Text: text,
+		HTML:      html,
+		Soup:      soup,
+		Text:      text,
+		Resources: resources,
 	}, nil
 }
 
