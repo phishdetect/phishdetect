@@ -6,7 +6,6 @@ require (
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/anaskhan96/soup v1.1.1
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
-	github.com/chromedp/chromedp v0.5.2 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.4.0
