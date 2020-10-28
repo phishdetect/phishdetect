@@ -29,6 +29,8 @@ PhishDetect can take HTML strings as input, but it can also just be provided wit
 
 Install Docker Community Edition for [Windows](https://download.docker.com/win/stable/Docker%20for%20Windows%20Installer.exe), [Mac](https://download.docker.com/mac/stable/Docker.dmg) or [Linux](https://docs.docker.com/install/linux/docker-ce/ubuntu/).
 
+Particularly when using this with [PhishDetect Node](https://github.com/phishdetect/phishdetect-node), you should be looking into installing Docker in [Rootless Mode](https://docs.docker.com/engine/security/rootless/). You can find more information about this in the Node's documentation.
+
 Download the Docker image from Docker Hub using:
 
     $ docker pull phishdetect/phishdetect
