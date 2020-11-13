@@ -46,7 +46,7 @@ func NewLink(urlString string) (*Link, error) {
 		return nil, err
 	}
 
-	// NOTE: This is an ugly hack to work around the scheme enforcement of urlx.
+	// NOTE: This is an ugly hack to work around the scheme enforcement of urls.
 	// We don't want to have it enforced and leave it empty if it is not there.
 	// This is normally for our check for TLS in the link.
 	scheme := parsed.Scheme
