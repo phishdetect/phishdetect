@@ -42,27 +42,27 @@ import (
 
 // Resource contains details of a resource that was fetched.
 type Resource struct {
-	Status  int
-	URL     string
-	Type    string
-	SHA256  string
-	Content string
+	Status  int    `json:"status"`
+	URL     string `json:"url"`
+	Type    string `json:"type"`
+	SHA256  string `json:"sha256"`
+	Content string `json:"content"`
 }
 
 // Browser is a struct containing details over a browser navigation to a URL.
 type Browser struct {
-	URL            string
-	FinalURL       string
-	Visits         []string
-	Resources      []Resource
-	HTML           string
-	ScreenshotPath string
-	ScreenshotData string
-	UseTor         bool
-	DebugPort      int
-	UserAgent      string
-	ImageName      string
-	ContainerID    string
+	URL            string     `json:"url"`
+	FinalURL       string     `json:"final_url"`
+	Visits         []string   `json:"visits"`
+	Resources      []Resource `json:"resources"`
+	HTML           string     `json:"html"`
+	ScreenshotPath string     `json:"screenshot_path"`
+	ScreenshotData string     `json:"screenshot_data"`
+	UseTor         bool       `json:"use_tor"`
+	DebugPort      int        `json:"debug_port"`
+	UserAgent      string     `json:"user_agent"`
+	ImageName      string     `json:"image_name"`
+	ContainerID    string     `json:"container_id"`
 }
 
 // NewBrowser instantiates a new Browser struct.
