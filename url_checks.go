@@ -32,7 +32,9 @@ var SafeBrowsingKey string
 func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 	lowSuspects := []string{
 		"auth",
+		"authorise",
 		"authorize",
+		"authorisation",
 		"authorization",
 		"authenticate",
 		"authentication",
@@ -49,7 +51,10 @@ func checkSuspiciousHostname(link *Link, page *Page, brands *Brands) bool {
 		"login",
 		"mails",
 		"management",
+		"notice",
 		"password",
+		"payee",
+		"payees",
 		"permission",
 		"recover",
 		"register",
