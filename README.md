@@ -105,7 +105,7 @@ func main() {
     // The first argument is the URL to analyze.
     // The second argument is the path to the file where to save the screenshot.
     // The third argument is a boolean value to enable or disable routing through Tor.
-    b := phishdetect.NewBrowser(url, "/path/to/screen.png", false)
+    b := phishdetect.NewBrowser(url, "/path/to/screen.png", false, false, "")
     // Run the browser.
     b.Run()
 

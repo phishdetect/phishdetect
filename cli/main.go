@@ -37,6 +37,7 @@ var (
 
 	debug        bool
 	tor          bool
+	logEvents    bool
 	apiVersion   string
 	urlOnly      bool
 	screenPath   string
@@ -106,6 +107,7 @@ func initLogging() {
 func init() {
 	flag.BoolVar(&debug, "debug", false, "Enable debug logging")
 	flag.BoolVar(&tor, "tor", false, "Route connection through the Tor network")
+	flag.BoolVar(&logEvents, "log-events", false, "Log all DevTools events")
 	flag.StringVar(&apiVersion, "api-version", "1.37", "Specify which Docker API version to use")
 	flag.BoolVar(&urlOnly, "url-only", false, "Only perform URL analysis")
 	flag.StringVar(&screenPath, "screen", "", "Specify the file path to store the screenshot")
@@ -121,6 +123,7 @@ func init() {
 
 	log.Debug("Flags: enable debug logs: ", debug)
 	log.Debug("Flags: enable Tor routing: ", tor)
+	log.Debug("Flags: enable all DevTools logging:", logEvents)
 	log.Debug("Flags: Docker API Version: ", apiVersion)
 	log.Debug("Flags: only URL analysis: ", urlOnly)
 	log.Debug("Flags: screenshot path: ", screenPath)
@@ -171,7 +174,7 @@ func main() {
 		analysis = phishdetect.NewAnalysis(url, "")
 		loadBrands(*analysis)
 	} else {
-		browser = phishdetect.NewBrowser(phishdetect.NormalizeURL(url), screenPath, tor, container)
+		browser = phishdetect.NewBrowser(phishdetect.NormalizeURL(url), screenPath, tor, logEvents, container)
 		err := browser.Run()
 		if err != nil {
 			log.Fatal(err)
@@ -213,8 +216,17 @@ func main() {
 		for _, resource := range browser.Resources {
 			log.Info("Resource of type ", resource.Type, " at URL ", resource.URL)
 			if resource.SHA256 != "" {
-				log.Info("\twith hash ", resource.SHA256)
+				log.Info("\t\\_ with hash ", resource.SHA256)
 			}
+		}
+
+		for _, dialog := range browser.Dialogs {
+			log.Info("JavaScript dialog of type ", dialog.Type, " at URL ",
+				dialog.URL, " and message: ", dialog.Message)
+		}
+
+		for _, download := range browser.Downloads {
+			log.Info("Download of file named ", download.FileName, " at URL ", download.URL)
 		}
 	}
 
