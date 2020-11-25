@@ -26,6 +26,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -42,6 +43,23 @@ import (
 	"github.com/mafredri/cdp/rpcc"
 	log "github.com/sirupsen/logrus"
 )
+
+type Visit struct {
+	Timestamp int64  `json:"timestamp"`
+	URL       string `json:"url"`
+}
+
+type ByChronologicalOrder []Visit
+
+func (a ByChronologicalOrder) Len() int {
+	return len(a)
+}
+func (a ByChronologicalOrder) Less(i, j int) bool {
+	return a[i].Timestamp < a[j].Timestamp
+}
+func (a ByChronologicalOrder) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
 
 // Resource contains details of a resource that was fetched.
 type Resource struct {
@@ -69,7 +87,7 @@ type Dialog struct {
 type Browser struct {
 	URL            string     `json:"url"`
 	FinalURL       string     `json:"final_url"`
-	Visits         []string   `json:"visits"`
+	Visits         []Visit    `json:"visits"`
 	Resources      []Resource `json:"resources"`
 	Downloads      []Download `json:"downloads"`
 	Dialogs        []Dialog   `json:"dialogs"`
@@ -246,13 +264,17 @@ func (b *Browser) killContainer() error {
 	return nil
 }
 
-func (b *Browser) addVisit(url string) {
+func (b *Browser) addVisit(timestamp int64, url string) {
 	for _, visit := range b.Visits {
-		if visit == url {
+		if visit.URL == url {
 			return
 		}
 	}
-	b.Visits = append(b.Visits, url)
+	newVisit := Visit{
+		Timestamp: timestamp,
+		URL:       url,
+	}
+	b.Visits = append(b.Visits, newVisit)
 }
 
 func (b *Browser) getHTML() error {
@@ -433,7 +455,7 @@ func (b *Browser) Run() error {
 				if event.Initiator.Type == "other" && event.Type == network.ResourceTypeDocument {
 					log.Debug("Received request to visit Document at ",
 						event.DocumentURL)
-					b.addVisit(event.DocumentURL)
+					b.addVisit(event.Timestamp.Time().UnixNano(), event.DocumentURL)
 				}
 			case <-responseReceived.Ready():
 				event, err := responseReceived.Recv()
@@ -522,7 +544,6 @@ func (b *Browser) Run() error {
 
 				if event.Frame.ID == nav.FrameID {
 					log.Debug("Browser has visited URL ", event.Frame.URL)
-					b.addVisit(event.Frame.URL)
 				}
 			case <-stopMonitor:
 				return
@@ -558,7 +579,8 @@ func (b *Browser) Run() error {
 
 	// Assign FinalURL.
 	if len(b.Visits) > 0 {
-		b.FinalURL = b.Visits[len(b.Visits)-1]
+		sort.Sort(ByChronologicalOrder(b.Visits))
+		b.FinalURL = b.Visits[len(b.Visits)-1].URL
 	}
 
 	return nil

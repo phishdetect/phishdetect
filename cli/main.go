@@ -209,7 +209,7 @@ func main() {
 	if !urlOnly {
 		log.Info("Visits:")
 		for _, visit := range browser.Visits {
-			log.Info("\t- ", visit)
+			log.Info("\t- ", visit.Timestamp, " ", visit.URL)
 		}
 		log.Info("Final URL: ", browser.FinalURL)
 
