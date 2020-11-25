@@ -25,7 +25,7 @@ func Microsoft() *Brand {
 		"microsoft.com", "microsoftonline.com", "office.com", "live.com",
 		"onedrive.com", "s-microsoft.com", "sharepoint.com", "microsoft.us",
 		"msft.net", "microsoft-int.com", "outlook.com", "office365.com",
-		"microsoftonline-p.com", "microsoftonline.cn",
+		"microsoftonline-p.com", "microsoftonline.cn", "microsoftonline.de",
 	}
 	suspicious := []string{
 		"microsofta", "microsoftb",
