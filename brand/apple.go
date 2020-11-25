@@ -23,7 +23,7 @@ func Apple() *Brand {
 	safelist := []string{
 		"apple.com", "icloud.com", "mac.com", "airport.com", "applecomputer.com",
 		"appleimac.com", "imac.com", "iphone.com", "iphone.org", "ipod.com",
-		"itunes.com", "applemusic.com",
+		"itunes.com", "applemusic.com", "apple-dns.net", "cdn-apple.com",
 	}
 	suspicious := []string{
 		"cpple", "epple", "ipple",
