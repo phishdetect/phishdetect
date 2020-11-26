@@ -51,11 +51,11 @@ type Response struct {
 	Status     int         `json:"status"`
 	IPAddress  string      `json:"ip_address"`
 	PortNumber int         `json:"port_number"`
-	URL        string      `json"url"`
+	URL        string      `json:"url"`
 	Type       string      `json:"type"`
 	Headers    interface{} `json:"headers"`
 	Mime       string      `json:"mime"`
-	SHA256     string      `json"sha256"`
+	SHA256     string      `json:"sha256"`
 	Content    string      `json:"content"`
 }
 
