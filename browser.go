@@ -80,17 +80,17 @@ type Request struct {
 
 type ByChronologicalOrder []Request
 
-func (a ByChronologicalOrder) Len() int {
-	return len(a)
+func (r ByChronologicalOrder) Len() int {
+	return len(r)
 }
-func (a ByChronologicalOrder) Less(i, j int) bool {
-	return a[i].Timestamp < a[j].Timestamp
+func (r ByChronologicalOrder) Less(i, j int) bool {
+	return r[i].Timestamp < r[j].Timestamp
 }
-func (a ByChronologicalOrder) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
+func (r ByChronologicalOrder) Swap(i, j int) {
+	r[i], r[j] = r[j], r[i]
 }
 
-// Download contains details of files which were offered for download at the link.
+// Download contains details of files which were offered for download.
 type Download struct {
 	URL      string `json:"url"`
 	FileName string `json:"file_name"`
@@ -105,15 +105,6 @@ type Dialog struct {
 
 // Browser is a struct containing details over a browser navigation to a URL.
 type Browser struct {
-	URL            string     `json:"url"`
-	FinalURL       string     `json:"final_url"`
-	Requests       []Request  `json:"requests"`
-	Responses      []Response `json:"responses"`
-	Downloads      []Download `json:"downloads"`
-	Dialogs        []Dialog   `json:"dialogs"`
-	HTML           string     `json:"html"`
-	ScreenshotPath string     `json:"screenshot_path"`
-	ScreenshotData string     `json:"screenshot_data"`
 	UseTor         bool       `json:"use_tor"`
 	DebugPort      int        `json:"debug_port"`
 	DebugURL       string     `json:"debug_url"`
@@ -122,6 +113,16 @@ type Browser struct {
 	ImageName      string     `json:"image_name"`
 	ContainerID    string     `json:"container_id"`
 	FrameID        string     `json:"frame_id"`
+	URL            string     `json:"url"`
+	FinalURL       string     `json:"final_url"`
+	Requests       []Request  `json:"requests"`
+	Responses      []Response `json:"responses"`
+	Downloads      []Download `json:"downloads"`
+	Dialogs        []Dialog   `json:"dialogs"`
+	HTML           string     `json:"html"`
+	HTMLSHA256     string     `json:"html_sha256"`
+	ScreenshotPath string     `json:"screenshot_path"`
+	ScreenshotData string     `json:"screenshot_data"`
 }
 
 // Adapted from: https://pkg.go.dev/github.com/mafredri/cdp#example-package-Logging
@@ -308,6 +309,7 @@ func (b *Browser) getHTML() error {
 		return fmt.Errorf("Unable to retrieve HTML from DOM: %s", err)
 	}
 	b.HTML = result.OuterHTML
+	b.HTMLSHA256 = GetSHA256Hash(b.HTML)
 	return nil
 }
 
