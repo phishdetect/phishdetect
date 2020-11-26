@@ -17,6 +17,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -38,6 +39,7 @@ var (
 	debug        bool
 	tor          bool
 	logEvents    bool
+	printVisits  bool
 	apiVersion   string
 	urlOnly      bool
 	screenPath   string
@@ -108,6 +110,7 @@ func init() {
 	flag.BoolVar(&debug, "debug", false, "Enable debug logging")
 	flag.BoolVar(&tor, "tor", false, "Route connection through the Tor network")
 	flag.BoolVar(&logEvents, "log-events", false, "Log all DevTools events")
+	flag.BoolVar(&printVisits, "print-visits", false, "Print JSON output of all visits")
 	flag.StringVar(&apiVersion, "api-version", "1.37", "Specify which Docker API version to use")
 	flag.BoolVar(&urlOnly, "url-only", false, "Only perform URL analysis")
 	flag.StringVar(&screenPath, "screen", "", "Specify the file path to store the screenshot")
@@ -182,7 +185,7 @@ func main() {
 
 		analysis = phishdetect.NewAnalysis(url, browser.HTML)
 		loadBrands(*analysis)
-		analysis.AnalyzeBrowserResults(browser.Requests)
+		analysis.AnalyzeBrowserResults(browser.Resources)
 
 		if strings.HasPrefix(browser.FinalURL, "chrome-error://") {
 			log.Fatal("An error occurred visiting the link. The website might be offline.")
@@ -207,14 +210,8 @@ func main() {
 	brand := analysis.Brands.GetBrand()
 
 	if !urlOnly {
-		for _, request := range browser.Requests {
-			log.Info("Request ", request.Method, " at URL ", request.URL)
-			if request.Response.Failed == false {
-				log.Info("\tresponse with status ", request.Response.Status, " by IP ", request.Response.IPAddress,
-					" and type ", request.Response.Type, " and SHA256 ", request.Response.SHA256)
-			} else {
-				log.Info("\terrored ", request.Response.Error)
-			}
+		for _, resource := range browser.Resources {
+			log.Info("Got resource of type ", resource.Type, " at URL ", resource.URL, " with SHA256 ", resource.SHA256)
 		}
 
 		for _, dialog := range browser.Dialogs {
@@ -246,5 +243,17 @@ func main() {
 	for _, warning := range analysis.Warnings {
 		log.WithFields(log.Fields{"name": warning.Name, "score": warning.Score}).
 			Info("\t- ", warning.Description)
+	}
+
+	lastVisit := browser.Visits[len(browser.Visits)-1]
+	if lastVisit.Error != nil {
+		log.Error("Last visit to URL ", lastVisit.Requests[len(lastVisit.Requests)-1].Request.URL, " failed with error ", lastVisit.Error.ErrorText)
+	}
+
+	if printVisits {
+		data, err := json.MarshalIndent(browser.Visits, "", "    ")
+		if err == nil {
+			log.Println(string(data))
+		}
 	}
 }

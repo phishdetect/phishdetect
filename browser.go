@@ -28,7 +28,6 @@ import (
 	"net"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/docker/docker/api/types"
@@ -44,41 +43,20 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type Response struct {
-	RequestID       string      `json:"request_id"`
-	LoaderID        string      `json:"loader_id"`
-	Failed          bool        `json:"failed"`
-	Error           string      `json:"error"`
-	Status          int         `json:"status"`
-	StatusText      string      `json:"status_text"`
-	IPAddress       string      `json:"ip_address"`
-	PortNumber      int         `json:"port_number"`
-	Protocol        string      `json:"protocol"`
-	URL             string      `json:"url"`
-	Type            string      `json:"type"`
-	Headers         interface{} `json:"headers"`
-	Mime            string      `json:"mime"`
-	SHA256          string      `json:"sha256"`
-	Content         string      `json:"content"`
-	SecurityState   string      `json:"security_state"`
-	SecurityDetails interface{} `json:"security_details"`
-	Timing          interface{} `json:"timing"`
+type RequestResponse struct {
+	Request  *network.RequestWillBeSentReply `json:"request"`
+	Response *network.ResponseReceivedReply  `json:"response"`
 }
 
-type Request struct {
-	Timestamp   int64       `json:"timestamp"`
-	Method      string      `json:"method"`
-	DocumentURL string      `json:"document_url"`
-	URL         string      `json:"url"`
-	Type        string      `json:"type"`
-	Headers     interface{} `json:"headers"`
-	Initiator   string      `json:"initiator"`
-	RequestID   string      `json:"request_id"`
-	FrameID     string      `json:"frame_id"`
-	Response    Response    `json:"response"`
+type Visit struct {
+	VisitID   string                            `json:"visit_id"`
+	Requests  []*network.RequestWillBeSentReply `json:"requests"`
+	Response  *network.ResponseReceivedReply    `json:"response"`
+	Resources []RequestResponse                 `json:"resources"`
+	Error     *network.LoadingFailedReply       `json:"error"`
 }
 
-type ByChronologicalOrder []Request
+type ByChronologicalOrder []*network.RequestWillBeSentReply
 
 func (r ByChronologicalOrder) Len() int {
 	return len(r)
@@ -88,6 +66,15 @@ func (r ByChronologicalOrder) Less(i, j int) bool {
 }
 func (r ByChronologicalOrder) Swap(i, j int) {
 	r[i], r[j] = r[j], r[i]
+}
+
+type Resource struct {
+	VisitID   string `json:"visit_id"`
+	RequestID string `json:"request_id"`
+	Type      string `json:"type"`
+	URL       string `json:"url"`
+	SHA256    string `json:"sha256"`
+	Content   string `json:"content"`
 }
 
 // Download contains details of files which were offered for download.
@@ -105,24 +92,27 @@ type Dialog struct {
 
 // Browser is a struct containing details over a browser navigation to a URL.
 type Browser struct {
-	UseTor         bool       `json:"use_tor"`
-	DebugPort      int        `json:"debug_port"`
-	DebugURL       string     `json:"debug_url"`
-	LogEvents      bool       `json:"log_events"`
-	UserAgent      string     `json:"user_agent"`
-	ImageName      string     `json:"image_name"`
-	ContainerID    string     `json:"container_id"`
-	FrameID        string     `json:"frame_id"`
-	URL            string     `json:"url"`
-	FinalURL       string     `json:"final_url"`
-	Requests       []Request  `json:"requests"`
-	Responses      []Response `json:"responses"`
-	Downloads      []Download `json:"downloads"`
-	Dialogs        []Dialog   `json:"dialogs"`
-	HTML           string     `json:"html"`
-	HTMLSHA256     string     `json:"html_sha256"`
-	ScreenshotPath string     `json:"screenshot_path"`
-	ScreenshotData string     `json:"screenshot_data"`
+	UseTor         bool                              `json:"use_tor"`
+	DebugPort      int                               `json:"debug_port"`
+	DebugURL       string                            `json:"debug_url"`
+	LogEvents      bool                              `json:"log_events"`
+	UserAgent      string                            `json:"user_agent"`
+	ImageName      string                            `json:"image_name"`
+	ContainerID    string                            `json:"container_id"`
+	FrameID        string                            `json:"frame_id"`
+	URL            string                            `json:"url"`
+	FinalURL       string                            `json:"final_url"`
+	RequestEvents  []*network.RequestWillBeSentReply `json:"request_events"`
+	ResponseEvents []*network.ResponseReceivedReply  `json:"response_events"`
+	ErrorEvents    []*network.LoadingFailedReply     `json:"error_events"`
+	Visits         []Visit                           `json:"visits"`
+	Resources      []Resource                        `json:"resources"`
+	Downloads      []Download                        `json:"downloads"`
+	Dialogs        []Dialog                          `json:"dialogs"`
+	HTML           string                            `json:"html"`
+	HTMLSHA256     string                            `json:"html_sha256"`
+	ScreenshotPath string                            `json:"screenshot_path"`
+	ScreenshotData string                            `json:"screenshot_data"`
 }
 
 // Adapted from: https://pkg.go.dev/github.com/mafredri/cdp#example-package-Logging
@@ -343,6 +333,99 @@ func (b *Browser) getScreenshot() error {
 	return nil
 }
 
+func (b *Browser) aggregateRequest(event *network.RequestWillBeSentReply, isDocument bool) {
+	for visitIndex, visit := range b.Visits {
+		if isDocument {
+			if string(event.RequestID) == visit.VisitID {
+				b.Visits[visitIndex].Requests = append(b.Visits[visitIndex].Requests, event)
+				return
+			}
+		} else {
+			if string(event.LoaderID) == visit.VisitID {
+				b.Visits[visitIndex].Resources = append(b.Visits[visitIndex].Resources, RequestResponse{
+					Request: event,
+				})
+				return
+			}
+		}
+	}
+
+	var newVisit Visit
+	if isDocument {
+		newVisit = Visit{
+			VisitID:  string(event.RequestID),
+			Requests: []*network.RequestWillBeSentReply{event},
+		}
+	} else {
+		newVisit = Visit{
+			VisitID: string(event.LoaderID),
+			Resources: []RequestResponse{
+				{
+					Request: event,
+				},
+			},
+		}
+	}
+	b.Visits = append(b.Visits, newVisit)
+}
+
+func (b *Browser) aggregateResponse(event *network.ResponseReceivedReply, isDocument bool) {
+	for visitIndex, visit := range b.Visits {
+		if isDocument {
+			if string(event.RequestID) == visit.VisitID {
+				b.Visits[visitIndex].Response = event
+				return
+			}
+		} else {
+			if string(event.LoaderID) != visit.VisitID {
+				continue
+			}
+
+			for resourceIndex, resource := range visit.Resources {
+				if event.RequestID == resource.Request.RequestID {
+					b.Visits[visitIndex].Resources[resourceIndex].Response = event
+					return
+				}
+			}
+		}
+	}
+}
+
+func (b *Browser) aggregateVisits() {
+	// First we aggregate all requests.
+	for _, request := range b.RequestEvents {
+		// If the RequestID is a MD5 hash, this request should be a Visit.
+		if len(string(request.RequestID)) == 32 {
+			b.aggregateRequest(request, true)
+		} else {
+			// Otherwise, it should be a resource.
+			b.aggregateRequest(request, false)
+		}
+	}
+
+	// Then we aggregate all responses.
+	for _, response := range b.ResponseEvents {
+		if len(string(response.RequestID)) == 32 {
+			b.aggregateResponse(response, true)
+		} else {
+			b.aggregateResponse(response, false)
+		}
+	}
+
+	// Then we check if any visit raised loading errors.
+	for _, error := range b.ErrorEvents {
+		for visitIndex, visit := range b.Visits {
+			if string(error.RequestID) == visit.VisitID {
+				b.Visits[visitIndex].Error = error
+			}
+		}
+	}
+
+	for visitIndex, _ := range b.Visits {
+		sort.Sort(ByChronologicalOrder(b.Visits[visitIndex].Requests))
+	}
+}
+
 // Run launches our browser and navigates to the specified URL.
 func (b *Browser) Run() error {
 	err := b.startContainer()
@@ -468,18 +551,7 @@ func (b *Browser) Run() error {
 					break
 				}
 
-				newRequest := Request{
-					Timestamp:   event.Timestamp.Time().UnixNano(),
-					DocumentURL: event.DocumentURL,
-					Method:      event.Request.Method,
-					URL:         event.Request.URL,
-					Type:        event.Type.String(),
-					Headers:     event.Request.Headers,
-					Initiator:   event.Initiator.Type,
-					RequestID:   string(event.RequestID),
-					FrameID:     string(*event.FrameID),
-				}
-				b.Requests = append(b.Requests, newRequest)
+				b.RequestEvents = append(b.RequestEvents, event)
 				break
 			case <-responseReceived.Ready():
 				event, err := responseReceived.Recv()
@@ -488,48 +560,28 @@ func (b *Browser) Run() error {
 					break
 				}
 
-				var resourceURL string
-				if strings.HasPrefix(event.Response.URL, "data:") {
-					resourceURL = "<data object>"
-				} else {
-					resourceURL = event.Response.URL
-				}
-
-				log.Debug("Received response with status ", event.Response.Status,
-					" for resource of type ", event.Type.String(), " at URL: ", resourceURL)
-
-				newResponse := Response{
-					RequestID:       string(event.RequestID),
-					LoaderID:        string(event.LoaderID),
-					Failed:          false,
-					Status:          event.Response.Status,
-					StatusText:      event.Response.StatusText,
-					IPAddress:       *event.Response.RemoteIPAddress,
-					PortNumber:      *event.Response.RemotePort,
-					Protocol:        *event.Response.Protocol,
-					URL:             resourceURL,
-					Type:            event.Type.String(),
-					Headers:         event.Response.Headers,
-					Mime:            event.Response.MimeType,
-					SecurityState:   event.Response.SecurityState.String(),
-					SecurityDetails: event.Response.SecurityDetails,
-					Timing:          event.Response.Timing,
-				}
-
 				// We only retrieve the content of scripts and documents.
 				if (event.Type == "Script" || event.Type == "Document") && event.Response.Status == 200 {
 					resp, err := cli.Network.GetResponseBody(ctx,
 						&network.GetResponseBodyArgs{RequestID: event.RequestID})
 
 					if err == nil {
-						newResponse.Content = fmt.Sprintf("%s", resp.Body)
-						if newResponse.Content != "" {
-							newResponse.SHA256 = GetSHA256Hash(newResponse.Content)
+						newResource := Resource{
+							VisitID:   string(event.LoaderID),
+							RequestID: string(event.RequestID),
+							URL:       event.Response.URL,
+							Type:      event.Type.String(),
 						}
+						if resp.Body != "" {
+							newResource.Content = resp.Body
+							newResource.SHA256 = GetSHA256Hash(newResource.Content)
+						}
+
+						b.Resources = append(b.Resources, newResource)
 					}
 				}
 
-				b.Responses = append(b.Responses, newResponse)
+				b.ResponseEvents = append(b.ResponseEvents, event)
 				break
 			case <-loadingFailed.Ready():
 				event, err := loadingFailed.Recv()
@@ -538,13 +590,7 @@ func (b *Browser) Run() error {
 					break
 				}
 
-				newResponse := Response{
-					RequestID: string(event.RequestID),
-					Failed:    true,
-					Error:     event.ErrorText,
-					Type:      event.Type.String(),
-				}
-				b.Responses = append(b.Responses, newResponse)
+				b.ErrorEvents = append(b.ErrorEvents, event)
 				break
 			case <-dialogOpening.Ready():
 				event, err := dialogOpening.Recv()
@@ -621,38 +667,11 @@ func (b *Browser) Run() error {
 		log.Warning(err)
 	}
 
+	b.aggregateVisits()
+
 	// Assign FinalURL.
-	if len(b.Requests) > 0 {
-		sort.Sort(ByChronologicalOrder(b.Requests))
-
-		// We just loop through all requests, find those of type Document
-		// and which loaded at the original frame.
-		// TODO: This currently means that pages loaded through JavaScript
-		//       redirects such as window.location are not considered visits.
-		//       Need to review this choice.
-		for _, request := range b.Requests {
-			if request.FrameID != b.FrameID {
-				continue
-			}
-
-			if request.Type == "Document" && request.Initiator == "other" {
-				b.FinalURL = request.URL
-			}
-		}
-	}
-
-	// We assign responses to the relative requests.
-	// NOTE: We only do this now because of potential race condtions that
-	//       could occur trying to do this while processing events earlier.
-	for _, response := range b.Responses {
-		for index, request := range b.Requests {
-			if request.RequestID != response.RequestID {
-				continue
-			}
-
-			b.Requests[index].Response = response
-		}
-	}
+	lastVisit := b.Visits[len(b.Visits)-1]
+	b.FinalURL = lastVisit.Requests[len(lastVisit.Requests)-1].Request.URL
 
 	return nil
 }
