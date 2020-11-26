@@ -44,12 +44,33 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type Visit struct {
-	Timestamp int64  `json:"timestamp"`
-	URL       string `json:"url"`
+type Response struct {
+	RequestID  string      `json:"request_id"`
+	Failed     bool        `json:"failed"`
+	Error      string      `json:"error"`
+	Status     int         `json:"status"`
+	IPAddress  string      `json:"ip_address"`
+	PortNumber int         `json:"port_number"`
+	URL        string      `json"url"`
+	Type       string      `json:"type"`
+	Headers    interface{} `json:"headers"`
+	Mime       string      `json:"mime"`
+	SHA256     string      `json"sha256"`
+	Content    string      `json:"content"`
 }
 
-type ByChronologicalOrder []Visit
+type Request struct {
+	Timestamp int64    `json:"timestamp"`
+	Method    string   `json:"method"`
+	URL       string   `json:"url"`
+	Type      string   `json:"type"`
+	Initiator string   `json:"initiator"`
+	RequestID string   `json:"request_id"`
+	FrameID   string   `json:"frame_id"`
+	Response  Response `json:"response"`
+}
+
+type ByChronologicalOrder []Request
 
 func (a ByChronologicalOrder) Len() int {
 	return len(a)
@@ -59,15 +80,6 @@ func (a ByChronologicalOrder) Less(i, j int) bool {
 }
 func (a ByChronologicalOrder) Swap(i, j int) {
 	a[i], a[j] = a[j], a[i]
-}
-
-// Resource contains details of a resource that was fetched.
-type Resource struct {
-	Status  int    `json:"status"`
-	URL     string `json:"url"`
-	Type    string `json:"type"`
-	SHA256  string `json:"sha256"`
-	Content string `json:"content"`
 }
 
 // Download contains details of files which were offered for download at the link.
@@ -87,8 +99,8 @@ type Dialog struct {
 type Browser struct {
 	URL            string     `json:"url"`
 	FinalURL       string     `json:"final_url"`
-	Visits         []Visit    `json:"visits"`
-	Resources      []Resource `json:"resources"`
+	Requests       []Request  `json:"requests"`
+	Responses      []Response `json:"responses"`
 	Downloads      []Download `json:"downloads"`
 	Dialogs        []Dialog   `json:"dialogs"`
 	HTML           string     `json:"html"`
@@ -101,6 +113,7 @@ type Browser struct {
 	UserAgent      string     `json:"user_agent"`
 	ImageName      string     `json:"image_name"`
 	ContainerID    string     `json:"container_id"`
+	FrameID        string     `json:"frame_id"`
 }
 
 // Adapted from: https://pkg.go.dev/github.com/mafredri/cdp#example-package-Logging
@@ -264,19 +277,6 @@ func (b *Browser) killContainer() error {
 	return nil
 }
 
-func (b *Browser) addVisit(timestamp int64, url string) {
-	for _, visit := range b.Visits {
-		if visit.URL == url {
-			return
-		}
-	}
-	newVisit := Visit{
-		Timestamp: timestamp,
-		URL:       url,
-	}
-	b.Visits = append(b.Visits, newVisit)
-}
-
 func (b *Browser) getHTML() error {
 	ctx, cancel := context.WithTimeout(context.Background(),
 		BrowserEventWaitTime*time.Second)
@@ -387,26 +387,6 @@ func (b *Browser) Run() error {
 	cli := cdp.NewClient(conn)
 
 	// Subscribe to events of interest.
-	domContent, err := cli.Page.DOMContentEventFired(ctx)
-	if err != nil {
-		return err
-	}
-	defer domContent.Close()
-	frameNavigated, err := cli.Page.FrameNavigated(ctx)
-	if err != nil {
-		return err
-	}
-	defer frameNavigated.Close()
-	dialogOpening, err := cli.Page.JavascriptDialogOpening(ctx)
-	if err != nil {
-		return err
-	}
-	defer dialogOpening.Close()
-	downloadWillBegin, err := cli.Page.DownloadWillBegin(ctx)
-	if err != nil {
-		return err
-	}
-	defer downloadWillBegin.Close()
 	requestWillBeSent, err := cli.Network.RequestWillBeSent(ctx)
 	if err != nil {
 		return err
@@ -417,6 +397,26 @@ func (b *Browser) Run() error {
 		return err
 	}
 	defer responseReceived.Close()
+	loadingFailed, err := cli.Network.LoadingFailed(ctx)
+	if err != nil {
+		return err
+	}
+	defer loadingFailed.Close()
+	domContent, err := cli.Page.DOMContentEventFired(ctx)
+	if err != nil {
+		return err
+	}
+	defer domContent.Close()
+	dialogOpening, err := cli.Page.JavascriptDialogOpening(ctx)
+	if err != nil {
+		return err
+	}
+	defer dialogOpening.Close()
+	downloadWillBegin, err := cli.Page.DownloadWillBegin(ctx)
+	if err != nil {
+		return err
+	}
+	defer downloadWillBegin.Close()
 
 	// Enable Page and Network tracking.
 	if err = cli.Page.Enable(ctx); err != nil {
@@ -426,6 +426,10 @@ func (b *Browser) Run() error {
 		return err
 	}
 
+	// Set the default behavior for file downloads as "deny".
+	// Because we currently don't make any use of the file content
+	// it's pointless to attempt to store it.
+	// TODO: Review this choice.
 	downloadArgs := page.NewSetDownloadBehaviorArgs("deny")
 	cli.Page.SetDownloadBehavior(ctx, downloadArgs)
 
@@ -437,7 +441,9 @@ func (b *Browser) Run() error {
 		return fmt.Errorf("Failed to navigate to page: %s", err)
 	}
 
-	log.Debug("Started loading on frame ID ", nav.FrameID)
+	// Navigation started!
+	b.FrameID = string(nav.FrameID)
+	log.Debug("Started loading on frame ID ", b.FrameID)
 
 	stopDomContentWait := false
 	stopMonitor := make(chan bool)
@@ -452,15 +458,21 @@ func (b *Browser) Run() error {
 					break
 				}
 
-				if event.Initiator.Type == "other" && event.Type == network.ResourceTypeDocument {
-					log.Debug("Received request to visit Document at ",
-						event.DocumentURL)
-					b.addVisit(event.Timestamp.Time().UnixNano(), event.DocumentURL)
+				newRequest := Request{
+					Timestamp: event.Timestamp.Time().UnixNano(),
+					Method:    event.Request.Method,
+					URL:       event.DocumentURL,
+					Type:      event.Type.String(),
+					Initiator: event.Initiator.Type,
+					RequestID: string(event.RequestID),
+					FrameID:   string(*event.FrameID),
 				}
+				b.Requests = append(b.Requests, newRequest)
+				break
 			case <-responseReceived.Ready():
 				event, err := responseReceived.Recv()
 				if err != nil {
-					log.Debug("ResponseReceived.Recv() failed: ", err)
+					log.Debug("responseReceived.Recv() failed: ", err)
 					break
 				}
 
@@ -474,26 +486,48 @@ func (b *Browser) Run() error {
 				log.Debug("Received response with status ", event.Response.Status,
 					" for resource of type ", event.Type.String(), " at URL: ", resourceURL)
 
-				rsrc := Resource{
-					Status: event.Response.Status,
-					URL:    event.Response.URL,
-					Type:   event.Type.String(),
+				newResponse := Response{
+					RequestID:  string(event.RequestID),
+					Failed:     false,
+					Status:     event.Response.Status,
+					IPAddress:  *event.Response.RemoteIPAddress,
+					PortNumber: *event.Response.RemotePort,
+					URL:        resourceURL,
+					Type:       event.Type.String(),
+					Headers:    event.Response.Headers,
+					Mime:       event.Response.MimeType,
 				}
 
-				// We only retrieve the content of scripts.
+				// We only retrieve the content of scripts and documents.
 				if (event.Type == "Script" || event.Type == "Document") && event.Response.Status == 200 {
 					resp, err := cli.Network.GetResponseBody(ctx,
 						&network.GetResponseBodyArgs{RequestID: event.RequestID})
 
 					if err == nil {
-						rsrc.Content = fmt.Sprintf("%s", resp.Body)
-						if rsrc.Content != "" {
-							rsrc.SHA256 = GetSHA256Hash(rsrc.Content)
+						newResponse.Content = fmt.Sprintf("%s", resp.Body)
+						if newResponse.Content != "" {
+							newResponse.SHA256 = GetSHA256Hash(newResponse.Content)
 						}
 					}
 				}
 
-				b.Resources = append(b.Resources, rsrc)
+				b.Responses = append(b.Responses, newResponse)
+				break
+			case <-loadingFailed.Ready():
+				event, err := loadingFailed.Recv()
+				if err != nil {
+					log.Debug("loadingFailed.Recv() failed: ", err)
+					break
+				}
+
+				newResponse := Response{
+					RequestID: string(event.RequestID),
+					Failed:    true,
+					Error:     event.ErrorText,
+					Type:      event.Type.String(),
+				}
+				b.Responses = append(b.Responses, newResponse)
+				break
 			case <-dialogOpening.Ready():
 				event, err := dialogOpening.Recv()
 				if err != nil {
@@ -518,6 +552,7 @@ func (b *Browser) Run() error {
 				dialogArgs := page.NewHandleJavaScriptDialogArgs(true)
 				dialogArgs.SetPromptText("qwerty")
 				cli.Page.HandleJavaScriptDialog(ctx, dialogArgs)
+				break
 			case <-downloadWillBegin.Ready():
 				event, err := downloadWillBegin.Recv()
 				if err != nil {
@@ -535,16 +570,7 @@ func (b *Browser) Run() error {
 
 				b.Downloads = append(b.Downloads, download)
 				stopDomContentWait = true
-			case <-frameNavigated.Ready():
-				event, err := frameNavigated.Recv()
-				if err != nil {
-					log.Debug("Failed to frameNavigated.Recv(): ", err)
-					break
-				}
-
-				if event.Frame.ID == nav.FrameID {
-					log.Debug("Browser has visited URL ", event.Frame.URL)
-				}
+				break
 			case <-stopMonitor:
 				return
 			}
@@ -578,9 +604,36 @@ func (b *Browser) Run() error {
 	}
 
 	// Assign FinalURL.
-	if len(b.Visits) > 0 {
-		sort.Sort(ByChronologicalOrder(b.Visits))
-		b.FinalURL = b.Visits[len(b.Visits)-1].URL
+	if len(b.Requests) > 0 {
+		sort.Sort(ByChronologicalOrder(b.Requests))
+
+		// We just loop through all requests, find those of type Document
+		// and which loaded at the original frame.
+		// TODO: This currently means that pages loaded through JavaScript
+		//       redirects such as window.location are not considered visits.
+		//       Need to review this choice.
+		for _, request := range b.Requests {
+			if request.FrameID != b.FrameID {
+				continue
+			}
+
+			if request.Type == "Document" && request.Initiator == "other" {
+				b.FinalURL = request.URL
+			}
+		}
+	}
+
+	// We assign responses to the relative requests.
+	// NOTE: We only do this now because of potential race condtions that
+	//       could occur trying to do this while processing events earlier.
+	for _, response := range b.Responses {
+		for index, request := range b.Requests {
+			if request.RequestID != response.RequestID {
+				continue
+			}
+
+			b.Requests[index].Response = response
+		}
 	}
 
 	return nil

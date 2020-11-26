@@ -61,7 +61,7 @@ func (a *Analysis) analyzeLink(checks []Check) error {
 	}
 	for _, check := range checks {
 		log.Debug("Running domain check ", check.Name, " ...")
-		if check.Call(link, nil, a.Brands) {
+		if check.Call(link, nil, []Request{}, a.Brands) {
 			log.Debug("Matched ", check.Name)
 			a.Score += check.Score
 			a.Warnings = append(a.Warnings, Warning{
@@ -92,21 +92,21 @@ func (a *Analysis) AnalyzeURL() error {
 	return a.analyzeLink(GetURLChecks())
 }
 
-func (a *Analysis) analyzeHTML(resources []Resource) error {
+func (a *Analysis) analyzeHTML(requests []Request) error {
 	log.Debug("Starting to analyze HTML...")
 
 	link, err := NewLink(a.FinalURL)
 	if err != nil {
 		return errors.New("An error occurred parsing the link: it might be invalid")
 	}
-	page, err := NewPage(a.HTML, resources)
+	page, err := NewPage(a.HTML)
 	if err != nil {
 		return err
 	}
 
 	for _, check := range GetHTMLChecks() {
 		log.Debug("Running HTML check ", check.Name, " ...")
-		if check.Call(link, page, a.Brands) {
+		if check.Call(link, page, requests, a.Brands) {
 			log.Debug("Matched ", check.Name)
 			a.Score += check.Score
 			a.Warnings = append(a.Warnings, Warning{
@@ -122,11 +122,11 @@ func (a *Analysis) analyzeHTML(resources []Resource) error {
 
 // AnalyzeHTML performs all the available checks to be run on an HTML string.
 func (a *Analysis) AnalyzeHTML() error {
-	return a.analyzeHTML([]Resource{})
+	return a.analyzeHTML([]Request{})
 }
 
 // AnalyzePage performs all the available checks to be run on an HTML string
 // as well as the provided list of resources (e.g. downloaded scripts).
-func (a *Analysis) AnalyzePage(resources []Resource) error {
-	return a.analyzeHTML(resources)
+func (a *Analysis) AnalyzePage(requests []Request) error {
+	return a.analyzeHTML(requests)
 }

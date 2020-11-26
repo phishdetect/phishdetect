@@ -34,7 +34,7 @@ func TestPage(t *testing.T) {
 </body>
 </html>`
 
-	page, err := NewPage(html, []Resource{})
+	page, err := NewPage(html)
 	if err != nil {
 		t.Errorf("Failed to parse HTML: %s", err.Error())
 	}
