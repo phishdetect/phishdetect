@@ -52,7 +52,7 @@ func NewAnalysis(url, html string) *Analysis {
 	}
 }
 
-func (a *Analysis) analyzeLink(checks []Check) error {
+func (a *Analysis) analyzeDomainOrURL(checks []Check) error {
 	log.Debug("Starting to analyze the URL...")
 
 	link, err := NewLink(a.FinalURL)
@@ -84,12 +84,12 @@ func (a *Analysis) analyzeLink(checks []Check) error {
 
 // AnalyzeDomain performs all the available checks to be run on a URL or domain.
 func (a *Analysis) AnalyzeDomain() error {
-	return a.analyzeLink(GetDomainChecks())
+	return a.analyzeDomainOrURL(GetDomainChecks())
 }
 
 // AnalyzeURL performs all the available checks to be run on a URL or domain.
 func (a *Analysis) AnalyzeURL() error {
-	return a.analyzeLink(GetURLChecks())
+	return a.analyzeDomainOrURL(GetURLChecks())
 }
 
 func (a *Analysis) analyzeHTML(requests []Request) error {
@@ -127,6 +127,6 @@ func (a *Analysis) AnalyzeHTML() error {
 
 // AnalyzePage performs all the available checks to be run on an HTML string
 // as well as the provided list of resources (e.g. downloaded scripts).
-func (a *Analysis) AnalyzePage(requests []Request) error {
+func (a *Analysis) AnalyzeLink(requests []Request) error {
 	return a.analyzeHTML(requests)
 }
