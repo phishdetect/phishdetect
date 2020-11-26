@@ -468,9 +468,9 @@ func (b *Browser) Run() error {
 
 				newRequest := Request{
 					Timestamp:   event.Timestamp.Time().UnixNano(),
+					DocumentURL: event.DocumentURL,
 					Method:      event.Request.Method,
 					URL:         event.Request.URL,
-					DocumentURL: event.DocumentURL,
 					Type:        event.Type.String(),
 					Headers:     event.Request.Headers,
 					Initiator:   event.Initiator.Type,
