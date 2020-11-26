@@ -125,8 +125,8 @@ func (a *Analysis) AnalyzeHTML() error {
 	return a.analyzeHTML([]Request{})
 }
 
-// AnalyzePage performs all the available checks to be run on an HTML string
-// as well as the provided list of resources (e.g. downloaded scripts).
-func (a *Analysis) AnalyzeLink(requests []Request) error {
+// AnalyzeBrowserResults performs all the available checks to be run on an HTML string
+// as well as the provided list of HTTP requests (e.g. downloaded scripts).
+func (a *Analysis) AnalyzeBrowserResults(requests []Request) error {
 	return a.analyzeHTML(requests)
 }
