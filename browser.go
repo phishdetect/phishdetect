@@ -45,29 +45,36 @@ import (
 )
 
 type Response struct {
-	RequestID  string      `json:"request_id"`
-	Failed     bool        `json:"failed"`
-	Error      string      `json:"error"`
-	Status     int         `json:"status"`
-	IPAddress  string      `json:"ip_address"`
-	PortNumber int         `json:"port_number"`
-	URL        string      `json:"url"`
-	Type       string      `json:"type"`
-	Headers    interface{} `json:"headers"`
-	Mime       string      `json:"mime"`
-	SHA256     string      `json:"sha256"`
-	Content    string      `json:"content"`
+	RequestID       string      `json:"request_id"`
+	LoaderID        string      `json:"loader_id"`
+	Failed          bool        `json:"failed"`
+	Error           string      `json:"error"`
+	Status          int         `json:"status"`
+	StatusText      string      `json:"status_text"`
+	IPAddress       string      `json:"ip_address"`
+	PortNumber      int         `json:"port_number"`
+	Protocol        string      `json:"protocol"`
+	URL             string      `json:"url"`
+	Type            string      `json:"type"`
+	Headers         interface{} `json:"headers"`
+	Mime            string      `json:"mime"`
+	SHA256          string      `json:"sha256"`
+	Content         string      `json:"content"`
+	SecurityState   string      `json:"security_state"`
+	SecurityDetails interface{} `json:"security_details"`
+	Timing          interface{} `json:"timing"`
 }
 
 type Request struct {
-	Timestamp int64    `json:"timestamp"`
-	Method    string   `json:"method"`
-	URL       string   `json:"url"`
-	Type      string   `json:"type"`
-	Initiator string   `json:"initiator"`
-	RequestID string   `json:"request_id"`
-	FrameID   string   `json:"frame_id"`
-	Response  Response `json:"response"`
+	Timestamp int64       `json:"timestamp"`
+	Method    string      `json:"method"`
+	URL       string      `json:"url"`
+	Type      string      `json:"type"`
+	Headers   interface{} `json:"headers"`
+	Initiator string      `json:"initiator"`
+	RequestID string      `json:"request_id"`
+	FrameID   string      `json:"frame_id"`
+	Response  Response    `json:"response"`
 }
 
 type ByChronologicalOrder []Request
@@ -463,6 +470,7 @@ func (b *Browser) Run() error {
 					Method:    event.Request.Method,
 					URL:       event.DocumentURL,
 					Type:      event.Type.String(),
+					Headers:   event.Request.Headers,
 					Initiator: event.Initiator.Type,
 					RequestID: string(event.RequestID),
 					FrameID:   string(*event.FrameID),
@@ -487,15 +495,21 @@ func (b *Browser) Run() error {
 					" for resource of type ", event.Type.String(), " at URL: ", resourceURL)
 
 				newResponse := Response{
-					RequestID:  string(event.RequestID),
-					Failed:     false,
-					Status:     event.Response.Status,
-					IPAddress:  *event.Response.RemoteIPAddress,
-					PortNumber: *event.Response.RemotePort,
-					URL:        resourceURL,
-					Type:       event.Type.String(),
-					Headers:    event.Response.Headers,
-					Mime:       event.Response.MimeType,
+					RequestID:       string(event.RequestID),
+					LoaderID:        string(event.LoaderID),
+					Failed:          false,
+					Status:          event.Response.Status,
+					StatusText:      event.Response.StatusText,
+					IPAddress:       *event.Response.RemoteIPAddress,
+					PortNumber:      *event.Response.RemotePort,
+					Protocol:        *event.Response.Protocol,
+					URL:             resourceURL,
+					Type:            event.Type.String(),
+					Headers:         event.Response.Headers,
+					Mime:            event.Response.MimeType,
+					SecurityState:   event.Response.SecurityState.String(),
+					SecurityDetails: event.Response.SecurityDetails,
+					Timing:          event.Response.Timing,
 				}
 
 				// We only retrieve the content of scripts and documents.
