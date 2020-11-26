@@ -66,15 +66,16 @@ type Response struct {
 }
 
 type Request struct {
-	Timestamp int64       `json:"timestamp"`
-	Method    string      `json:"method"`
-	URL       string      `json:"url"`
-	Type      string      `json:"type"`
-	Headers   interface{} `json:"headers"`
-	Initiator string      `json:"initiator"`
-	RequestID string      `json:"request_id"`
-	FrameID   string      `json:"frame_id"`
-	Response  Response    `json:"response"`
+	Timestamp   int64       `json:"timestamp"`
+	Method      string      `json:"method"`
+	DocumentURL string      `json:"document_url"`
+	URL         string      `json:"url"`
+	Type        string      `json:"type"`
+	Headers     interface{} `json:"headers"`
+	Initiator   string      `json:"initiator"`
+	RequestID   string      `json:"request_id"`
+	FrameID     string      `json:"frame_id"`
+	Response    Response    `json:"response"`
 }
 
 type ByChronologicalOrder []Request
@@ -466,14 +467,15 @@ func (b *Browser) Run() error {
 				}
 
 				newRequest := Request{
-					Timestamp: event.Timestamp.Time().UnixNano(),
-					Method:    event.Request.Method,
-					URL:       event.DocumentURL,
-					Type:      event.Type.String(),
-					Headers:   event.Request.Headers,
-					Initiator: event.Initiator.Type,
-					RequestID: string(event.RequestID),
-					FrameID:   string(*event.FrameID),
+					Timestamp:   event.Timestamp.Time().UnixNano(),
+					Method:      event.Request.Method,
+					URL:         event.Request.URL,
+					DocumentURL: event.DocumentURL,
+					Type:        event.Type.String(),
+					Headers:     event.Request.Headers,
+					Initiator:   event.Initiator.Type,
+					RequestID:   string(event.RequestID),
+					FrameID:     string(*event.FrameID),
 				}
 				b.Requests = append(b.Requests, newRequest)
 				break
