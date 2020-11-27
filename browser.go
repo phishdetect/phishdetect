@@ -421,9 +421,30 @@ func (b *Browser) aggregateVisits() {
 		}
 	}
 
-	for visitIndex, _ := range b.Visits {
+	for visitIndex := range b.Visits {
 		sort.Sort(ByChronologicalOrder(b.Visits[visitIndex].Requests))
 	}
+}
+
+func (b *Browser) getFinalURL() error {
+	ctx, cancel := context.WithTimeout(context.Background(),
+		BrowserEventWaitTime*time.Second)
+	defer cancel()
+	conn, err := rpcc.DialContext(ctx, b.DebugURL)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	cli := cdp.NewClient(conn)
+
+	navHistoryReply, err := cli.Page.GetNavigationHistory(ctx)
+	if err != nil {
+		return fmt.Errorf("Unable to get navigation history: %s", err)
+	}
+
+	b.FinalURL = navHistoryReply.Entries[len(navHistoryReply.Entries)-1].URL
+	return nil
 }
 
 // Run launches our browser and navigates to the specified URL.
@@ -551,6 +572,8 @@ func (b *Browser) Run() error {
 					break
 				}
 
+				log.Debug("A request will be sent to ", event.Request.URL)
+
 				b.RequestEvents = append(b.RequestEvents, event)
 				break
 			case <-responseReceived.Ready():
@@ -559,6 +582,8 @@ func (b *Browser) Run() error {
 					log.Debug("responseReceived.Recv() failed: ", err)
 					break
 				}
+
+				log.Debug("Got a response for resource of type ", event.Type.String(), " for URL ", event.Response.URL)
 
 				// We only retrieve the content of scripts and documents.
 				if (event.Type == "Script" || event.Type == "Document") && event.Response.Status == 200 {
@@ -668,12 +693,7 @@ func (b *Browser) Run() error {
 	}
 
 	b.aggregateVisits()
-
-	// Assign FinalURL.
-	// We use the first visit because subsequent visits should be iframes, etc.
-	// TODO: JavaScript redirects would not however be counted as final visits.
-	firstVisit := b.Visits[0]
-	b.FinalURL = firstVisit.Requests[len(firstVisit.Requests)-1].Request.URL
+	b.getFinalURL()
 
 	return nil
 }

@@ -245,11 +245,6 @@ func main() {
 			Info("\t- ", warning.Description)
 	}
 
-	lastVisit := browser.Visits[len(browser.Visits)-1]
-	if lastVisit.Error != nil {
-		log.Error("Last visit to URL ", lastVisit.Requests[len(lastVisit.Requests)-1].Request.URL, " failed with error ", lastVisit.Error.ErrorText)
-	}
-
 	if printVisits {
 		data, err := json.MarshalIndent(browser.Visits, "", "    ")
 		if err == nil {
