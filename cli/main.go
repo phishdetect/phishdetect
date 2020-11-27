@@ -185,7 +185,7 @@ func main() {
 
 		analysis = phishdetect.NewAnalysis(url, browser.HTML)
 		loadBrands(*analysis)
-		analysis.AnalyzeBrowserResults(browser.Resources)
+		analysis.AnalyzeBrowserResults(browser.ResourcesData)
 
 		if strings.HasPrefix(browser.FinalURL, "chrome-error://") {
 			log.Fatal("An error occurred visiting the link. The website might be offline.")
@@ -210,8 +210,8 @@ func main() {
 	brand := analysis.Brands.GetBrand()
 
 	if !urlOnly {
-		for _, resource := range browser.Resources {
-			log.Info("Got resource of type ", resource.Type, " at URL ", resource.URL, " with SHA256 ", resource.SHA256)
+		for _, resourceData := range browser.ResourcesData {
+			log.Info("Got resource of type ", resourceData.Type, " at URL ", resourceData.URL, " with SHA256 ", resourceData.SHA256)
 		}
 
 		for _, dialog := range browser.Dialogs {

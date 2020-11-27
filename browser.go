@@ -68,7 +68,7 @@ func (r ByChronologicalOrder) Swap(i, j int) {
 	r[i], r[j] = r[j], r[i]
 }
 
-type Resource struct {
+type ResourceDataEntry struct {
 	VisitID   string `json:"visit_id"`
 	RequestID string `json:"request_id"`
 	Type      string `json:"type"`
@@ -76,6 +76,8 @@ type Resource struct {
 	SHA256    string `json:"sha256"`
 	Content   string `json:"content"`
 }
+
+type ResourcesData []ResourceDataEntry
 
 // Download contains details of files which were offered for download.
 type Download struct {
@@ -106,7 +108,7 @@ type Browser struct {
 	ResponseEvents []*network.ResponseReceivedReply  `json:"response_events"`
 	ErrorEvents    []*network.LoadingFailedReply     `json:"error_events"`
 	Visits         []Visit                           `json:"visits"`
-	Resources      []Resource                        `json:"resources"`
+	ResourcesData  ResourcesData                     `json:"resources_data"`
 	Downloads      []Download                        `json:"downloads"`
 	Dialogs        []Dialog                          `json:"dialogs"`
 	HTML           string                            `json:"html"`
@@ -591,7 +593,7 @@ func (b *Browser) Run() error {
 						&network.GetResponseBodyArgs{RequestID: event.RequestID})
 
 					if err == nil {
-						newResource := Resource{
+						newResource := ResourceDataEntry{
 							VisitID:   string(event.LoaderID),
 							RequestID: string(event.RequestID),
 							URL:       event.Response.URL,
@@ -602,7 +604,7 @@ func (b *Browser) Run() error {
 							newResource.SHA256 = GetSHA256Hash(newResource.Content)
 						}
 
-						b.Resources = append(b.Resources, newResource)
+						b.ResourcesData = append(b.ResourcesData, newResource)
 					}
 				}
 
