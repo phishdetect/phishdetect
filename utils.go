@@ -53,6 +53,7 @@ func SliceContains(slice []string, item string) bool {
 // NormalizeURL fixes a URL that is e.g. missing a scheme, etc.
 func NormalizeURL(url string) string {
 	url = strings.TrimSpace(url)
+	url = strings.Replace(url, "&amp;", "&", -1)
 	cleanURL, _ := urlx.Parse(url)
 	normalized, _ := urlx.Normalize(cleanURL)
 	if normalized == "" {

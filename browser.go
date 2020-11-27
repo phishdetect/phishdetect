@@ -670,8 +670,10 @@ func (b *Browser) Run() error {
 	b.aggregateVisits()
 
 	// Assign FinalURL.
-	lastVisit := b.Visits[len(b.Visits)-1]
-	b.FinalURL = lastVisit.Requests[len(lastVisit.Requests)-1].Request.URL
+	// We use the first visit because subsequent visits should be iframes, etc.
+	// TODO: JavaScript redirects would not however be counted as final visits.
+	firstVisit := b.Visits[0]
+	b.FinalURL = firstVisit.Requests[len(firstVisit.Requests)-1].Request.URL
 
 	return nil
 }
