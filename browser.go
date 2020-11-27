@@ -693,7 +693,11 @@ func (b *Browser) Run() error {
 	}
 
 	b.aggregateVisits()
-	b.getFinalURL()
+
+	err = b.getFinalURL()
+	if err != nil {
+		log.Warning(err)
+	}
 
 	return nil
 }
