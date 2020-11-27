@@ -185,7 +185,7 @@ func (b *Browser) pickUserAgent() {
 
 func (b *Browser) pickDebugPort() {
 	min := 9000
-	max := 10000
+	max := 60000
 	port := min
 
 	rand.Seed(time.Now().UTC().UnixNano())
