@@ -101,27 +101,28 @@ type Dialog struct {
 
 // Browser is a struct containing details over a browser navigation to a URL.
 type Browser struct {
-	UseTor         bool                              `json:"use_tor"`
-	DebugPort      int                               `json:"debug_port"`
-	DebugURL       string                            `json:"debug_url"`
-	LogEvents      bool                              `json:"log_events"`
-	UserAgent      string                            `json:"user_agent"`
-	ImageName      string                            `json:"image_name"`
-	ContainerID    string                            `json:"container_id"`
-	FrameID        string                            `json:"frame_id"`
-	URL            string                            `json:"url"`
-	FinalURL       string                            `json:"final_url"`
-	RequestEvents  []*network.RequestWillBeSentReply `json:"request_events"`
-	ResponseEvents []*network.ResponseReceivedReply  `json:"response_events"`
-	ErrorEvents    []*network.LoadingFailedReply     `json:"error_events"`
-	Visits         []Visit                           `json:"visits"`
-	ResourcesData  ResourcesData                     `json:"resources_data"`
-	Downloads      []Download                        `json:"downloads"`
-	Dialogs        []Dialog                          `json:"dialogs"`
-	HTML           string                            `json:"html"`
-	HTMLSHA256     string                            `json:"html_sha256"`
-	ScreenshotPath string                            `json:"screenshot_path"`
-	ScreenshotData string                            `json:"screenshot_data"`
+	UseTor            bool                              `json:"use_tor"`
+	DebugPort         int                               `json:"debug_port"`
+	DebugURL          string                            `json:"debug_url"`
+	LogEvents         bool                              `json:"log_events"`
+	UserAgent         string                            `json:"user_agent"`
+	ImageName         string                            `json:"image_name"`
+	ContainerID       string                            `json:"container_id"`
+	FrameID           string                            `json:"frame_id"`
+	URL               string                            `json:"url"`
+	FinalURL          string                            `json:"final_url"`
+	RequestEvents     []*network.RequestWillBeSentReply `json:"request_events"`
+	ResponseEvents    []*network.ResponseReceivedReply  `json:"response_events"`
+	ErrorEvents       []*network.LoadingFailedReply     `json:"error_events"`
+	Visits            []Visit                           `json:"visits"`
+	ResourcesData     ResourcesData                     `json:"resources_data"`
+	Downloads         []Download                        `json:"downloads"`
+	NavigationHistory []page.NavigationEntry            `json:"navigation_history"`
+	Dialogs           []Dialog                          `json:"dialogs"`
+	HTML              string                            `json:"html"`
+	HTMLSHA256        string                            `json:"html_sha256"`
+	ScreenshotPath    string                            `json:"screenshot_path"`
+	ScreenshotData    string                            `json:"screenshot_data"`
 }
 
 // LogCodec captures the output from writing RPC requests and reading
@@ -452,6 +453,7 @@ func (b *Browser) getFinalURL() error {
 		return fmt.Errorf("Unable to get navigation history: %s", err)
 	}
 
+	b.NavigationHistory = navHistoryReply.Entries
 	b.FinalURL = navHistoryReply.Entries[len(navHistoryReply.Entries)-1].URL
 	return nil
 }

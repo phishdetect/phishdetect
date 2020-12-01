@@ -210,6 +210,10 @@ func main() {
 	brand := analysis.Brands.GetBrand()
 
 	if !urlOnly {
+		for _, navHistory := range browser.NavigationHistory {
+			log.Info("Navigation entry to URL ", navHistory.URL, " with transition of type ", navHistory.TransitionType)
+		}
+
 		for _, resourceData := range browser.ResourcesData {
 			log.Info("Got resource of type ", resourceData.Type, " at URL ", resourceData.URL, " with SHA256 ", resourceData.SHA256)
 		}
