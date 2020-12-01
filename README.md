@@ -86,6 +86,8 @@ func main() {
 }
 ```
 
+In addition, if you already have the HTML of a given page you want to analyze, you can supply it as a second argument to `NewAnalysis()` with `a := phishdetect.NewAnalysis(url, html)` and then invoke `a.AnalyzeHTML()`.
+
 
 ### Analyzing a link dynamically
 
@@ -152,7 +154,7 @@ func main() {
     myBrand := brand.Brand{
         Name:       "MyBrand",
         Original:   []string{"MyBrand", "MyBrandProduct"},
-        Safelist:  []string{"mybrand.com", "mybrand.net", "mybrand.org"},
+        Safelist:   []string{"mybrand.com", "mybrand.net", "mybrand.org"},
         Suspicious: []string{"mybland.com", "mybrend.com", "mgbrand.com"},
     }
 
