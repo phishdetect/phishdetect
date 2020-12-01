@@ -43,11 +43,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// RequestResponse contains the combination of an HTTP request and its relevant
+// response. It should only be used to mark resources loaded by single visits.
 type RequestResponse struct {
 	Request  *network.RequestWillBeSentReply `json:"request"`
 	Response *network.ResponseReceivedReply  `json:"response"`
 }
 
+// Visit identifies actually documents loaded on the browser frame.
 type Visit struct {
 	VisitID   string                            `json:"visit_id"`
 	Requests  []*network.RequestWillBeSentReply `json:"requests"`
@@ -56,6 +59,7 @@ type Visit struct {
 	Error     *network.LoadingFailedReply       `json:"error"`
 }
 
+// ByChronologicalOrder is used to order requests by timestamp.
 type ByChronologicalOrder []*network.RequestWillBeSentReply
 
 func (r ByChronologicalOrder) Len() int {
@@ -68,6 +72,8 @@ func (r ByChronologicalOrder) Swap(i, j int) {
 	r[i], r[j] = r[j], r[i]
 }
 
+// ResourceDataEntry contains metadata information on downloaded resource files
+// such as JavaScript snippets.
 type ResourceDataEntry struct {
 	VisitID   string `json:"visit_id"`
 	RequestID string `json:"request_id"`
@@ -77,6 +83,7 @@ type ResourceDataEntry struct {
 	Content   string `json:"content"`
 }
 
+// ResourcesData is a collection of ResourceDataEntry items.
 type ResourcesData []ResourceDataEntry
 
 // Download contains details of files which were offered for download.
@@ -117,10 +124,10 @@ type Browser struct {
 	ScreenshotData string                            `json:"screenshot_data"`
 }
 
-// Adapted from: https://pkg.go.dev/github.com/mafredri/cdp#example-package-Logging
 // LogCodec captures the output from writing RPC requests and reading
 // responses on the connection. It implements rpcc.Codec via
 // WriteRequest and ReadResponse.
+// Adapted from: https://pkg.go.dev/github.com/mafredri/cdp#example-package-Logging
 type LogCodec struct{ conn io.ReadWriter }
 
 // WriteRequest marshals v into a buffer, writes its contents onto the
