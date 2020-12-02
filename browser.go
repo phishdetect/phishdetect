@@ -99,6 +99,8 @@ type Dialog struct {
 	Message string `json:"message"`
 }
 
+type NavigationHistory []page.NavigationEntry
+
 // Browser is a struct containing details over a browser navigation to a URL.
 type Browser struct {
 	UseTor            bool                              `json:"use_tor"`
@@ -117,7 +119,7 @@ type Browser struct {
 	Visits            []Visit                           `json:"visits"`
 	ResourcesData     ResourcesData                     `json:"resources_data"`
 	Downloads         []Download                        `json:"downloads"`
-	NavigationHistory []page.NavigationEntry            `json:"navigation_history"`
+	NavigationHistory NavigationHistory                 `json:"navigation_history"`
 	Dialogs           []Dialog                          `json:"dialogs"`
 	HTML              string                            `json:"html"`
 	HTMLSHA256        string                            `json:"html_sha256"`

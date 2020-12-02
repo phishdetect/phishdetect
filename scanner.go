@@ -44,7 +44,6 @@ func InitializeYara(yaraRulesPath string) error {
 
 	rulesStat, err := os.Stat(yaraRulesPath)
 	if err != nil {
-		log.Error(err.Error())
 		return err
 	}
 
