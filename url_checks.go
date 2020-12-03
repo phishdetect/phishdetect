@@ -29,7 +29,7 @@ import (
 // SafeBrowsingKey contains the API key to use Google SafeBrowsing API.
 var SafeBrowsingKey string
 
-func checkSuspiciousHostname(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) bool {
+func checkSuspiciousHostname(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
 	lowSuspects := []string{
 		"auth",
 		"authorise",
@@ -88,7 +88,7 @@ func checkSuspiciousHostname(link *Link, page *Page, resourcesData ResourcesData
 				// A suspicious brand name in the domain should have more
 				// weight than anything.
 				brand.Matches += 10
-				return true
+				return true, nil
 			}
 
 			// If no obvious suspicious word is found, we do some additional
@@ -151,13 +151,13 @@ func checkSuspiciousHostname(link *Link, page *Page, resourcesData ResourcesData
 	}
 
 	if high >= 2 || (high >= 1 && low >= 1) || low >= 2 {
-		return true
+		return true, nil
 	}
 
-	return false
+	return false, nil
 }
 
-func checkSuspiciousTLD(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) bool {
+func checkSuspiciousTLD(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
 	suspects := []string{
 		".bank",
 		".biz",
@@ -201,29 +201,29 @@ func checkSuspiciousTLD(link *Link, page *Page, resourcesData ResourcesData, bra
 
 	for _, suspect := range suspects {
 		if strings.HasSuffix(link.Domain, suspect) {
-			return true
+			return true, nil
 		}
 	}
 
-	return false
+	return false, nil
 }
 
-func checkSuspiciousBridges(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) bool {
+func checkSuspiciousBridges(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
 	// ".www." causes too many false positives.
 	suspects := []string{".com-", ".org-"}
 
 	for _, suspect := range suspects {
 		if strings.Contains(link.Domain, suspect) {
-			return true
+			return true, nil
 		}
 	}
 
-	return false
+	return false, nil
 }
 
-func checkEncodedDomain(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) bool {
+func checkEncodedDomain(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
 	if !strings.Contains(link.Domain, "xn--") {
-		return false
+		return false, nil
 	}
 
 	for _, brand := range brands.List {
@@ -234,15 +234,15 @@ func checkEncodedDomain(link *Link, page *Page, resourcesData ResourcesData, bra
 
 			if strings.Contains(link.Domain, word) {
 				brand.Matches++
-				return true
+				return true, nil
 			}
 		}
 	}
 
-	return false
+	return false, nil
 }
 
-func checkExcessivePunct(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) bool {
+func checkExcessivePunct(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
 	regex, _ := regexp.Compile("\\.")
 	dots := regex.FindAllString(link.Domain, -1)
 	dotsCount := len(dots)
@@ -256,23 +256,23 @@ func checkExcessivePunct(link *Link, page *Page, resourcesData ResourcesData, br
 
 	total := dotsCount + dashesCount
 	if total >= 4 {
-		return true
+		return true, nil
 	}
 
-	return false
+	return false, nil
 }
 
-func checkNoTLS(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) bool {
+func checkNoTLS(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
 	if strings.HasPrefix(link.Scheme, "http") {
 		if link.Scheme != "https" {
-			return true
+			return true, nil
 		}
 	}
 
-	return false
+	return false, nil
 }
 
-func checkB64Parameters(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) bool {
+func checkB64Parameters(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
 	for _, value := range link.Parameters {
 		// We skip strings that are too short, because they could significantly
 		// raise false positives.
@@ -281,16 +281,16 @@ func checkB64Parameters(link *Link, page *Page, resourcesData ResourcesData, bra
 		}
 		_, err := base64.StdEncoding.DecodeString(value)
 		if err != nil {
-			return true
+			return true, nil
 		}
 	}
 
-	return false
+	return false, nil
 }
 
-func checkGoogleSafeBrowsing(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) bool {
+func checkGoogleSafeBrowsing(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
 	if SafeBrowsingKey == "" {
-		return false
+		return false, nil
 	}
 
 	log.Debug("Using Google SafeBrowsing API key: ", SafeBrowsingKey)
@@ -300,65 +300,65 @@ func checkGoogleSafeBrowsing(link *Link, page *Page, resourcesData ResourcesData
 	})
 	if err != nil {
 		log.Error(err.Error())
-		return false
+		return false, nil
 	}
 
 	threats, err := sb.LookupURLs([]string{link.URL})
 	if err != nil {
 		log.Error(err.Error())
-		return false
+		return false, nil
 	}
 
 	if len(threats[0]) > 0 {
 		for _, threat := range threats {
 			log.Debug(threat)
 		}
-		return true
+		return true, nil
 	}
 
 	log.Debug("No Google SafeBrowsing threats found for this URL")
 
-	return false
+	return false, nil
 }
 
 // GetDomainChecks returns a list of only the checks that work for domain names.
 func GetDomainChecks() []Check {
 	return []Check{
 		{
-			checkSuspiciousTLD,
-			5,
-			"suspicious-tld",
-			"The domain uses a suspicious TLD",
+			Call:        checkSuspiciousTLD,
+			Score:       5,
+			Name:        "suspicious-tld",
+			Description: "The domain uses a suspicious TLD",
 		},
 		{
-			checkExcessivePunct,
-			20,
-			"excessive-punct",
-			"The domain has suspicious amount of dots and dashes",
+			Call:        checkExcessivePunct,
+			Score:       20,
+			Name:        "excessive-punct",
+			Description: "The domain has suspicious amount of dots and dashes",
 		},
 		{
-			checkSuspiciousBridges,
-			25,
-			"suspicious-bridges",
-			"The domain uses very suspicious patterns used for bad domains composition",
+			Call:        checkSuspiciousBridges,
+			Score:       25,
+			Name:        "suspicious-bridges",
+			Description: "The domain uses very suspicious patterns used for bad domains composition",
 		},
 		{
-			checkSuspiciousHostname,
-			30,
-			"suspicious-hostname",
-			"The domain contains suspicious words",
+			Call:        checkSuspiciousHostname,
+			Score:       30,
+			Name:        "suspicious-hostname",
+			Description: "The domain contains suspicious words",
 		},
 		{
-			checkEncodedDomain,
-			50,
-			"encoded-domain",
-			"The domain contains special characters to mimic known brands",
+			Call:        checkEncodedDomain,
+			Score:       50,
+			Name:        "encoded-domain",
+			Description: "The domain contains special characters to mimic known brands",
 		},
 		{
-			checkGoogleSafeBrowsing,
-			50,
-			"google-safebrowsing",
-			"The link is listed in Google SafeBrowsing as malicious",
+			Call:        checkGoogleSafeBrowsing,
+			Score:       50,
+			Name:        "google-safebrowsing",
+			Description: "The link is listed in Google SafeBrowsing as malicious",
 		},
 	}
 }
@@ -368,16 +368,16 @@ func GetURLChecks() []Check {
 	checks := GetDomainChecks()
 	checks = append(checks, []Check{
 		{
-			checkB64Parameters,
-			5,
-			"base64-parameters",
-			"The link might contain base64 encoded parameters (low confidence)",
+			Call:        checkB64Parameters,
+			Score:       5,
+			Name:        "base64-parameters",
+			Description: "The link might contain base64 encoded parameters (low confidence)",
 		},
 		{
-			checkNoTLS,
-			15,
-			"no-tls",
-			"The website is not using a secure transport layer (HTTPS)",
+			Call:        checkNoTLS,
+			Score:       15,
+			Name:        "no-tls",
+			Description: "The website is not using a secure transport layer (HTTPS)",
 		},
 	}...)
 

@@ -211,20 +211,20 @@ func main() {
 
 	if !urlOnly {
 		for _, navHistory := range browser.NavigationHistory {
-			log.Info("Navigation entry to URL ", navHistory.URL, " with transition of type ", navHistory.TransitionType)
+			log.Info("Navigation entry to URL ", navHistory.URL,
+				" with transition of type ", navHistory.TransitionType)
 		}
-
 		for _, resourceData := range browser.ResourcesData {
-			log.Info("Got resource of type ", resourceData.Type, " at URL ", resourceData.URL, " with SHA256 ", resourceData.SHA256)
+			log.Info("Got resource of type ", resourceData.Type,
+				" at URL ", resourceData.URL, " with SHA256 ", resourceData.SHA256)
 		}
-
 		for _, dialog := range browser.Dialogs {
 			log.Info("JavaScript dialog of type ", dialog.Type, " at URL ",
 				dialog.URL, " and message: ", dialog.Message)
 		}
-
 		for _, download := range browser.Downloads {
-			log.Info("Download of file named ", download.FileName, " at URL ", download.URL)
+			log.Info("Download of file named ", download.FileName,
+				" at URL ", download.URL)
 		}
 	}
 
@@ -247,6 +247,12 @@ func main() {
 	for _, warning := range analysis.Warnings {
 		log.WithFields(log.Fields{"name": warning.Name, "score": warning.Score}).
 			Info("\t- ", warning.Description)
+		if warning.Matches != nil {
+			matches, err := json.MarshalIndent(warning.Matches, "", "    ")
+			if err == nil {
+				log.Printf("\n%s", string(matches))
+			}
+		}
 	}
 
 	if printVisits {

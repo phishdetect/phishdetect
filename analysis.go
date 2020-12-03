@@ -24,9 +24,10 @@ import (
 
 // Warning is a converstion of Check containing only results.
 type Warning struct {
-	Score       int    `json:"score"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Score       int         `json:"score"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	Matches     interface{} `json:"matches"`
 }
 
 // Analysis contains information on the outcome of the URL and/or HTML analysis.
@@ -61,13 +62,15 @@ func (a *Analysis) analyzeDomainOrURL(checks []Check) error {
 	}
 	for _, check := range checks {
 		log.Debug("Running domain check ", check.Name, " ...")
-		if check.Call(link, nil, ResourcesData{}, a.Brands) {
+		matched, matches := check.Call(link, nil, ResourcesData{}, a.Brands)
+		if matched {
 			log.Debug("Matched ", check.Name)
 			a.Score += check.Score
 			a.Warnings = append(a.Warnings, Warning{
 				Score:       check.Score,
 				Name:        check.Name,
 				Description: check.Description,
+				Matches:     matches,
 			})
 		}
 	}
@@ -106,13 +109,15 @@ func (a *Analysis) analyzeHTML(resourcesData ResourcesData) error {
 
 	for _, check := range GetHTMLChecks() {
 		log.Debug("Running HTML check ", check.Name, " ...")
-		if check.Call(link, page, resourcesData, a.Brands) {
+		matched, matches := check.Call(link, page, resourcesData, a.Brands)
+		if matched {
 			log.Debug("Matched ", check.Name)
 			a.Score += check.Score
 			a.Warnings = append(a.Warnings, Warning{
 				Score:       check.Score,
 				Name:        check.Name,
 				Description: check.Description,
+				Matches:     matches,
 			})
 		}
 	}
