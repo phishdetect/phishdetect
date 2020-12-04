@@ -27,6 +27,7 @@ import (
 // Page contains information on the HTML page.
 type Page struct {
 	HTML string
+	SHA256 string
 	Soup soup.Root
 	Text string
 }
@@ -44,6 +45,7 @@ func NewPage(html string) (*Page, error) {
 
 	return &Page{
 		HTML: html,
+		SHA256: GetSHA256Hash(html),
 		Soup: soup,
 		Text: text,
 	}, nil

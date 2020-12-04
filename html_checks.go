@@ -25,6 +25,31 @@ import (
 	"github.com/mozillazg/go-unidecode"
 )
 
+type CheckTarget struct {
+	Type       string
+	Identifier string
+	Content    string
+}
+
+// getCheckTargets is used to build a collection of check targets for those
+// checks that require scanning the DOM HTML and downloaded resources.
+func getCheckTargets(page *Page, resourcesData ResourcesData) []CheckTarget {
+	var targets []CheckTarget
+	targets = append(targets, CheckTarget{
+		Type:       "html",
+		Identifier: page.SHA256,
+		Content:    page.HTML,
+	})
+	for _, resource := range resourcesData {
+		targets = append(targets, CheckTarget{
+			Type:       "resource",
+			Identifier: resource.SHA256,
+			Content:    resource.Content,
+		})
+	}
+	return targets
+}
+
 // checkSuspiciousTitle determines if the page title contains any references
 // to any brand's name.
 func checkSuspiciousTitle(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
@@ -224,21 +249,18 @@ func checkDecrypt(link *Link, page *Page, resourcesData ResourcesData, brands *B
 		"(?i)aes\\.ctr\\.decrypt\\(",
 		"(?i)cryptojs\\.aes\\.decrypt\\(",
 	}
+
+	targets := getCheckTargets(page, resourcesData)
 	for _, expr := range exprs {
 		regex, _ := regexp.Compile(expr)
 
-		// First we check the DOM HTML.
-		if regex.MatchString(page.HTML) {
-			return true, nil
-		}
-
-		// Then we check in all responses for which we have data.
-		for _, resource := range resourcesData {
-			if resource.Content == "" {
-				continue
-			}
-			if regex.MatchString(resource.Content) {
-				return true, nil
+		for _, target := range targets {
+			if regex.MatchString(target.Content) {
+				return true, map[string]string{
+					"entity": target.Type,
+					"identifier": target.Identifier,
+					"match": expr,
+				}
 			}
 		}
 	}
@@ -253,21 +275,18 @@ func checkDocumentWrite(link *Link, page *Page, resourcesData ResourcesData, bra
 	exprs := []string{
 		"(?i)document\\.write\\(",
 	}
+
+	targets := getCheckTargets(page, resourcesData)
 	for _, expr := range exprs {
 		regex, _ := regexp.Compile(expr)
 
-		// First we check the DOM HTML.
-		if regex.MatchString(page.HTML) {
-			return true, nil
-		}
-
-		// Then we check in all responses for which we have data.
-		for _, resource := range resourcesData {
-			if resource.Content == "" {
-				continue
-			}
-			if regex.MatchString(resource.Content) {
-				return true, nil
+		for _, target := range targets {
+			if regex.MatchString(target.Content) {
+				return true, map[string]string{
+					"entity": target.Type,
+					"identifier": target.Identifier,
+					"match": expr,
+				}
 			}
 		}
 	}
@@ -415,25 +434,7 @@ func checkYaraRules(link *Link, page *Page, resourcesData ResourcesData, brands 
 		return false, nil
 	}
 
-	type ScanTarget struct {
-		Type       string
-		Identifier string
-		Content    string
-	}
-
-	var targets []ScanTarget
-	targets = append(targets, ScanTarget{
-		Type:       "html",
-		Identifier: "",
-		Content:    page.HTML,
-	})
-	for _, resource := range resourcesData {
-		targets = append(targets, ScanTarget{
-			Type:       "resource",
-			Identifier: resource.SHA256,
-			Content:    resource.Content,
-		})
-	}
+	targets := getCheckTargets(page, resourcesData)
 
 	for _, target := range targets {
 		var matches yara.MatchRules
@@ -574,7 +575,7 @@ func GetHTMLChecks() []Check {
 			Call:        checkYaraRules,
 			Score:       50,
 			Name:        "yara-rule",
-			Description: "The page was detected as a known phishing kit",
+			Description: "The page or a loaded resource matched a Yara rule",
 		},
 	}
 }
