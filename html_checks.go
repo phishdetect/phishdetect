@@ -259,7 +259,7 @@ func checkDecrypt(link *Link, page *Page, resourcesData ResourcesData, brands *B
 				return true, map[string]string{
 					"entity": target.Type,
 					"identifier": target.Identifier,
-					"match": expr,
+					"matched_regexp": expr,
 				}
 			}
 		}
@@ -285,7 +285,7 @@ func checkDocumentWrite(link *Link, page *Page, resourcesData ResourcesData, bra
 				return true, map[string]string{
 					"entity": target.Type,
 					"identifier": target.Identifier,
-					"match": expr,
+					"matched_regexp": expr,
 				}
 			}
 		}
