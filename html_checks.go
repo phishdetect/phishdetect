@@ -34,12 +34,14 @@ func getCheckTargets(page *Page, browser *Browser) []CheckTarget {
 		Identifier: page.SHA256,
 		Content:    page.HTML,
 	})
-	for _, resource := range browser.ResourcesData {
-		targets = append(targets, CheckTarget{
-			Type:       "resource",
-			Identifier: resource.SHA256,
-			Content:    resource.Content,
-		})
+	if browser != nil {
+		for _, resource := range browser.ResourcesData {
+			targets = append(targets, CheckTarget{
+				Type:       "resource",
+				Identifier: resource.SHA256,
+				Content:    resource.Content,
+			})
+		}
 	}
 	return targets
 }
