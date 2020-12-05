@@ -25,22 +25,16 @@ import (
 	"github.com/mozillazg/go-unidecode"
 )
 
-type CheckTarget struct {
-	Type       string
-	Identifier string
-	Content    string
-}
-
 // getCheckTargets is used to build a collection of check targets for those
 // checks that require scanning the DOM HTML and downloaded resources.
-func getCheckTargets(page *Page, resourcesData ResourcesData) []CheckTarget {
+func getCheckTargets(page *Page, browser *Browser) []CheckTarget {
 	var targets []CheckTarget
 	targets = append(targets, CheckTarget{
 		Type:       "html",
 		Identifier: page.SHA256,
 		Content:    page.HTML,
 	})
-	for _, resource := range resourcesData {
+	for _, resource := range browser.ResourcesData {
 		targets = append(targets, CheckTarget{
 			Type:       "resource",
 			Identifier: resource.SHA256,
@@ -52,7 +46,7 @@ func getCheckTargets(page *Page, resourcesData ResourcesData) []CheckTarget {
 
 // checkSuspiciousTitle determines if the page title contains any references
 // to any brand's name.
-func checkSuspiciousTitle(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkSuspiciousTitle(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	title := page.GetTitle()
 	if strings.TrimSpace(title) == "" {
 		return false, nil
@@ -65,8 +59,12 @@ func checkSuspiciousTitle(link *Link, page *Page, resourcesData ResourcesData, b
 		if regex.MatchString(title) {
 			// Having the brand name in the title is a stronger indication.
 			brand.Matches += 3
-			return true, map[string]string{
-				"title": title,
+			return true, CheckResults{
+				Entity:     "html",
+				Identifier: page.SHA256,
+				Matches: map[string]string{
+					"title": title,
+				},
 			}
 		}
 	}
@@ -76,7 +74,7 @@ func checkSuspiciousTitle(link *Link, page *Page, resourcesData ResourcesData, b
 
 // checkEscapedText determines if the page contains any HTML escaped versions
 // of any brand's name.
-func checkEscapedText(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkEscapedText(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	// For each brand ...
 	for _, brand := range brands.List {
 		// ... we check whether there are HTML escaped versions of the
@@ -98,7 +96,13 @@ func checkEscapedText(link *Link, page *Page, resourcesData ResourcesData, brand
 
 				if TextContains(page.HTML, escaped) {
 					brand.Matches++
-					return true, nil
+					return true, CheckResults{
+						Entity:     "html",
+						Identifier: page.SHA256,
+						Matches: map[string]string{
+							"escaped": escaped,
+						},
+					}
 				}
 
 				// Then we try an hexadecimal escape.
@@ -110,7 +114,13 @@ func checkEscapedText(link *Link, page *Page, resourcesData ResourcesData, brand
 
 				if TextContains(page.HTML, escapedHex) {
 					brand.Matches++
-					return true, nil
+					return true, CheckResults{
+						Entity:     "html",
+						Identifier: page.SHA256,
+						Matches: map[string]string{
+							"escaped": escapedHex,
+						},
+					}
 				}
 			}
 		}
@@ -121,7 +131,7 @@ func checkEscapedText(link *Link, page *Page, resourcesData ResourcesData, brand
 
 // checkEncodedText determines if the page contains any Unicode encoded
 // versions of any brand's name.
-func checkEncodedText(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkEncodedText(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	for _, brand := range brands.List {
 		for _, keyword := range brand.Original {
 			// First we check if the keyword already is found in "clear".
@@ -144,7 +154,7 @@ func checkEncodedText(link *Link, page *Page, resourcesData ResourcesData, brand
 // checkBrandOriginal just checks if the page contains any brand's name.
 // This is mostly used for brand identification, so we give it a score of 0.
 // This check doesn't influence classification.
-func checkBrandOriginal(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkBrandOriginal(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	for _, brand := range brands.List {
 		for _, keyword := range brand.Original {
 			if TextContains(page.Text, keyword) {
@@ -159,7 +169,7 @@ func checkBrandOriginal(link *Link, page *Page, resourcesData ResourcesData, bra
 
 // checkSuspiciousText determines if the page contains any common strings
 // used in phishing pages.
-func checkSuspiciousText(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkSuspiciousText(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	// TODO: Need to move these in brands.
 	patterns := []string{
 		"continue to Google Drive",
@@ -208,7 +218,7 @@ func checkSuspiciousText(link *Link, page *Page, resourcesData ResourcesData, br
 
 // checkTwoFactor checks for the presence of strings potentially indicating
 // phishing for 2FA tokens.
-func checkTwoFactor(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkTwoFactor(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	patterns := []string{
 		"2-Step Verification",
 		"verification code was just sent to your number",
@@ -225,7 +235,7 @@ func checkTwoFactor(link *Link, page *Page, resourcesData ResourcesData, brands 
 
 // checkPasswordInput just determines if the page contains a password
 // form input.
-func checkPasswordInput(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkPasswordInput(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	inputs := page.GetInputs("password")
 	if len(inputs) > 0 {
 		return true, nil
@@ -234,7 +244,7 @@ func checkPasswordInput(link *Link, page *Page, resourcesData ResourcesData, bra
 }
 
 // checkHiddenInput just determines if the page contains a hidden form input.
-func checkHiddenInput(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkHiddenInput(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	inputs := page.GetInputs("hidden")
 	if len(inputs) > 0 {
 		return true, nil
@@ -244,22 +254,22 @@ func checkHiddenInput(link *Link, page *Page, resourcesData ResourcesData, brand
 
 // checkDecrypt determines if the page contains what appear to be JavaScript
 // decryption routines.
-func checkDecrypt(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkDecrypt(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	exprs := []string{
 		"(?i)aes\\.ctr\\.decrypt\\(",
 		"(?i)cryptojs\\.aes\\.decrypt\\(",
 	}
 
-	targets := getCheckTargets(page, resourcesData)
+	targets := getCheckTargets(page, browser)
 	for _, expr := range exprs {
 		regex, _ := regexp.Compile(expr)
 
 		for _, target := range targets {
 			if regex.MatchString(target.Content) {
-				return true, map[string]string{
-					"entity": target.Type,
-					"identifier": target.Identifier,
-					"matched_regexp": expr,
+				return true, CheckResults{
+					Entity:     target.Type,
+					Identifier: target.Identifier,
+					Matches:    expr,
 				}
 			}
 		}
@@ -271,21 +281,21 @@ func checkDecrypt(link *Link, page *Page, resourcesData ResourcesData, brands *B
 // checkDocumentWrite determines whether the page is being built dynamically
 // using document.write() JavaScript function (which is rather atypical for
 // legitimate modern web tech).
-func checkDocumentWrite(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkDocumentWrite(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	exprs := []string{
 		"(?i)document\\.write\\(",
 	}
 
-	targets := getCheckTargets(page, resourcesData)
+	targets := getCheckTargets(page, browser)
 	for _, expr := range exprs {
 		regex, _ := regexp.Compile(expr)
 
 		for _, target := range targets {
 			if regex.MatchString(target.Content) {
-				return true, map[string]string{
-					"entity": target.Type,
-					"identifier": target.Identifier,
-					"matched_regexp": expr,
+				return true, CheckResults{
+					Entity:     target.Type,
+					Identifier: target.Identifier,
+					Matches:    expr,
 				}
 			}
 		}
@@ -296,7 +306,7 @@ func checkDocumentWrite(link *Link, page *Page, resourcesData ResourcesData, bra
 
 // checkNoIndexRobots determines if the page has any meta tags to disable
 // archiving and indexing by search engines.
-func checkNoIndexRobots(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkNoIndexRobots(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	robots := []string{
 		"noarchive",
 		"noindex",
@@ -331,7 +341,7 @@ func checkNoIndexRobots(link *Link, page *Page, resourcesData ResourcesData, bra
 // checkSigninData determines if the page contains HTML data attributes,
 // which might indicate that the page (if not legitimate) was mirrored from
 // e.g. Google's login page.
-func checkSigninData(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkSigninData(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	dataStrings := []string{
 		"data-initial-sign-in-data",
 		"data-initial-setup-data",
@@ -348,7 +358,7 @@ func checkSigninData(link *Link, page *Page, resourcesData ResourcesData, brands
 
 // checkPHPFormAction just determines if the page contains a form pointing
 // to a PHP page.
-func checkPHPFormAction(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkPHPFormAction(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	forms := page.GetEntities("form")
 	for _, form := range forms {
 		attrs := form.Attrs()
@@ -358,8 +368,12 @@ func checkPHPFormAction(link *Link, page *Page, resourcesData ResourcesData, bra
 
 		action := strings.Split(strings.ToLower(attrs["action"]), "?")[0]
 		if strings.HasSuffix(action, ".php") {
-			return true, map[string]string{
-				"form_action": action,
+			return true, CheckResults{
+				Entity:     "html",
+				Identifier: page.SHA256,
+				Matches: map[string]string{
+					"form_action": action,
+				},
 			}
 		}
 	}
@@ -369,7 +383,7 @@ func checkPHPFormAction(link *Link, page *Page, resourcesData ResourcesData, bra
 
 // checkIFrameWithPHP just determines if the page contains an iframe loading
 // a PHP script.
-func checkIFrameWithPHP(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkIFrameWithPHP(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	iframes := page.GetEntities("iframe")
 	for _, iframe := range iframes {
 		attrs := iframe.Attrs()
@@ -379,8 +393,12 @@ func checkIFrameWithPHP(link *Link, page *Page, resourcesData ResourcesData, bra
 
 		src := strings.Split(strings.ToLower(attrs["src"]), "?")[0]
 		if strings.HasSuffix(src, ".php") {
-			return true, map[string]string{
-				"iframe_src": src,
+			return true, CheckResults{
+				Entity:     "html",
+				Identifier: page.SHA256,
+				Matches: map[string]string{
+					"iframe_src": src,
+				},
 			}
 		}
 	}
@@ -390,7 +408,7 @@ func checkIFrameWithPHP(link *Link, page *Page, resourcesData ResourcesData, bra
 
 // checkMultiAuth determines if the page is attempting to phish for
 // multiple email services at once.
-func checkMultiAuth(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkMultiAuth(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	// TODO: Hacky, replace with regexps.
 	patterns := []string{
 		"Sign in with Google",
@@ -415,26 +433,30 @@ func checkMultiAuth(link *Link, page *Page, resourcesData ResourcesData, brands 
 		"Login with other mail",
 	}
 
-	counter := 0
+	matches := []string{}
 	for _, pattern := range patterns {
 		if TextContains(page.Text, pattern) {
-			counter++
+			matches = append(matches, pattern)
 		}
 	}
 
-	if counter >= 3 {
-		return true, nil
+	if len(matches) >= 3 {
+		return true, CheckResults{
+			Entity:     "html",
+			Identifier: page.SHA256,
+			Matches:    matches,
+		}
 	}
 
 	return false, nil
 }
 
-func checkYaraRules(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkYaraRules(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	if YaraRules == nil {
 		return false, nil
 	}
 
-	targets := getCheckTargets(page, resourcesData)
+	targets := getCheckTargets(page, browser)
 
 	for _, target := range targets {
 		var matches yara.MatchRules
@@ -468,10 +490,10 @@ func checkYaraRules(link *Link, page *Page, resourcesData ResourcesData, brands 
 			}
 		}
 
-		return true, map[string]interface{}{
-			"entity":     target.Type,
-			"identifier": target.Identifier,
-			"matches":    matches,
+		return true, CheckResults{
+			Entity:     target.Type,
+			Identifier: target.Identifier,
+			Matches:    matches,
 		}
 	}
 

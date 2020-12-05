@@ -62,7 +62,7 @@ func (a *Analysis) analyzeDomainOrURL(checks []Check) error {
 	}
 	for _, check := range checks {
 		log.Debug("Running domain check ", check.Name, " ...")
-		matched, matches := check.Call(link, nil, ResourcesData{}, a.Brands)
+		matched, matches := check.Call(link, nil, nil, a.Brands)
 		if matched {
 			log.Debug("Matched ", check.Name)
 			a.Score += check.Score
@@ -95,7 +95,7 @@ func (a *Analysis) AnalyzeURL() error {
 	return a.analyzeDomainOrURL(GetURLChecks())
 }
 
-func (a *Analysis) analyzeHTML(resourcesData ResourcesData) error {
+func (a *Analysis) analyzeHTML(browser *Browser) error {
 	log.Debug("Starting to analyze HTML...")
 
 	link, err := NewLink(a.FinalURL)
@@ -109,7 +109,7 @@ func (a *Analysis) analyzeHTML(resourcesData ResourcesData) error {
 
 	for _, check := range GetHTMLChecks() {
 		log.Debug("Running HTML check ", check.Name, " ...")
-		matched, matches := check.Call(link, page, resourcesData, a.Brands)
+		matched, matches := check.Call(link, page, browser, a.Brands)
 		if matched {
 			log.Debug("Matched ", check.Name)
 			a.Score += check.Score
@@ -127,11 +127,11 @@ func (a *Analysis) analyzeHTML(resourcesData ResourcesData) error {
 
 // AnalyzeHTML performs all the available checks to be run on an HTML string.
 func (a *Analysis) AnalyzeHTML() error {
-	return a.analyzeHTML(ResourcesData{})
+	return a.analyzeHTML(nil)
 }
 
 // AnalyzeBrowserResults performs all the available checks to be run on an HTML string
 // as well as the provided list of HTTP requests (e.g. downloaded scripts).
-func (a *Analysis) AnalyzeBrowserResults(resourcesData ResourcesData) error {
-	return a.analyzeHTML(resourcesData)
+func (a *Analysis) AnalyzeBrowserResults(browser *Browser) error {
+	return a.analyzeHTML(browser)
 }

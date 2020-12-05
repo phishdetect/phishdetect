@@ -17,7 +17,7 @@
 package phishdetect
 
 // CheckFunction defines the functions used to implement URL or HTML checks.
-type CheckFunction func(*Link, *Page, ResourcesData, *Brands) (bool, interface{})
+type CheckFunction func(*Link, *Page, *Browser, *Brands) (bool, interface{})
 
 // Check defines the general proprties of a CheckFunction.
 type Check struct {
@@ -25,4 +25,16 @@ type Check struct {
 	Score       int
 	Name        string
 	Description string
+}
+
+type CheckTarget struct {
+	Type       string
+	Identifier string
+	Content    string
+}
+
+type CheckResults struct {
+	Entity     string      `json:"entity"`
+	Identifier string      `json:"identifier"`
+	Matches    interface{} `json:"matches"`
 }

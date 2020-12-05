@@ -29,7 +29,7 @@ import (
 // SafeBrowsingKey contains the API key to use Google SafeBrowsing API.
 var SafeBrowsingKey string
 
-func checkSuspiciousHostname(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkSuspiciousHostname(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	lowSuspects := []string{
 		"auth",
 		"authorise",
@@ -157,7 +157,7 @@ func checkSuspiciousHostname(link *Link, page *Page, resourcesData ResourcesData
 	return false, nil
 }
 
-func checkSuspiciousTLD(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkSuspiciousTLD(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	suspects := []string{
 		".bank",
 		".biz",
@@ -208,7 +208,7 @@ func checkSuspiciousTLD(link *Link, page *Page, resourcesData ResourcesData, bra
 	return false, nil
 }
 
-func checkSuspiciousBridges(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkSuspiciousBridges(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	// ".www." causes too many false positives.
 	suspects := []string{".com-", ".org-"}
 
@@ -221,7 +221,7 @@ func checkSuspiciousBridges(link *Link, page *Page, resourcesData ResourcesData,
 	return false, nil
 }
 
-func checkEncodedDomain(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkEncodedDomain(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	if !strings.Contains(link.Domain, "xn--") {
 		return false, nil
 	}
@@ -242,7 +242,7 @@ func checkEncodedDomain(link *Link, page *Page, resourcesData ResourcesData, bra
 	return false, nil
 }
 
-func checkExcessivePunct(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkExcessivePunct(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	regex, _ := regexp.Compile("\\.")
 	dots := regex.FindAllString(link.Domain, -1)
 	dotsCount := len(dots)
@@ -262,7 +262,7 @@ func checkExcessivePunct(link *Link, page *Page, resourcesData ResourcesData, br
 	return false, nil
 }
 
-func checkNoTLS(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkNoTLS(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	if strings.HasPrefix(link.Scheme, "http") {
 		if link.Scheme != "https" {
 			return true, nil
@@ -272,7 +272,7 @@ func checkNoTLS(link *Link, page *Page, resourcesData ResourcesData, brands *Bra
 	return false, nil
 }
 
-func checkB64Parameters(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkB64Parameters(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	for _, value := range link.Parameters {
 		// We skip strings that are too short, because they could significantly
 		// raise false positives.
@@ -288,7 +288,7 @@ func checkB64Parameters(link *Link, page *Page, resourcesData ResourcesData, bra
 	return false, nil
 }
 
-func checkGoogleSafeBrowsing(link *Link, page *Page, resourcesData ResourcesData, brands *Brands) (bool, interface{}) {
+func checkGoogleSafeBrowsing(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	if SafeBrowsingKey == "" {
 		return false, nil
 	}
