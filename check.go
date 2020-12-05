@@ -27,12 +27,16 @@ type Check struct {
 	Description string
 }
 
+// CheckTarget is used to construct a list of targets for some checks.
+// Primarily used for code deduplication.
 type CheckTarget struct {
 	Type       string
 	Identifier string
 	Content    string
 }
 
+// CheckResults contains information about check results and relevant
+// matches.
 type CheckResults struct {
 	Entity     string      `json:"entity"`
 	Identifier string      `json:"identifier"`

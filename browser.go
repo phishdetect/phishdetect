@@ -99,6 +99,7 @@ type Dialog struct {
 	Message string `json:"message"`
 }
 
+// NavigationHistory is a list of NavigationEntry from DevTools.
 type NavigationHistory []page.NavigationEntry
 
 // Browser is a struct containing details over a browser navigation to a URL.
