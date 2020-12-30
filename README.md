@@ -187,17 +187,9 @@ This needs to be done only once (perhaps in your program's `init()` function). A
 
 Firstly, make sure you have Go 1.11+ installed. We require Go 1.11 or later versions because of the native support for Go Modules, which we use to manage dependencies. If it isn't available for your operating system of choice, we recommend trying [gvm](https://github.com/moovweb/gvm).
 
-Now you can either install PhishDetect's command-line interface by simply launching:
-
-    go get github.com/phishdetect/phishdetect/cli
-
 Or build the binary from the source code. In order to do so, proceed cloning the Git repository:
 
     $ git clone github.com/phishdetect/phishdetect.git
-
-Move to directory you just cloned and proceed with downloading the depedencies:
-
-    $ make deps
 
 In order to build binaries for GNU/Linux:
 
