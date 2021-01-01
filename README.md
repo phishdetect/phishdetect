@@ -1,6 +1,6 @@
 [![Build Status](https://api.travis-ci.org/phishdetect/phishdetect.png?branch=master)](https://travis-ci.org/phishdetect/phishdetect)
-[![Go Report Card][goreportcard-badge]][goreportcard]
-[![GoDoc][godoc-badge]][godoc]
+[![Go Report Card](https://goreportcard.com/badge/github.com/phishdetect/phishdetect)](https://goreportcard.com/report/github.com/phishdetect/phishdetect)
+[![Go Reference](https://pkg.go.dev/badge/github.com/phishdetect/phishdetect.svg)](https://pkg.go.dev/github.com/phishdetect/phishdetect)
 
 # PhishDetect
 
@@ -246,9 +246,3 @@ Specify a URL and the preferred options and wait for the results to appear:
 ## License
 
 PhishDetect is released under GNU Affero General Public License 3.0 and is copyrighted to Claudio Guarnieri.
-
-
-[goreportcard]: https://goreportcard.com/report/github.com/phishdetect/phishdetect
-[goreportcard-badge]: https://goreportcard.com/badge/github.com/phishdetect/phishdetect
-[godoc]: https://godoc.org/github.com/phishdetect/phishdetect
-[godoc-badge]: https://godoc.org/phishdetect/phishdetect?status.svg
