@@ -1,5 +1,5 @@
 // PhishDetect
-// Copyright (c) 2018-2020 Claudio Guarnieri.
+// Copyright (c) 2018-2021 Claudio Guarnieri.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -30,6 +30,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/botherder/go-savetime/hashes"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -254,7 +255,7 @@ func (b *Browser) startContainer() error {
 
 	ctx := context.Background()
 
-	resp, err := cli.ContainerCreate(ctx, config, hostConfig, nil, "")
+	resp, err := cli.ContainerCreate(ctx, config, hostConfig, nil, nil, "")
 	if err != nil {
 		return fmt.Errorf("Unable to create container: %s", err)
 	}
@@ -312,7 +313,7 @@ func (b *Browser) getHTML() error {
 		return fmt.Errorf("Unable to retrieve HTML from DOM: %s", err)
 	}
 	b.HTML = result.OuterHTML
-	b.HTMLSHA256 = GetSHA256Hash(b.HTML)
+	b.HTMLSHA256, _ = hashes.StringSHA256(b.HTML)
 	return nil
 }
 
@@ -613,7 +614,7 @@ func (b *Browser) Run() error {
 						}
 						if resp.Body != "" {
 							newResource.Content = resp.Body
-							newResource.SHA256 = GetSHA256Hash(newResource.Content)
+							newResource.SHA256, _ = hashes.StringSHA256(newResource.Content)
 						}
 
 						b.ResourcesData = append(b.ResourcesData, newResource)

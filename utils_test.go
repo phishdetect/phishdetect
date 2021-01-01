@@ -1,5 +1,5 @@
 // PhishDetect
-// Copyright (c) 2018-2020 Claudio Guarnieri.
+// Copyright (c) 2018-2021 Claudio Guarnieri.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -20,34 +20,6 @@ import (
 	"testing"
 )
 
-func TestTextContains(t *testing.T) {
-	text := "This is A TEXT example"
-
-	if !TextContains(text, "a text") {
-		t.Errorf("Search for correct pattern failed, got false expected true")
-	}
-
-	if TextContains(text, "wrong") {
-		t.Errorf("Search for incorrect pattern failed, got true expected false")
-	}
-}
-
-func TestSliceContains(t *testing.T) {
-	slice := []string{
-		"first",
-		"second",
-		"third",
-	}
-
-	if !SliceContains(slice, "first") {
-		t.Errorf("Search for correct slice element failed, got false expected true")
-	}
-
-	if SliceContains(slice, "wrong") {
-		t.Errorf("Search for incorrect slice element failed, got true expected false")
-	}
-}
-
 func TestNormalizeURL(t *testing.T) {
 	url := "example.com"
 	normalized := NormalizeURL(url)
@@ -61,11 +33,5 @@ func TestNormalizeURL(t *testing.T) {
 
 	if normalized != url {
 		t.Errorf("Normalizing correct URL failed, expected \"%s\" got \"%s\"", url, normalized)
-	}
-}
-
-func TestGetSHA256Hash(t *testing.T) {
-	if GetSHA256Hash("phishdetect") != "02340d4cf82168b7f82cb686822835e72ee882ac3a3dc9855e4a25b59681f818" {
-		t.Errorf("GetSHA256Hash is not returning the correct hash for the provided string")
 	}
 }

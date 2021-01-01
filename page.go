@@ -1,5 +1,5 @@
 // PhishDetect
-// Copyright (c) 2018-2020 Claudio Guarnieri.
+// Copyright (c) 2018-2021 Claudio Guarnieri.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +21,7 @@ import (
 	"strings"
 
 	"github.com/anaskhan96/soup"
+	"github.com/botherder/go-savetime/hashes"
 	"jaytaylor.com/html2text"
 )
 
@@ -42,10 +43,11 @@ func NewPage(html string) (*Page, error) {
 	text, _ := html2text.FromString(html, html2text.Options{
 		PrettyTables: false,
 	})
+	htmlHash, _ := hashes.StringSHA256(html)
 
 	return &Page{
 		HTML:   html,
-		SHA256: GetSHA256Hash(html),
+		SHA256: htmlHash,
 		Soup:   soup,
 		Text:   text,
 	}, nil

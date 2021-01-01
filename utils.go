@@ -1,5 +1,5 @@
 // PhishDetect
-// Copyright (c) 2018-2020 Claudio Guarnieri.
+// Copyright (c) 2018-2021 Claudio Guarnieri.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -17,38 +17,10 @@
 package phishdetect
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"strings"
 
 	"github.com/goware/urlx"
 )
-
-// TextContains will determine if a substring is present in a string.
-// It is case-insensitive.
-func TextContains(text, pattern string) bool {
-	pattern = strings.ToLower(pattern)
-	lines := strings.Split(text, "\n")
-	for _, line := range lines {
-		line = strings.ToLower(line)
-		if strings.Contains(line, pattern) {
-			return true
-		}
-	}
-
-	return false
-}
-
-// SliceContains checks whether a string is contained in a slice of strings.
-func SliceContains(slice []string, item string) bool {
-	for _, entry := range slice {
-		if strings.ToLower(item) == strings.ToLower(entry) {
-			return true
-		}
-	}
-
-	return false
-}
 
 // NormalizeURL fixes a URL that is e.g. missing a scheme, etc.
 func NormalizeURL(url string) string {
@@ -61,11 +33,4 @@ func NormalizeURL(url string) string {
 	}
 
 	return normalized
-}
-
-// GetSHA256Hash retrieves a SHA256 hash of a string.
-func GetSHA256Hash(text string) string {
-	hasher := sha256.New()
-	hasher.Write([]byte(text))
-	return hex.EncodeToString(hasher.Sum(nil))
 }

@@ -1,5 +1,5 @@
 // PhishDetect
-// Copyright (c) 2018-2020 Claudio Guarnieri.
+// Copyright (c) 2018-2021 Claudio Guarnieri.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +21,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/botherder/go-savetime/text"
 	"github.com/hillu/go-yara/v4"
 	"github.com/mozillazg/go-unidecode"
 )
@@ -96,7 +97,7 @@ func checkEscapedText(link *Link, page *Page, browser *Browser, brands *Brands) 
 				}
 				escaped := strings.Join(entities, "")
 
-				if TextContains(page.HTML, escaped) {
+				if text.TextContains(page.HTML, escaped) {
 					brand.Matches++
 					return true, CheckResults{
 						Entity:     "html",
@@ -114,7 +115,7 @@ func checkEscapedText(link *Link, page *Page, browser *Browser, brands *Brands) 
 				}
 				escapedHex := strings.Join(entitiesHex, "")
 
-				if TextContains(page.HTML, escapedHex) {
+				if text.TextContains(page.HTML, escapedHex) {
 					brand.Matches++
 					return true, CheckResults{
 						Entity:     "html",
@@ -138,12 +139,12 @@ func checkEncodedText(link *Link, page *Page, browser *Browser, brands *Brands) 
 		for _, keyword := range brand.Original {
 			// First we check if the keyword already is found in "clear".
 			// If so, we have to skip it.
-			if TextContains(page.Text, keyword) {
+			if text.TextContains(page.Text, keyword) {
 				continue
 			}
 
 			decoded := unidecode.Unidecode(page.Text)
-			if TextContains(decoded, keyword) {
+			if text.TextContains(decoded, keyword) {
 				brand.Matches++
 				return true, nil
 			}
@@ -159,7 +160,7 @@ func checkEncodedText(link *Link, page *Page, browser *Browser, brands *Brands) 
 func checkBrandOriginal(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	for _, brand := range brands.List {
 		for _, keyword := range brand.Original {
-			if TextContains(page.Text, keyword) {
+			if text.TextContains(page.Text, keyword) {
 				brand.Matches++
 				return true, nil
 			}
@@ -206,11 +207,11 @@ func checkSuspiciousText(link *Link, page *Page, browser *Browser, brands *Brand
 	}
 
 	for _, pattern := range patterns {
-		if TextContains(page.Text, pattern) {
+		if text.TextContains(page.Text, pattern) {
 			return true, nil
 		}
 
-		if TextContains(page.HTML, pattern) {
+		if text.TextContains(page.HTML, pattern) {
 			return true, nil
 		}
 	}
@@ -227,7 +228,7 @@ func checkTwoFactor(link *Link, page *Page, browser *Browser, brands *Brands) (b
 	}
 
 	for _, pattern := range patterns {
-		if TextContains(page.Text, pattern) {
+		if text.TextContains(page.Text, pattern) {
 			return true, nil
 		}
 	}
@@ -350,7 +351,7 @@ func checkSigninData(link *Link, page *Page, browser *Browser, brands *Brands) (
 		"data-app-config",
 	}
 	for _, data := range dataStrings {
-		if TextContains(page.HTML, data) {
+		if text.TextContains(page.HTML, data) {
 			return true, nil
 		}
 	}
@@ -437,7 +438,7 @@ func checkMultiAuth(link *Link, page *Page, browser *Browser, brands *Brands) (b
 
 	matches := []string{}
 	for _, pattern := range patterns {
-		if TextContains(page.Text, pattern) {
+		if text.TextContains(page.Text, pattern) {
 			matches = append(matches, pattern)
 		}
 	}

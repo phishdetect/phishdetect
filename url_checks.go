@@ -1,5 +1,5 @@
 // PhishDetect
-// Copyright (c) 2018-2020 Claudio Guarnieri.
+// Copyright (c) 2018-2021 Claudio Guarnieri.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -21,6 +21,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/botherder/go-savetime/slices"
 	"github.com/google/safebrowsing"
 	log "github.com/sirupsen/logrus"
 	"github.com/texttheater/golang-levenshtein/levenshtein"
@@ -84,7 +85,7 @@ func checkSuspiciousHostname(link *Link, page *Page, browser *Browser, brands *B
 		for _, brand := range brands.List {
 			// We check if a word in the domain is among any brand's
 			// list of suspicious words.
-			if SliceContains(brand.Suspicious, word) {
+			if slices.SliceContainsNoCase(brand.Suspicious, word) {
 				// A suspicious brand name in the domain should have more
 				// weight than anything.
 				brand.Matches += 10
@@ -111,7 +112,7 @@ func checkSuspiciousHostname(link *Link, page *Page, browser *Browser, brands *B
 					// distance of 1 could cause too many false positives.
 					// e.g. "icloud" => "cloud".
 					exclude := []string{"cloud"}
-					if SliceContains(exclude, word) {
+					if slices.SliceContainsNoCase(exclude, word) {
 						continue
 					}
 

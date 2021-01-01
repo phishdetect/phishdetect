@@ -1,5 +1,5 @@
 // PhishDetect
-// Copyright (c) 2018-2020 Claudio Guarnieri.
+// Copyright (c) 2018-2021 Claudio Guarnieri.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -18,6 +18,8 @@ package phishdetect
 
 import (
 	"testing"
+
+	"github.com/botherder/go-savetime/slices"
 )
 
 func TestBrandDetection(t *testing.T) {
@@ -94,7 +96,7 @@ func TestDomainWarnings(t *testing.T) {
 
 	counter := 0
 	for _, warning := range a.Warnings {
-		if SliceContains(expectedWarnings, warning.Name) {
+		if slices.SliceContains(expectedWarnings, warning.Name) {
 			counter++
 		}
 	}
@@ -132,7 +134,7 @@ func TestHTMLWarnings(t *testing.T) {
 
 	counter := 0
 	for _, warning := range a.Warnings {
-		if SliceContains(expectedWarnings, warning.Name) {
+		if slices.SliceContains(expectedWarnings, warning.Name) {
 			counter++
 		}
 	}
