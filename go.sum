@@ -14,6 +14,10 @@ github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89 h1:2pkAuIM8O
 github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89/go.mod h1:/09nEjna1UMoasyyQDhOrIn8hi2v2kiJglPWed1idck=
 github.com/botherder/go-savetime v0.0.0-20210101145310-2fa1aeb078f1 h1:9kpAF92SDShGlfhmyRXHJZ8v/upGBw0iNsKL93lh2hQ=
 github.com/botherder/go-savetime v0.0.0-20210101145310-2fa1aeb078f1/go.mod h1:w8rKlqwexRgSmekdFAZVfenmaZKhXBIew2tDvuox2sI=
+github.com/botherder/go-savetime v1.0.0 h1:opnIiQn6UoaH+M+qkRtWEbcV2XRX10fb8eSHLFO2txs=
+github.com/botherder/go-savetime v1.0.0/go.mod h1:w8rKlqwexRgSmekdFAZVfenmaZKhXBIew2tDvuox2sI=
+github.com/botherder/go-savetime v1.0.1 h1:pK+0nJBwKKcn3XtXoEzAZsiHKl/pe9YiaR5karL5QqA=
+github.com/botherder/go-savetime v1.0.1/go.mod h1:w8rKlqwexRgSmekdFAZVfenmaZKhXBIew2tDvuox2sI=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cncf/udpa/go v0.0.0-20200629203442-efcf912fb354/go.mod h1:WmhPx2Nbnhtbo57+VJT5O0JRkEi1Wbu0z5j0R8u5Hbk=

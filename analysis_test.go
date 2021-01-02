@@ -19,7 +19,7 @@ package phishdetect
 import (
 	"testing"
 
-	"github.com/botherder/go-savetime/slices"
+	"github.com/botherder/go-savetime/slice"
 )
 
 func TestBrandDetection(t *testing.T) {
@@ -96,7 +96,7 @@ func TestDomainWarnings(t *testing.T) {
 
 	counter := 0
 	for _, warning := range a.Warnings {
-		if slices.SliceContains(expectedWarnings, warning.Name) {
+		if slice.Contains(expectedWarnings, warning.Name) {
 			counter++
 		}
 	}
@@ -134,7 +134,7 @@ func TestHTMLWarnings(t *testing.T) {
 
 	counter := 0
 	for _, warning := range a.Warnings {
-		if slices.SliceContains(expectedWarnings, warning.Name) {
+		if slice.Contains(expectedWarnings, warning.Name) {
 			counter++
 		}
 	}

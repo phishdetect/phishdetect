@@ -97,7 +97,7 @@ func checkEscapedText(link *Link, page *Page, browser *Browser, brands *Brands) 
 				}
 				escaped := strings.Join(entities, "")
 
-				if text.TextContains(page.HTML, escaped) {
+				if text.Contains(page.HTML, escaped) {
 					brand.Matches++
 					return true, CheckResults{
 						Entity:     "html",
@@ -115,7 +115,7 @@ func checkEscapedText(link *Link, page *Page, browser *Browser, brands *Brands) 
 				}
 				escapedHex := strings.Join(entitiesHex, "")
 
-				if text.TextContains(page.HTML, escapedHex) {
+				if text.Contains(page.HTML, escapedHex) {
 					brand.Matches++
 					return true, CheckResults{
 						Entity:     "html",
@@ -139,12 +139,12 @@ func checkEncodedText(link *Link, page *Page, browser *Browser, brands *Brands) 
 		for _, keyword := range brand.Original {
 			// First we check if the keyword already is found in "clear".
 			// If so, we have to skip it.
-			if text.TextContains(page.Text, keyword) {
+			if text.Contains(page.Text, keyword) {
 				continue
 			}
 
 			decoded := unidecode.Unidecode(page.Text)
-			if text.TextContains(decoded, keyword) {
+			if text.Contains(decoded, keyword) {
 				brand.Matches++
 				return true, nil
 			}
@@ -160,7 +160,7 @@ func checkEncodedText(link *Link, page *Page, browser *Browser, brands *Brands) 
 func checkBrandOriginal(link *Link, page *Page, browser *Browser, brands *Brands) (bool, interface{}) {
 	for _, brand := range brands.List {
 		for _, keyword := range brand.Original {
-			if text.TextContains(page.Text, keyword) {
+			if text.Contains(page.Text, keyword) {
 				brand.Matches++
 				return true, nil
 			}
@@ -207,11 +207,11 @@ func checkSuspiciousText(link *Link, page *Page, browser *Browser, brands *Brand
 	}
 
 	for _, pattern := range patterns {
-		if text.TextContains(page.Text, pattern) {
+		if text.Contains(page.Text, pattern) {
 			return true, nil
 		}
 
-		if text.TextContains(page.HTML, pattern) {
+		if text.Contains(page.HTML, pattern) {
 			return true, nil
 		}
 	}
@@ -228,7 +228,7 @@ func checkTwoFactor(link *Link, page *Page, browser *Browser, brands *Brands) (b
 	}
 
 	for _, pattern := range patterns {
-		if text.TextContains(page.Text, pattern) {
+		if text.Contains(page.Text, pattern) {
 			return true, nil
 		}
 	}
@@ -351,7 +351,7 @@ func checkSigninData(link *Link, page *Page, browser *Browser, brands *Brands) (
 		"data-app-config",
 	}
 	for _, data := range dataStrings {
-		if text.TextContains(page.HTML, data) {
+		if text.Contains(page.HTML, data) {
 			return true, nil
 		}
 	}
@@ -438,7 +438,7 @@ func checkMultiAuth(link *Link, page *Page, browser *Browser, brands *Brands) (b
 
 	matches := []string{}
 	for _, pattern := range patterns {
-		if text.TextContains(page.Text, pattern) {
+		if text.Contains(page.Text, pattern) {
 			matches = append(matches, pattern)
 		}
 	}

@@ -6,7 +6,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.16 // indirect
 	github.com/anaskhan96/soup v1.2.4
 	github.com/bobesa/go-domain-util v0.0.0-20190911083921-4033b5f7dd89
-	github.com/botherder/go-savetime v0.0.0-20210101145310-2fa1aeb078f1
+	github.com/botherder/go-savetime v1.0.1
 	github.com/containerd/containerd v1.4.3 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v20.10.1+incompatible

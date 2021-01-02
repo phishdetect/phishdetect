@@ -21,7 +21,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/botherder/go-savetime/slices"
+	"github.com/botherder/go-savetime/slice"
 	"github.com/google/safebrowsing"
 	log "github.com/sirupsen/logrus"
 	"github.com/texttheater/golang-levenshtein/levenshtein"
@@ -85,7 +85,7 @@ func checkSuspiciousHostname(link *Link, page *Page, browser *Browser, brands *B
 		for _, brand := range brands.List {
 			// We check if a word in the domain is among any brand's
 			// list of suspicious words.
-			if slices.SliceContainsNoCase(brand.Suspicious, word) {
+			if slice.ContainsNoCase(brand.Suspicious, word) {
 				// A suspicious brand name in the domain should have more
 				// weight than anything.
 				brand.Matches += 10
@@ -112,7 +112,7 @@ func checkSuspiciousHostname(link *Link, page *Page, browser *Browser, brands *B
 					// distance of 1 could cause too many false positives.
 					// e.g. "icloud" => "cloud".
 					exclude := []string{"cloud"}
-					if slices.SliceContainsNoCase(exclude, word) {
+					if slice.ContainsNoCase(exclude, word) {
 						continue
 					}
 
