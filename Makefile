@@ -13,10 +13,10 @@ deps:
 	@echo "[deps] Done!"
 
 linux: deps
-	@mkdir -p $(BUILD_FOLDER)/linux
+	@mkdir -p $(BUILD_FOLDER)
 
-	@echo "[builder] Building Linux CLI executable"
-	@cd cmd/phishdetect; $(FLAGS_LINUX) go build -o $(BUILD_FOLDER)/phishdetect-cli
+	@echo "[builder] Building Linux command-line executable"
+	@cd cmd/phishdetect; $(FLAGS_LINUX) go build -o $(BUILD_FOLDER)/phishdetect
 
 	@echo "[builder] Done!"
 
