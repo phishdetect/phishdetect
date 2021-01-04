@@ -19,6 +19,11 @@ package phishdetect
 import (
 	"errors"
 
+	"github.com/phishdetect/phishdetect/brands"
+	"github.com/phishdetect/phishdetect/browser"
+	"github.com/phishdetect/phishdetect/checks"
+	"github.com/phishdetect/phishdetect/link"
+	"github.com/phishdetect/phishdetect/page"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -32,31 +37,31 @@ type Warning struct {
 
 // Analysis contains information on the outcome of the URL and/or HTML analysis.
 type Analysis struct {
-	URL        string    `json:"url"`
-	FinalURL   string    `json:"final_url"`
-	HTML       string    `json:"html"`
-	Warnings   []Warning `json:"warnings"`
-	Score      int       `json:"score"`
-	Safelisted bool      `json:"safelisted"`
-	Dangerous  bool      `json:"dangerous"`
-	Brands     *Brands   `json:"brands"`
+	URL        string         `json:"url"`
+	FinalURL   string         `json:"final_url"`
+	HTML       string         `json:"html"`
+	Warnings   []Warning      `json:"warnings"`
+	Score      int            `json:"score"`
+	Safelisted bool           `json:"safelisted"`
+	Dangerous  bool           `json:"dangerous"`
+	Brands     *brands.Brands `json:"brands"`
 }
 
 // NewAnalysis instantiates a new Analysis struct.
 func NewAnalysis(url, html string) *Analysis {
-	brands := NewBrands()
+	brandsList := brands.New()
 	return &Analysis{
 		URL:      url,
 		FinalURL: url,
 		HTML:     html,
-		Brands:   brands,
+		Brands:   brandsList,
 	}
 }
 
-func (a *Analysis) analyzeDomainOrURL(checks []Check) error {
+func (a *Analysis) analyzeDomainOrURL(checks []checks.Check) error {
 	log.Debug("Starting to analyze the URL...")
 
-	link, err := NewLink(a.FinalURL)
+	link, err := link.New(a.FinalURL)
 	if err != nil {
 		return errors.New("An error occurred parsing the domain, it might be invalid")
 	}
@@ -87,27 +92,27 @@ func (a *Analysis) analyzeDomainOrURL(checks []Check) error {
 
 // AnalyzeDomain performs all the available checks to be run on a URL or domain.
 func (a *Analysis) AnalyzeDomain() error {
-	return a.analyzeDomainOrURL(GetDomainChecks())
+	return a.analyzeDomainOrURL(checks.GetDomainChecks())
 }
 
 // AnalyzeURL performs all the available checks to be run on a URL or domain.
 func (a *Analysis) AnalyzeURL() error {
-	return a.analyzeDomainOrURL(GetURLChecks())
+	return a.analyzeDomainOrURL(checks.GetURLChecks())
 }
 
-func (a *Analysis) analyzeHTML(browser *Browser) error {
+func (a *Analysis) analyzeHTML(browser *browser.Browser) error {
 	log.Debug("Starting to analyze HTML...")
 
-	link, err := NewLink(a.FinalURL)
+	link, err := link.New(a.FinalURL)
 	if err != nil {
 		return errors.New("An error occurred parsing the link: it might be invalid")
 	}
-	page, err := NewPage(a.HTML)
+	page, err := page.New(a.HTML)
 	if err != nil {
 		return err
 	}
 
-	for _, check := range GetHTMLChecks() {
+	for _, check := range checks.GetHTMLChecks() {
 		log.Debug("Running HTML check ", check.Name, " ...")
 		matched, matches := check.Call(link, page, browser, a.Brands)
 		if matched {
@@ -132,6 +137,6 @@ func (a *Analysis) AnalyzeHTML() error {
 
 // AnalyzeBrowserResults performs all the available checks to be run on an HTML string
 // as well as the provided list of HTTP requests (e.g. downloaded scripts).
-func (a *Analysis) AnalyzeBrowserResults(browser *Browser) error {
+func (a *Analysis) AnalyzeBrowserResults(browser *browser.Browser) error {
 	return a.analyzeHTML(browser)
 }

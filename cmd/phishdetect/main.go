@@ -25,16 +25,19 @@ import (
 
 	"github.com/mattn/go-colorable"
 	"github.com/phishdetect/phishdetect"
-	"github.com/phishdetect/phishdetect/brand"
+	"github.com/phishdetect/phishdetect/brands"
+	"github.com/phishdetect/phishdetect/browser"
+	"github.com/phishdetect/phishdetect/checks"
+	"github.com/phishdetect/phishdetect/utils"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	"gopkg.in/yaml.v2"
 )
 
 var (
-	analysis     *phishdetect.Analysis
-	browser      *phishdetect.Browser
-	customBrands []*brand.Brand
+	a            *phishdetect.Analysis
+	b            *browser.Browser
+	customBrands []*brands.Brand
 
 	debug        bool
 	tor          bool
@@ -51,7 +54,7 @@ var (
 	args         []string
 )
 
-func compileBrands(brandsPath string) []*brand.Brand {
+func compileBrands(brandsPath string) []*brands.Brand {
 	if brandsPath == "" {
 		return nil
 	}
@@ -70,11 +73,11 @@ func compileBrands(brandsPath string) []*brand.Brand {
 		return nil
 	})
 
-	brands := []*brand.Brand{}
+	compiledBrands := []*brands.Brand{}
 
 	for _, path := range filePaths {
 		log.Debug("Trying to load custom brand file at path ", path)
-		customBrand := brand.Brand{}
+		customBrand := brands.Brand{}
 		yamlFile, err := ioutil.ReadFile(path)
 		err = yaml.Unmarshal(yamlFile, &customBrand)
 		if err != nil {
@@ -84,15 +87,15 @@ func compileBrands(brandsPath string) []*brand.Brand {
 
 		log.Debug("Loaded custom brand with name: ", customBrand.Name)
 
-		brands = append(brands, &customBrand)
+		compiledBrands = append(compiledBrands, &customBrand)
 	}
 
-	return brands
+	return compiledBrands
 }
 
-func loadBrands(analysis phishdetect.Analysis) {
+func loadBrands(a phishdetect.Analysis) {
 	for _, customBrand := range customBrands {
-		analysis.Brands.AddBrand(customBrand)
+		a.Brands.AddBrand(customBrand)
 	}
 
 	return
@@ -112,7 +115,7 @@ func init() {
 	flag.BoolVar(&logEvents, "log-events", false, "Log all DevTools events")
 	flag.BoolVar(&printVisits, "print-visits", false, "Print JSON output of all visits")
 	flag.StringVar(&apiVersion, "api-version", "1.37", "Specify which Docker API version to use")
-	flag.BoolVar(&urlOnly, "url-only", false, "Only perform URL analysis")
+	flag.BoolVar(&urlOnly, "url-only", false, "Only perform URL a")
 	flag.StringVar(&screenPath, "screen", "", "Specify the file path to store the screenshot")
 	flag.StringVar(&safeBrowsing, "safebrowsing", "", "Specify a file path containing your Google SafeBrowsing API key")
 	flag.StringVar(&container, "container", "phishdetect/phishdetect", "Specify a name for a docker image to use")
@@ -128,7 +131,7 @@ func init() {
 	log.Debug("Flags: enable Tor routing: ", tor)
 	log.Debug("Flags: enable all DevTools logging:", logEvents)
 	log.Debug("Flags: Docker API Version: ", apiVersion)
-	log.Debug("Flags: only URL analysis: ", urlOnly)
+	log.Debug("Flags: only URL a: ", urlOnly)
 	log.Debug("Flags: screenshot path: ", screenPath)
 	log.Debug("Flags: Google SafeBrowsing API key file: ", safeBrowsing)
 	log.Debug("Flags: Brands path: ", brandsPath)
@@ -148,7 +151,7 @@ func main() {
 			buf, _ := ioutil.ReadFile(safeBrowsing)
 			key := string(buf)
 			if key != "" {
-				phishdetect.SafeBrowsingKey = key
+				checks.SafeBrowsingKey = key
 			}
 		} else {
 			log.Warning("The specified Google SafeBrowsing API key file does not exist. Check disabled.")
@@ -157,7 +160,7 @@ func main() {
 
 	if yaraPath != "" {
 		if _, err := os.Stat(yaraPath); err == nil {
-			err = phishdetect.InitializeYara(yaraPath)
+			err = checks.InitializeYara(yaraPath)
 			if err != nil {
 				log.Warning("Failed to initialize Yara scanner: ", err.Error())
 			}
@@ -173,26 +176,26 @@ func main() {
 	log.Info("Analyzing URL ", url)
 
 	if urlOnly {
-		log.Debug("Instantiated url-only analysis.")
-		analysis = phishdetect.NewAnalysis(url, "")
-		loadBrands(*analysis)
+		log.Debug("Instantiated url-only a.")
+		a = phishdetect.NewAnalysis(url, "")
+		loadBrands(*a)
 	} else {
-		browser = phishdetect.NewBrowser(phishdetect.NormalizeURL(url), screenPath, tor, logEvents, container)
-		err := browser.Run()
+		b = browser.New(utils.NormalizeURL(url), screenPath, tor, logEvents, container)
+		err := b.Run()
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		analysis = phishdetect.NewAnalysis(url, browser.HTML)
-		loadBrands(*analysis)
-		analysis.AnalyzeBrowserResults(browser)
+		a = phishdetect.NewAnalysis(url, b.HTML)
+		loadBrands(*a)
+		a.AnalyzeBrowserResults(b)
 
-		if strings.HasPrefix(browser.FinalURL, "chrome-error://") {
+		if strings.HasPrefix(b.FinalURL, "chrome-error://") {
 			log.Fatal("An error occurred visiting the link. The website might be offline.")
 		}
 
 		if htmlPath != "" {
-			err = ioutil.WriteFile(htmlPath, []byte(browser.HTML), 0644)
+			err = ioutil.WriteFile(htmlPath, []byte(b.HTML), 0644)
 			if err != nil {
 				log.Error(err.Error())
 			} else {
@@ -200,42 +203,42 @@ func main() {
 			}
 		}
 
-		if browser.FinalURL != "" {
-			analysis.FinalURL = browser.FinalURL
-			log.Debug("Going to use final URL for analysis ", analysis.FinalURL)
+		if b.FinalURL != "" {
+			a.FinalURL = b.FinalURL
+			log.Debug("Going to use final URL for a ", a.FinalURL)
 		}
 	}
 
-	analysis.AnalyzeURL()
-	brand := analysis.Brands.GetBrand()
+	a.AnalyzeURL()
+	brand := a.Brands.GetBrand()
 
 	if !urlOnly {
-		for _, navHistory := range browser.NavigationHistory {
+		for _, navHistory := range b.NavigationHistory {
 			log.Info("Navigation entry to URL ", navHistory.URL,
 				" with transition of type ", navHistory.TransitionType)
 		}
-		for _, resourceData := range browser.ResourcesData {
+		for _, resourceData := range b.ResourcesData {
 			log.Info("Got resource of type ", resourceData.Type,
 				" at URL ", resourceData.URL, " with SHA256 ", resourceData.SHA256)
 		}
-		for _, dialog := range browser.Dialogs {
+		for _, dialog := range b.Dialogs {
 			log.Info("JavaScript dialog of type ", dialog.Type, " at URL ",
 				dialog.URL, " and message: ", dialog.Message)
 		}
-		for _, download := range browser.Downloads {
+		for _, download := range b.Downloads {
 			log.Info("Download of file named ", download.FileName,
 				" at URL ", download.URL)
 		}
 	}
 
-	log.Info("Final URL: ", analysis.FinalURL)
-	log.Info("Safelisted: ", analysis.Safelisted)
-	log.Info("Dangerous: ", analysis.Dangerous)
-	log.Info("Final score: ", analysis.Score)
+	log.Info("Final URL: ", a.FinalURL)
+	log.Info("Safelisted: ", a.Safelisted)
+	log.Info("Dangerous: ", a.Dangerous)
+	log.Info("Final score: ", a.Score)
 
 	log.Info("Brand: ", brand)
 	log.Debug("All brands scores:")
-	for _, brand := range analysis.Brands.List {
+	for _, brand := range a.Brands.List {
 		if brand.Matches == 0 {
 			continue
 		}
@@ -244,7 +247,7 @@ func main() {
 	}
 
 	log.Info("Warnings:")
-	for _, warning := range analysis.Warnings {
+	for _, warning := range a.Warnings {
 		log.WithFields(log.Fields{"name": warning.Name, "score": warning.Score}).
 			Info("\t- ", warning.Description)
 		if warning.Matches != nil {
@@ -256,7 +259,7 @@ func main() {
 	}
 
 	if printVisits {
-		data, err := json.MarshalIndent(browser.Visits, "", "    ")
+		data, err := json.MarshalIndent(b.Visits, "", "    ")
 		if err == nil {
 			log.Println(string(data))
 		}

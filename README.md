@@ -97,6 +97,7 @@ package main
 import (
     "fmt"
     "github.com/phishdetect/phishdetect"
+    "github.com/phishdetect/phishdetect/browser"
 )
 
 func main() {
@@ -105,7 +106,7 @@ func main() {
     // The first argument is the URL to analyze.
     // The second argument is the path to the file where to save the screenshot.
     // The third argument is a boolean value to enable or disable routing through Tor.
-    b := phishdetect.NewBrowser(url, "/path/to/screen.png", false, false, "")
+    b := browser.New(url, "/path/to/screen.png", false, false, "")
     // Run the browser.
     b.Run()
 
@@ -144,12 +145,12 @@ PhishDetect comes pre-compiled with a fixed set of brands. You might want to loa
 ```go
 import (
     "github.com/phishdetect/phishdetect"
-    "github.com/phishdetect/phishdetect/brand"
+    "github.com/phishdetect/phishdetect/brands"
 )
 
 func main() {
     // We create a new Brand.
-    myBrand := brand.Brand{
+    myBrand := brands.Brand{
         Name:       "MyBrand",
         Original:   []string{"MyBrand", "MyBrandProduct"},
         Safelist:   []string{"mybrand.com", "mybrand.net", "mybrand.org"},
@@ -173,7 +174,7 @@ If you want to scan the visited page's HTML with Yara rules of your own, you jus
 For example:
 
 ```go
-err := phishdetect.InitializeYara(rulesPath)
+err := checks.InitializeYara(rulesPath)
 if err != nil {
     log.Error("I failed to initialize the Yara scanner: ", err.Error())
 }
