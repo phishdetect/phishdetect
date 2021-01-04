@@ -63,7 +63,7 @@ func main() {
     a := phishdetect.NewAnalysis("example.com", "")
     // Perform the analysis of the URL/domain.
     a.AnalyzeURL()
-    // Retrieve the name of the the impersonated brand.
+    // Retrieve the name of the impersonated brand.
     brand := a.Brands.GetBrand()
 
     // If the domain is recognized as safelisted, this
