@@ -47,6 +47,20 @@ type Analysis struct {
 	Brands     *brands.Brands `json:"brands"`
 }
 
+// LoadYaraRules allows to pre-load Yara rules to be used during analysis.
+// NOTE: This is mostly intended to avoid library users from having to import
+//       the "check" package.
+func LoadYaraRules(yaraRulesPath string) error {
+	return checks.InitializeYara(yaraRulesPath)
+}
+
+// AddSafeBrowsingKey allows to pre-load a key for Google SafeBrowsing lookups.
+// NOTE: This is mostly intended to avoid library users from having to import
+//       the "check" package.
+func AddSafeBrowsingKey(key string) {
+	checks.SafeBrowsingKey = key
+}
+
 // NewAnalysis instantiates a new Analysis struct.
 func NewAnalysis(url, html string) *Analysis {
 	brandsList := brands.New()

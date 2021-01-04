@@ -27,7 +27,6 @@ import (
 	"github.com/phishdetect/phishdetect"
 	"github.com/phishdetect/phishdetect/brands"
 	"github.com/phishdetect/phishdetect/browser"
-	"github.com/phishdetect/phishdetect/checks"
 	"github.com/phishdetect/phishdetect/utils"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
@@ -151,7 +150,7 @@ func main() {
 			buf, _ := ioutil.ReadFile(safeBrowsing)
 			key := string(buf)
 			if key != "" {
-				checks.SafeBrowsingKey = key
+				phishdetect.AddSafeBrowsingKey(key)
 			}
 		} else {
 			log.Warning("The specified Google SafeBrowsing API key file does not exist. Check disabled.")
@@ -160,7 +159,7 @@ func main() {
 
 	if yaraPath != "" {
 		if _, err := os.Stat(yaraPath); err == nil {
-			err = checks.InitializeYara(yaraPath)
+			err = phishdetect.LoadYaraRules(yaraPath)
 			if err != nil {
 				log.Warning("Failed to initialize Yara scanner: ", err.Error())
 			}

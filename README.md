@@ -169,12 +169,12 @@ func main() {
 
 ### Adding Yara rules to the HTML classifier
 
-If you want to scan the visited page's HTML with Yara rules of your own, you just need to initialize PhishDetect's scanner using `phishdetect.InitializeYara()` and by providing the path (as a `string`) to either a Yara rule file or a folder containing Yara rule files (with `.yar` or `.yara` extensions).
+If you want to scan the visited page's HTML with Yara rules of your own, you just need to initialize PhishDetect's scanner using `phishdetect.LoadYaraRules()` and by providing the path (as a `string`) to either a Yara rule file or a folder containing Yara rule files (with `.yar` or `.yara` extensions).
 
 For example:
 
 ```go
-err := checks.InitializeYara(rulesPath)
+err := phishdetect.LoadYaraRules(rulesPath)
 if err != nil {
     log.Error("I failed to initialize the Yara scanner: ", err.Error())
 }
