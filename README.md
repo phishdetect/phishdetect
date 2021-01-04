@@ -198,9 +198,9 @@ In order to build binaries for GNU/Linux:
 
 Once the compilation is completed, you will find the command-line interface in the `build/` folder.
 
-Launch `phishdetect-cli -h` to view the help message:
+Launch `phishdetect -h` to view the help message:
 
-    Usage of phishdetect-cli:
+    Usage of phishdetect:
           --api-version string    Specify which Docker API version to use (default "1.37")
           --brands string         Specify a folder containing YAML files with Brand specifications
           --container string      Specify a name for a docker image to use (default "phishdetect/phishdetect")
@@ -214,7 +214,7 @@ Launch `phishdetect-cli -h` to view the help message:
 
 Specify a URL and the preferred options and wait for the results to appear:
 
-    $ build/linux/phishdetect-cli -screen /tmp/screen.png -tor http://[REDACTED].com/Login
+    $ build/linux/phishdetect -screen /tmp/screen.png -tor http://[REDACTED].com/Login
     INFO[0000] Analyzing URL http://[REDACTED].com/Login
     INFO[0000] Using User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safar$
     INFO[0000] Using debug port: 9564
