@@ -114,7 +114,7 @@ func main() {
     a := phishdetect.NewAnalysis(url, b.HTML)
     a.AnalyzeURL()
     // Analyze the HTML string.
-    a.AnalyzeHTML()
+    a.AnalyzeBrowserResults(b)
     brand := a.Brands.GetBrand()
 
     // In addition to the results explained in the previous example, we have
