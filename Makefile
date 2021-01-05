@@ -1,6 +1,6 @@
-.DEFAULT_GOAL   = linux
-BUILD_FOLDER	= $(shell pwd)/build
-FLAGS_LINUX	 = GOOS=linux GOARCH=amd64 CGO_ENABLED=1
+.DEFAULT_GOAL = linux
+BUILD_FOLDER  = $(shell pwd)/build
+FLAGS_LINUX   = GOOS=linux GOARCH=amd64 CGO_ENABLED=1
 
 lint:
 	@echo "[lint] Running linter on codebase"
