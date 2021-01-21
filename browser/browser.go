@@ -33,6 +33,7 @@ import (
 	"github.com/botherder/go-savetime/hashes"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	networkTypes "github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/mafredri/cdp"
@@ -111,6 +112,7 @@ type Browser struct {
 	LogEvents         bool                              `json:"log_events"`
 	UserAgent         string                            `json:"user_agent"`
 	ImageName         string                            `json:"image_name"`
+	NetworkID         string                            `json:"network_id"`
 	ContainerID       string                            `json:"container_id"`
 	FrameID           string                            `json:"frame_id"`
 	URL               string                            `json:"url"`
@@ -218,6 +220,67 @@ func (b *Browser) pickDebugPort() {
 	log.Debug("Using debug port: ", b.DebugPort)
 }
 
+func (b *Browser) createNetwork() error {
+	options := types.NetworkCreate{
+		CheckDuplicate: true,
+		Driver:         "bridge",
+		EnableIPv6:     false,
+		Internal:       true,
+	}
+
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return err
+	}
+	defer cli.Close()
+
+	ctx := context.Background()
+
+	networkName := fmt.Sprintf("pdnet-%s", b.ContainerID)
+	resp, err := cli.NetworkCreate(ctx, networkName, options)
+	if err != nil {
+		return err
+	}
+
+	if resp.Warning != "" {
+		log.Warning(resp.Warning)
+	}
+
+	b.NetworkID = resp.ID
+
+	log.Debug("Created a new Docker network with identifier: ", b.NetworkID)
+
+	return cli.NetworkConnect(ctx, b.NetworkID, b.ContainerID, &networkTypes.EndpointSettings{})
+}
+
+func (b* Browser) destroyNetwork() error {
+	if b.NetworkID == "" {
+		return nil
+	}
+
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return err
+	}
+	defer cli.Close()
+
+	ctx := context.Background()
+
+	inspect, err := cli.NetworkInspect(ctx, b.NetworkID, types.NetworkInspectOptions{})
+	if err != nil {
+		return err
+	}
+
+	for container, _ := range inspect.Containers {
+		if err := cli.NetworkDisconnect(ctx, b.NetworkID, container, true); err != nil {
+			return fmt.Errorf("Unable to disconnect container %s from network %s: %s",
+				container, b.NetworkID, err)
+		}
+	}
+
+	return cli.NetworkRemove(ctx, b.NetworkID)
+}
+
 func (b *Browser) startContainer() error {
 	b.pickUserAgent()
 	b.pickDebugPort()
@@ -262,6 +325,11 @@ func (b *Browser) startContainer() error {
 
 	b.ContainerID = resp.ID
 
+	err = b.createNetwork()
+	if err != nil {
+		return fmt.Errorf("Unable to create new Docker network: %s", err)
+	}
+
 	if err = cli.ContainerStart(ctx, b.ContainerID, types.ContainerStartOptions{}); err != nil {
 		return fmt.Errorf("Unable to start container: %s", err)
 	}
@@ -279,6 +347,11 @@ func (b *Browser) killContainer() error {
 	defer cli.Close()
 
 	ctx := context.Background()
+
+	err = b.destroyNetwork()
+	if err != nil {
+		return err
+	}
 
 	err = cli.ContainerKill(ctx, b.ContainerID, "")
 	if err != nil {
