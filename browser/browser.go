@@ -289,15 +289,6 @@ func (b *Browser) startContainer() error {
 		envs = append(envs, "TOR=yes")
 		log.Debug("Enabled route through the Tor network")
 	}
-
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		return fmt.Errorf("Unable to create new Docker client: %s", err)
-	}
-	defer cli.Close()
-
-	ctx := context.Background()
-
 	config := &container.Config{
 		Image: b.ImageName,
 		Env:   envs,
@@ -318,7 +309,7 @@ func (b *Browser) startContainer() error {
 	}
 
 	// First, we create a dedicated network.
-	err = b.createNetwork()
+	err := b.createNetwork()
 	if err != nil {
 		return fmt.Errorf("Unable to create new Docker network: %s", err)
 	}
@@ -328,6 +319,14 @@ func (b *Browser) startContainer() error {
 	netConfig := &networkTypes.NetworkingConfig{
 		EndpointsConfig: endpoints,
 	}
+
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return fmt.Errorf("Unable to create new Docker client: %s", err)
+	}
+	defer cli.Close()
+
+	ctx := context.Background()
 
 	// Then we create the container, using the configurations we set earlier.
 	resp, err := cli.ContainerCreate(ctx, config, hostConfig, netConfig, nil, "")
