@@ -252,7 +252,7 @@ func (b *Browser) createNetwork() error {
 	return nil
 }
 
-func (b* Browser) destroyNetwork() error {
+func (b *Browser) destroyNetwork() error {
 	if b.NetworkID == "" {
 		return nil
 	}
@@ -270,7 +270,7 @@ func (b* Browser) destroyNetwork() error {
 		return err
 	}
 
-	for container, _ := range inspect.Containers {
+	for container := range inspect.Containers {
 		if err := cli.NetworkDisconnect(ctx, b.NetworkID, container, true); err != nil {
 			return fmt.Errorf("Unable to disconnect container %s from network %s: %s",
 				container, b.NetworkID, err)
