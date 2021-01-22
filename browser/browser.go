@@ -225,7 +225,6 @@ func (b *Browser) createNetwork() error {
 		CheckDuplicate: true,
 		Driver:         "bridge",
 		EnableIPv6:     false,
-		Internal:       true,
 	}
 
 	cli, err := client.NewEnvClient()
@@ -236,7 +235,7 @@ func (b *Browser) createNetwork() error {
 
 	ctx := context.Background()
 
-	networkName := fmt.Sprintf("pdnet-%s", b.ContainerID)
+	networkName := fmt.Sprintf("pdnet-%d", time.Now().UnixNano())
 	resp, err := cli.NetworkCreate(ctx, networkName, options)
 	if err != nil {
 		return err
@@ -250,7 +249,7 @@ func (b *Browser) createNetwork() error {
 
 	log.Debug("Created a new Docker network with identifier: ", b.NetworkID)
 
-	return cli.NetworkConnect(ctx, b.NetworkID, b.ContainerID, &networkTypes.EndpointSettings{})
+	return nil
 }
 
 func (b* Browser) destroyNetwork() error {
@@ -291,6 +290,14 @@ func (b *Browser) startContainer() error {
 		log.Debug("Enabled route through the Tor network")
 	}
 
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return fmt.Errorf("Unable to create new Docker client: %s", err)
+	}
+	defer cli.Close()
+
+	ctx := context.Background()
+
 	config := &container.Config{
 		Image: b.ImageName,
 		Env:   envs,
@@ -310,26 +317,27 @@ func (b *Browser) startContainer() error {
 		AutoRemove: true,
 	}
 
-	cli, err := client.NewEnvClient()
+	// First, we create a dedicated network.
+	err = b.createNetwork()
 	if err != nil {
-		return fmt.Errorf("Unable to create new Docker client: %s", err)
+		return fmt.Errorf("Unable to create new Docker network: %s", err)
 	}
-	defer cli.Close()
 
-	ctx := context.Background()
+	endpoints := make(map[string]*networkTypes.EndpointSettings, 1)
+	endpoints[b.NetworkID] = &networkTypes.EndpointSettings{}
+	netConfig := &networkTypes.NetworkingConfig{
+		EndpointsConfig: endpoints,
+	}
 
-	resp, err := cli.ContainerCreate(ctx, config, hostConfig, nil, nil, "")
+	// Then we create the container, using the configurations we set earlier.
+	resp, err := cli.ContainerCreate(ctx, config, hostConfig, netConfig, nil, "")
 	if err != nil {
 		return fmt.Errorf("Unable to create container: %s", err)
 	}
 
 	b.ContainerID = resp.ID
 
-	err = b.createNetwork()
-	if err != nil {
-		return fmt.Errorf("Unable to create new Docker network: %s", err)
-	}
-
+	// Now we start the container.
 	if err = cli.ContainerStart(ctx, b.ContainerID, types.ContainerStartOptions{}); err != nil {
 		return fmt.Errorf("Unable to start container: %s", err)
 	}
@@ -348,17 +356,17 @@ func (b *Browser) killContainer() error {
 
 	ctx := context.Background()
 
-	err = b.destroyNetwork()
-	if err != nil {
-		return err
-	}
-
 	err = cli.ContainerKill(ctx, b.ContainerID, "")
 	if err != nil {
 		return err
 	}
 
 	log.Debug("Killed container with ID ", b.ContainerID)
+
+	err = b.destroyNetwork()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
