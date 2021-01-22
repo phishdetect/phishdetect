@@ -135,7 +135,7 @@ func main() {
 }
 ```
 
-For more information, please refer to the [Godoc][godoc].
+For more information, please refer to the [reference documentation](https://pkg.go.dev/github.com/phishdetect/phishdetect).
 
 
 ### Adding new Brands to the existing list
