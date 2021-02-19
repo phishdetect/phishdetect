@@ -32,7 +32,7 @@ if [[ -v TOR ]]; then
 fi
 
 if [[ -v PROXY ]]; then
-	CHROME_ARGS="$CHROME_ARGS --proxy-server=${PROXY}"
+	CHROME_ARGS="${CHROME_ARGS} --proxy-server=${PROXY}"
 fi
 
 echo $CHROME_ARGS
