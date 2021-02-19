@@ -30,3 +30,6 @@ const BrowserEventWaitTime time.Duration = 15
 // BrowserTimeout is the minutes we will wait before declaring failed the
 // connection to our debugged browser or to the URL failed.
 const BrowserTimeout time.Duration = 1
+
+// TorSocksProxy defines the default SOCKS5 conection string for Tor.
+const TorSocksProxy string = "socks5://127.0.0.1:9050"

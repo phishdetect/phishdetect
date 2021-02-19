@@ -28,6 +28,7 @@ import (
 	"net"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/botherder/go-savetime/hashes"
@@ -106,7 +107,7 @@ type NavigationHistory []page.NavigationEntry
 
 // Browser is a struct containing details over a browser navigation to a URL.
 type Browser struct {
-	UseTor            bool                              `json:"use_tor"`
+	Proxy             string                            `json:"proxy"`
 	DebugPort         int                               `json:"debug_port"`
 	DebugURL          string                            `json:"debug_url"`
 	LogEvents         bool                              `json:"log_events"`
@@ -168,7 +169,7 @@ func (c *LogCodec) ReadResponse(resp *rpcc.Response) error {
 }
 
 // New instantiates a new Browser struct.
-func New(url string, screenshotPath string, useTor bool, logEvents bool, imageName string) *Browser {
+func New(url string, screenshotPath string, proxy string, logEvents bool, imageName string) *Browser {
 	if imageName == "" {
 		imageName = "phishdetect/phishdetect"
 	}
@@ -176,7 +177,7 @@ func New(url string, screenshotPath string, useTor bool, logEvents bool, imageNa
 	return &Browser{
 		URL:            url,
 		ScreenshotPath: screenshotPath,
-		UseTor:         useTor,
+		Proxy:          proxy,
 		ImageName:      imageName,
 		LogEvents:      logEvents,
 	}
@@ -285,9 +286,14 @@ func (b *Browser) startContainer() error {
 	b.pickDebugPort()
 
 	envs := []string{fmt.Sprintf("USER_AGENT=%s", b.UserAgent)}
-	if b.UseTor {
-		envs = append(envs, "TOR=yes")
-		log.Debug("Enabled route through the Tor network")
+	if b.Proxy != "" {
+		if strings.ToLower(b.Proxy) == TorSocksProxy {
+			envs = append(envs, "TOR=1")
+			log.Debug("Enabled route through the Tor network")
+		}
+
+		log.Debug("Using proxy server: %s", b.Proxy)
+		envs = append(envs, fmt.Sprintf("PROXY=%s", b.Proxy))
 	}
 	config := &container.Config{
 		Image: b.ImageName,

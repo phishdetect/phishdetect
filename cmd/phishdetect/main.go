@@ -39,7 +39,7 @@ var (
 	customBrands []*brands.Brand
 
 	debug        bool
-	tor          bool
+	proxy        string
 	logEvents    bool
 	printVisits  bool
 	apiVersion   string
@@ -110,7 +110,7 @@ func initLogging() {
 
 func init() {
 	flag.BoolVar(&debug, "debug", false, "Enable debug logging")
-	flag.BoolVar(&tor, "tor", false, "Route connection through the Tor network")
+	flag.StringVar(&proxy, "proxy", "", "Route connection through a SOCKS5 proxy")
 	flag.BoolVar(&logEvents, "log-events", false, "Log all DevTools events")
 	flag.BoolVar(&printVisits, "print-visits", false, "Print JSON output of all visits")
 	flag.StringVar(&apiVersion, "api-version", "1.37", "Specify which Docker API version to use")
@@ -127,7 +127,7 @@ func init() {
 	initLogging()
 
 	log.Debug("Flags: enable debug logs: ", debug)
-	log.Debug("Flags: enable Tor routing: ", tor)
+	log.Debug("Flags: enable socks5 proxy: ", proxy)
 	log.Debug("Flags: enable all DevTools logging:", logEvents)
 	log.Debug("Flags: Docker API Version: ", apiVersion)
 	log.Debug("Flags: only URL analysis: ", urlOnly)
@@ -179,7 +179,7 @@ func main() {
 		a = phishdetect.NewAnalysis(url, "")
 		loadBrands(*a)
 	} else {
-		b = browser.New(utils.NormalizeURL(url), screenPath, tor, logEvents, container)
+		b = browser.New(utils.NormalizeURL(url), screenPath, proxy, logEvents, container)
 		err := b.Run()
 		if err != nil {
 			log.Fatal(err)

@@ -29,7 +29,10 @@ CHROME_ARGS="--headless \
 
 if [[ -v TOR ]]; then
     service tor start
-    CHROME_ARGS="$CHROME_ARGS --proxy-server=socks5://127.0.0.1:9050"
+fi
+
+if [[ -v PROXY ]]; then
+	CHROME_ARGS="$CHROME_ARGS --proxy-server=${PROXY}"
 fi
 
 echo $CHROME_ARGS
