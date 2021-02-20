@@ -292,7 +292,7 @@ func (b *Browser) startContainer() error {
 			log.Debug("Enabled route through the Tor network")
 		}
 
-		log.Debug("Using proxy server: %s", b.Proxy)
+		log.Debug("Using proxy server: ", b.Proxy)
 		envs = append(envs, fmt.Sprintf("PROXY=%s", b.Proxy))
 	}
 	config := &container.Config{
