@@ -105,8 +105,12 @@ func main() {
     // Instantiate a new Browser.
     // The first argument is the URL to analyze.
     // The second argument is the path to the file where to save the screenshot.
-    // The third argument is a boolean value to enable or disable routing through Tor.
-    b := browser.New(url, "/path/to/screen.png", false, false, "")
+    // Through the third argument we can specify a proxy to route the browser through.
+    // (for example "socks5://127.0.0.1:9050" for Tor).
+    // The fourth argument indicates whether to log all DevTools Protocol events.
+    // Through the fifth argument we can indicate a different Docker image that
+    // isn't the default.
+    b := browser.New(url, "/path/to/screen.png", "", false, "")
     // Run the browser.
     b.Run()
 
@@ -206,42 +210,13 @@ Launch `phishdetect -h` to view the help message:
           --container string      Specify a name for a docker image to use (default "phishdetect/phishdetect")
           --debug                 Enable debug logging
           --html string           Specify a path to save the HTML from the visited page
+          --log-events            Log all DevTools events
+          --print-visits          Print JSON output of all visits
+          --proxy string          Route connection through a SOCKS5 proxy
           --safebrowsing string   Specify a file path containing your Google SafeBrowsing API key
           --screen string         Specify the file path to store the screenshot
-          --tor                   Route connection through the Tor network
           --url-only              Only perform URL analysis
           --yara string           Specify a path to a file or folder contaning Yara rules
-
-Specify a URL and the preferred options and wait for the results to appear:
-
-    $ build/linux/phishdetect -screen /tmp/screen.png -tor http://[REDACTED].com/Login
-    INFO[0000] Analyzing URL http://[REDACTED].com/Login
-    INFO[0000] Using User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safar$
-    INFO[0000] Using debug port: 9564
-    INFO[0000] Enabled route through the Tor network
-    INFO[0000] Started container with ID e43f6df4ab0fb8e29453df3ebaede0fe6a4bcbafa4fabaaa1da95573a28552ff
-    INFO[0000] Attempting to connect to debug port...
-    INFO[0001] Connection to debug port established!
-    INFO[0013] Saved screenshot at /tmp/screen.png
-    INFO[0013] Killed container with ID e43f6df4ab0fb8e29453df3ebaede0fe6a4bcbafa4fabaaa1da95573a28552ff
-    INFO[0013] Starting to analyze HTML...
-    INFO[0013] Matched password-input
-    INFO[0013] Matched suspicious-title
-    INFO[0014] Starting to analyze the URL...
-    INFO[0014] Matched suspicious-hostname
-    INFO[0014] Matched no-tls
-    INFO[0014] Visits:
-    INFO[0014]      - http://[REDACTED].com/Login
-    INFO[0014]      - http://[REDACTED].com/Login/
-    INFO[0014] Final URL: http://[REDACTED].com/Login/
-    INFO[0014] Safelisted: false
-    INFO[0014] Final score: 90
-    INFO[0014] Brand: tutanota
-    INFO[0014] Warnings:
-    INFO[0014]      - The page contains a password input         name=password-input score=10
-    INFO[0014]      - The page has a suspicious title            name=suspicious-title score=30
-    INFO[0014]      - The domain contains suspicious words       name=suspicious-hostname score=30
-    INFO[0014]      - The website is not using a secure transport layer (HTTPS)  name=no-tls score=20
 
 
 ## License
