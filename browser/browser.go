@@ -123,6 +123,7 @@ type Browser struct {
 	FrameID           string                            `json:"frame_id"`           // ID of the primary frame.
 	URL               string                            `json:"url"`                // URL analyzed.
 	FinalURL          string                            `json:"final_url"`          // Last detected URL visited, from navigation history.
+	FinalURLError     string                            `json:"final_url_error"`    // Error text for the last detected visit.
 	RequestEvents     []*network.RequestWillBeSentReply `json:"request_events"`     // All requests performed (list of DevTools RequestWillBeSentReply events).
 	ResponseEvents    []*network.ResponseReceivedReply  `json:"response_events"`    // All responses recorded during execution (list of DevTools ResponseReceivedReply events).
 	ErrorEvents       []*network.LoadingFailedReply     `json:"error_events"`       // All errors recorded during execution (list of DevTools LoadingFailedReply events).
@@ -550,6 +551,18 @@ func (b *Browser) getFinalURL() error {
 
 	b.NavigationHistory = navHistoryReply.Entries
 	b.FinalURL = navHistoryReply.Entries[len(navHistoryReply.Entries)-1].URL
+	getFinalURLError := func() string {
+		for _, visit := range b.Visits {
+			for _, request := range visit.Requests {
+				if (request.DocumentURL == b.FinalURL) && visit.Error != nil {
+					return visit.Error.ErrorText
+				}
+			}
+		}
+		return ""
+	}
+	b.FinalURLError = getFinalURLError()
+
 	return nil
 }
 

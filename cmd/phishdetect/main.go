@@ -206,6 +206,10 @@ func main() {
 			a.FinalURL = b.FinalURL
 			log.Debug("Going to use final URL for a ", a.FinalURL)
 		}
+
+		if b.FinalURLError != "" {
+			log.Error("The execution ended with an error ", b.FinalURLError)
+		}
 	}
 
 	a.AnalyzeURL()
