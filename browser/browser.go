@@ -53,13 +53,13 @@ type RequestResponse struct {
 	Response *network.ResponseReceivedReply  `json:"response"`
 }
 
-// Visit identifies actually documents loaded on the browser frame.
+// Visit contains details of a document loaded on the browser frame.
 type Visit struct {
-	VisitID   string                            `json:"visit_id"`
-	Requests  []*network.RequestWillBeSentReply `json:"requests"`
-	Response  *network.ResponseReceivedReply    `json:"response"`
-	Resources []RequestResponse                 `json:"resources"`
-	Error     *network.LoadingFailedReply       `json:"error"`
+	VisitID   string                            `json:"visit_id"`  // ID of the visit as defined by DevTools.
+	Requests  []*network.RequestWillBeSentReply `json:"requests"`  // All requests performed by this visit (list of DevTools RequestWillBeSentReply events).
+	Response  *network.ResponseReceivedReply    `json:"response"`  // Response to the visit.
+	Resources []RequestResponse                 `json:"resources"` // All resources loaded by the visit (in the form of an aggregate of request->response).
+	Error     *network.LoadingFailedReply       `json:"error"`     // Any error the visit might have triggered.
 }
 
 // ByChronologicalOrder is used to order requests by timestamp.
@@ -78,49 +78,54 @@ func (r ByChronologicalOrder) Swap(i, j int) {
 // ResourceDataEntry contains metadata information on downloaded resource files
 // such as JavaScript snippets.
 type ResourceDataEntry struct {
-	VisitID   string `json:"visit_id"`
-	RequestID string `json:"request_id"`
-	Type      string `json:"type"`
-	URL       string `json:"url"`
-	SHA256    string `json:"sha256"`
-	Content   string `json:"content"`
+	VisitID   string `json:"visit_id"`   // ID of the visit which loaded this resource.
+	RequestID string `json:"request_id"` // ID of the specific request from the visit.
+	Type      string `json:"type"`       // Type of resource (e.g. Document, Image, Script).
+	URL       string `json:"url"`        // URL of the resource.
+	SHA256    string `json:"sha256"`     // SHA256 hash of the resource (if downloaded).
+	Content   string `json:"content"`    // String content of the resource (if downloaded).
 }
 
 // ResourcesData is a collection of ResourceDataEntry items.
 type ResourcesData []ResourceDataEntry
 
-// Download contains details of files which were offered for download.
+// Download contains details of a file download offered by the analyzed URL.
 type Download struct {
-	URL      string `json:"url"`
-	FileName string `json:"file_name"`
+	URL      string `json:"url"`       // URL of the file download offered.
+	FileName string `json:"file_name"` // File name offered for the download.
 }
 
 // Dialog contains details of JavaScript dialogs opened.
 type Dialog struct {
-	URL     string `json:"url"`
-	Type    string `json:"type"`
-	Message string `json:"message"`
+	URL     string `json:"url"`     // URL which prompted the JavaScript dialog.
+	Type    string `json:"type"`    // Type of dialog.
+	Message string `json:"message"` // Message contained in the dialog.
 }
 
 // NavigationHistory is a list of NavigationEntry from DevTools.
+// It should be an accurate representation of all main navigation events
+// performed while analyzing the URL (opposite to a full list of visits
+// or requests/responses which might have been executed in an iframe or
+// through JavaScript).
 type NavigationHistory []page.NavigationEntry
 
-// Browser is a struct containing details over a browser navigation to a URL.
+// Browser is the main struct containing information about the results of the
+// analysis of the given URL.
 type Browser struct {
 	Proxy             string                            `json:"proxy"`              // Proxy connection string specified to the browser (if any).
 	DebugPort         int                               `json:"debug_port"`         // Randomly picked port to use for DevTools debug.
 	DebugURL          string                            `json:"debug_url"`          // DevTools debug URL.
 	LogEvents         bool                              `json:"log_events"`         // Flag to indicate whether to log all DevTools events.
 	UserAgent         string                            `json:"user_agent"`         // Randomly picked User Agent specified to the browser.
-	ImageName         string                            `json:"image_name"`         // The name of the Docker image used.
-	NetworkID         string                            `json:"network_id"`         // The ID of Docker network created for the execution.
-	ContainerID       string                            `json:"container_id"`       // The ID of the Docker contained used.
-	FrameID           string                            `json:"frame_id"`           // The primary frame ID used.
-	URL               string                            `json:"url"`                // The URL analyzed.
-	FinalURL          string                            `json:"final_url"`          // The last detected URL visited, from navigation history.
-	RequestEvents     []*network.RequestWillBeSentReply `json:"request_events"`     // List of all requests performed.
-	ResponseEvents    []*network.ResponseReceivedReply  `json:"response_events"`    // All responses recorded during execution.
-	ErrorEvents       []*network.LoadingFailedReply     `json:"error_events"`       // All LoadingFailedReply events recorded during execution.
+	ImageName         string                            `json:"image_name"`         // Name of the Docker image used.
+	NetworkID         string                            `json:"network_id"`         // ID of Docker network created for the execution.
+	ContainerID       string                            `json:"container_id"`       // ID of the Docker contained used.
+	FrameID           string                            `json:"frame_id"`           // ID of the primary frame.
+	URL               string                            `json:"url"`                // URL analyzed.
+	FinalURL          string                            `json:"final_url"`          // Last detected URL visited, from navigation history.
+	RequestEvents     []*network.RequestWillBeSentReply `json:"request_events"`     // All requests performed (list of DevTools RequestWillBeSentReply events).
+	ResponseEvents    []*network.ResponseReceivedReply  `json:"response_events"`    // All responses recorded during execution (list of DevTools ResponseReceivedReply events).
+	ErrorEvents       []*network.LoadingFailedReply     `json:"error_events"`       // All errors recorded during execution (list of DevTools LoadingFailedReply events).
 	Visits            []Visit                           `json:"visits"`             // List of visits, inclusive of requests, responses and errors.
 	ResourcesData     ResourcesData                     `json:"resources_data"`     // List of resources loaded by all visits.
 	Downloads         []Download                        `json:"downloads"`          // List of file downloads offered during execution.
