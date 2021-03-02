@@ -107,29 +107,29 @@ type NavigationHistory []page.NavigationEntry
 
 // Browser is a struct containing details over a browser navigation to a URL.
 type Browser struct {
-	Proxy             string                            `json:"proxy"`
-	DebugPort         int                               `json:"debug_port"`
-	DebugURL          string                            `json:"debug_url"`
-	LogEvents         bool                              `json:"log_events"`
-	UserAgent         string                            `json:"user_agent"`
-	ImageName         string                            `json:"image_name"`
-	NetworkID         string                            `json:"network_id"`
-	ContainerID       string                            `json:"container_id"`
-	FrameID           string                            `json:"frame_id"`
-	URL               string                            `json:"url"`
-	FinalURL          string                            `json:"final_url"`
-	RequestEvents     []*network.RequestWillBeSentReply `json:"request_events"`
-	ResponseEvents    []*network.ResponseReceivedReply  `json:"response_events"`
-	ErrorEvents       []*network.LoadingFailedReply     `json:"error_events"`
-	Visits            []Visit                           `json:"visits"`
-	ResourcesData     ResourcesData                     `json:"resources_data"`
-	Downloads         []Download                        `json:"downloads"`
-	NavigationHistory NavigationHistory                 `json:"navigation_history"`
-	Dialogs           []Dialog                          `json:"dialogs"`
-	HTML              string                            `json:"html"`
-	HTMLSHA256        string                            `json:"html_sha256"`
-	ScreenshotPath    string                            `json:"screenshot_path"`
-	ScreenshotData    string                            `json:"screenshot_data"`
+	Proxy             string                            `json:"proxy"`              // Proxy connection string specified to the browser (if any).
+	DebugPort         int                               `json:"debug_port"`         // Randomly picked port to use for DevTools debug.
+	DebugURL          string                            `json:"debug_url"`          // DevTools debug URL.
+	LogEvents         bool                              `json:"log_events"`         // Flag to indicate whether to log all DevTools events.
+	UserAgent         string                            `json:"user_agent"`         // Randomly picked User Agent specified to the browser.
+	ImageName         string                            `json:"image_name"`         // The name of the Docker image used.
+	NetworkID         string                            `json:"network_id"`         // The ID of Docker network created for the execution.
+	ContainerID       string                            `json:"container_id"`       // The ID of the Docker contained used.
+	FrameID           string                            `json:"frame_id"`           // The primary frame ID used.
+	URL               string                            `json:"url"`                // The URL analyzed.
+	FinalURL          string                            `json:"final_url"`          // The last detected URL visited, from navigation history.
+	RequestEvents     []*network.RequestWillBeSentReply `json:"request_events"`     // List of all requests performed.
+	ResponseEvents    []*network.ResponseReceivedReply  `json:"response_events"`    // All responses recorded during execution.
+	ErrorEvents       []*network.LoadingFailedReply     `json:"error_events"`       // All LoadingFailedReply events recorded during execution.
+	Visits            []Visit                           `json:"visits"`             // List of visits, inclusive of requests, responses and errors.
+	ResourcesData     ResourcesData                     `json:"resources_data"`     // List of resources loaded by all visits.
+	Downloads         []Download                        `json:"downloads"`          // List of file downloads offered during execution.
+	NavigationHistory NavigationHistory                 `json:"navigation_history"` // Navigation history records as provided by Chrome.
+	Dialogs           []Dialog                          `json:"dialogs"`            // List of JavaScript dialogs that were prompted during execution.
+	HTML              string                            `json:"html"`               // DOM HTML of the last open frame.
+	HTMLSHA256        string                            `json:"html_sha256"`        // SHA256 hash of the last DOM HTML.
+	ScreenshotPath    string                            `json:"screenshot_path"`    // Path to the screenshot if saved to disk.
+	ScreenshotData    string                            `json:"screenshot_data"`    // Base64-encoded binary data of the screenshot.
 }
 
 // LogCodec captures the output from writing RPC requests and reading
