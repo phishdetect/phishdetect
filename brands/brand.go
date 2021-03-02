@@ -18,10 +18,10 @@ package brands
 
 // Brand defines the attributes of a brand.
 type Brand struct {
-	Name       string   `json:"name",yaml:"name"`
-	Original   []string `json:"original",yaml:"original"`
-	Dangerous  []string `json:"dangerous",yaml:"dangerous"`
-	Safelist   []string `json:"safelist",yaml:"safelist"`
-	Suspicious []string `json:"suspicious",yaml:"suspicious"`
-	Matches    int      `json:"matches",yaml:"matches"`
+	Name       string   `json:"name",yaml:"name"`             // Name of the brand.
+	Original   []string `json:"original",yaml:"original"`     // List of original brand words (e.g. inclusive of products or services).
+	Dangerous  []string `json:"dangerous",yaml:"dangerous"`   // List of regexps matching URLs for this brand that might be prone to abuse (e.g. Google Sites, Google Script).
+	Safelist   []string `json:"safelist",yaml:"safelist"`     // List of safelisted domains associated with this brand.
+	Suspicious []string `json:"suspicious",yaml:"suspicious"` // List of suspicious permutations of brand names.
+	Matches    int      `json:"matches",yaml:"matches"`       // Total number of matches of analysis checks for this brand.
 }
