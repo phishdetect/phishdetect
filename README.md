@@ -1,8 +1,13 @@
-[![Build Status](https://api.travis-ci.org/phishdetect/phishdetect.png?branch=master)](https://travis-ci.org/phishdetect/phishdetect)
-[![Go Report Card](https://goreportcard.com/badge/github.com/phishdetect/phishdetect)](https://goreportcard.com/report/github.com/phishdetect/phishdetect)
-[![Go Reference](https://pkg.go.dev/badge/github.com/phishdetect/phishdetect.svg)](https://pkg.go.dev/github.com/phishdetect/phishdetect)
+<p align="center">
+     <img src="https://raw.githubusercontent.com/phishdetect/assets/main/logos/phishdetect.png" width="300" />
+     <p align="center">
+          <a href="https://travis-ci.org/phishdetect/phishdetect"><img src="https://api.travis-ci.org/phishdetect/phishdetect.png?branch=master" alt="Build Status" /></a>
+          <a href="https://goreportcard.com/report/github.com/phishdetect/phishdetect"><img src="https://goreportcard.com/badge/github.com/phishdetect/phishdetect" alt="Report Card" /></a>
+          <a href="https://pkg.go.dev/github.com/phishdetect/phishdetect"><img src="https://pkg.go.dev/badge/github.com/phishdetect/phishdetect.svg" alt="Go Reference" /></a>
+     </p>
+</p>
 
-# PhishDetect
+# PhishDetect Core
 
 **NOTE: This project is experimental. It is not to be used yet, particularly with at-risk users.**
 
