@@ -175,7 +175,7 @@ func main() {
 	log.Info("Analyzing URL ", url)
 
 	if urlOnly {
-		log.Debug("Instantiated url-only a.")
+		log.Debug("Instantiated url-only analysis.")
 		a = phishdetect.NewAnalysis(url, "")
 		loadBrands(*a)
 	} else {
