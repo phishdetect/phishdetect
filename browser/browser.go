@@ -112,6 +112,7 @@ type NavigationHistory []page.NavigationEntry
 // Browser is the main struct containing information about the results of the
 // analysis of the given URL.
 type Browser struct {
+	Datetime          time.Time                         `json:"datetime"`           // Current UTC date and time.
 	Proxy             string                            `json:"proxy"`              // Proxy connection string specified to the browser (if any).
 	DebugPort         int                               `json:"debug_port"`         // Randomly picked port to use for DevTools debug.
 	DebugURL          string                            `json:"debug_url"`          // DevTools debug URL.
@@ -181,6 +182,7 @@ func New(url string, screenshotPath string, proxy string, logEvents bool, imageN
 	}
 
 	return &Browser{
+		Datetime:       time.Now().UTC(),
 		URL:            url,
 		ScreenshotPath: screenshotPath,
 		Proxy:          proxy,
