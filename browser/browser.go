@@ -78,12 +78,12 @@ func (r ByChronologicalOrder) Swap(i, j int) {
 // ResourceDataEntry contains metadata information on downloaded resource files
 // such as JavaScript snippets.
 type ResourceDataEntry struct {
-	VisitID   string `json:"visit_id"`   // ID of the visit which loaded this resource.
-	RequestID string `json:"request_id"` // ID of the specific request from the visit.
-	Type      string `json:"type"`       // Type of resource (e.g. Document, Image, Script).
-	URL       string `json:"url"`        // URL of the resource.
-	SHA256    string `json:"sha256"`     // SHA256 hash of the resource (if downloaded).
-	Content   string `json:"content"`    // String content of the resource (if downloaded).
+	VisitID   string `json:"visit_id", bson:"visit_id"`     // ID of the visit which loaded this resource.
+	RequestID string `json:"request_id", bson:"request_id"` // ID of the specific request from the visit.
+	Type      string `json:"type", bson:"type"`             // Type of resource (e.g. Document, Image, Script).
+	URL       string `json:"url", bson:"url"`               // URL of the resource.
+	SHA256    string `json:"sha256", bson:"sha256"`         // SHA256 hash of the resource (if downloaded).
+	Content   string `json:"content", bson:"content"`       // String content of the resource (if downloaded).
 }
 
 // ResourcesData is a collection of ResourceDataEntry items.
@@ -91,15 +91,15 @@ type ResourcesData []ResourceDataEntry
 
 // Download contains details of a file download offered by the analyzed URL.
 type Download struct {
-	URL      string `json:"url"`       // URL of the file download offered.
-	FileName string `json:"file_name"` // File name offered for the download.
+	URL      string `json:"url", bson:"url"`             // URL of the file download offered.
+	FileName string `json:"file_name", bson:"file_name"` // File name offered for the download.
 }
 
 // Dialog contains details of JavaScript dialogs opened.
 type Dialog struct {
-	URL     string `json:"url"`     // URL which prompted the JavaScript dialog.
-	Type    string `json:"type"`    // Type of dialog.
-	Message string `json:"message"` // Message contained in the dialog.
+	URL     string `json:"url", bson:"url"`         // URL which prompted the JavaScript dialog.
+	Type    string `json:"type", bson:"type"`       // Type of dialog.
+	Message string `json:"message", bson:"message"` // Message contained in the dialog.
 }
 
 // NavigationHistory is a list of NavigationEntry from DevTools.
@@ -112,31 +112,31 @@ type NavigationHistory []page.NavigationEntry
 // Browser is the main struct containing information about the results of the
 // analysis of the given URL.
 type Browser struct {
-	Datetime          time.Time                         `json:"datetime"`           // Current UTC date and time.
-	Proxy             string                            `json:"proxy"`              // Proxy connection string specified to the browser (if any).
-	DebugPort         int                               `json:"debug_port"`         // Randomly picked port to use for DevTools debug.
-	DebugURL          string                            `json:"debug_url"`          // DevTools debug URL.
-	LogEvents         bool                              `json:"log_events"`         // Flag to indicate whether to log all DevTools events.
-	UserAgent         string                            `json:"user_agent"`         // Randomly picked User Agent specified to the browser.
-	ImageName         string                            `json:"image_name"`         // Name of the Docker image used.
-	NetworkID         string                            `json:"network_id"`         // ID of Docker network created for the execution.
-	ContainerID       string                            `json:"container_id"`       // ID of the Docker contained used.
-	FrameID           string                            `json:"frame_id"`           // ID of the primary frame.
-	URL               string                            `json:"url"`                // URL analyzed.
-	FinalURL          string                            `json:"final_url"`          // Last detected URL visited, from navigation history.
-	FinalURLError     string                            `json:"final_url_error"`    // Error text for the last detected visit.
-	RequestEvents     []*network.RequestWillBeSentReply `json:"request_events"`     // All requests performed (list of DevTools RequestWillBeSentReply events).
-	ResponseEvents    []*network.ResponseReceivedReply  `json:"response_events"`    // All responses recorded during execution (list of DevTools ResponseReceivedReply events).
-	ErrorEvents       []*network.LoadingFailedReply     `json:"error_events"`       // All errors recorded during execution (list of DevTools LoadingFailedReply events).
-	Visits            []Visit                           `json:"visits"`             // List of visits, inclusive of requests, responses and errors.
-	ResourcesData     ResourcesData                     `json:"resources_data"`     // List of resources loaded by all visits.
-	Downloads         []Download                        `json:"downloads"`          // List of file downloads offered during execution.
-	NavigationHistory NavigationHistory                 `json:"navigation_history"` // Navigation history records as provided by Chrome.
-	Dialogs           []Dialog                          `json:"dialogs"`            // List of JavaScript dialogs that were prompted during execution.
-	HTML              string                            `json:"html"`               // DOM HTML of the last open frame.
-	HTMLSHA256        string                            `json:"html_sha256"`        // SHA256 hash of the last DOM HTML.
-	ScreenshotPath    string                            `json:"screenshot_path"`    // Path to the screenshot if saved to disk.
-	ScreenshotData    string                            `json:"screenshot_data"`    // Base64-encoded binary data of the screenshot.
+	Datetime          time.Time                         `json:"datetime", bson:"datetime"`                     // Current UTC date and time.
+	Proxy             string                            `json:"proxy, bson:"proxy"`                            // Proxy connection string specified to the browser (if any).
+	DebugPort         int                               `json:"debug_port", bson:"debug_port"`                 // Randomly picked port to use for DevTools debug.
+	DebugURL          string                            `json:"debug_url", bson:"debug_url"`                   // DevTools debug URL.
+	LogEvents         bool                              `json:"log_events", bson:"log_events"`                 // Flag to indicate whether to log all DevTools events.
+	UserAgent         string                            `json:"user_agent", bson:"user_agent"`                 // Randomly picked User Agent specified to the browser.
+	ImageName         string                            `json:"image_name", bson:"image_name"`                 // Name of the Docker image used.
+	NetworkID         string                            `json:"network_id", bson:"network_id"`                 // ID of Docker network created for the execution.
+	ContainerID       string                            `json:"container_id", bson:"container_id",`            // ID of the Docker contained used.
+	FrameID           string                            `json:"frame_id", bson:"frame_id"`                     // ID of the primary frame.
+	URL               string                            `json:"url", bson:"url"`                               // URL analyzed.
+	FinalURL          string                            `json:"final_url", bson:"final_url"`                   // Last detected URL visited, from navigation history.
+	FinalURLError     string                            `json:"final_url_error", bson:"final_url_error"`       // Error text for the last detected visit.
+	RequestEvents     []*network.RequestWillBeSentReply `json:"request_events", bson:"request_events"`         // All requests performed (list of DevTools RequestWillBeSentReply events).
+	ResponseEvents    []*network.ResponseReceivedReply  `json:"response_events", bson:"response_events"`       // All responses recorded during execution (list of DevTools ResponseReceivedReply events).
+	ErrorEvents       []*network.LoadingFailedReply     `json:"error_events", bson:"error_events",`            // All errors recorded during execution (list of DevTools LoadingFailedReply events).
+	Visits            []Visit                           `json:"visits", bson:"visits"`                         // List of visits, inclusive of requests, responses and errors.
+	ResourcesData     ResourcesData                     `json:"resources_data", bson:"resources_data"`         // List of resources loaded by all visits.
+	Downloads         []Download                        `json:"downloads", bson:"downloads"`                   // List of file downloads offered during execution.
+	NavigationHistory NavigationHistory                 `json:"navigation_history", bson:"navigation_history"` // Navigation history records as provided by Chrome.
+	Dialogs           []Dialog                          `json:"dialogs", bson:"dialogs"`                       // List of JavaScript dialogs that were prompted during execution.
+	HTML              string                            `json:"html", bson:"html"`                             // DOM HTML of the last open frame.
+	HTMLSHA256        string                            `json:"html_sha256, bson:"html_sha256"`                // SHA256 hash of the last DOM HTML.
+	ScreenshotPath    string                            `json:"screenshot_path", bson:"screenshot_path"`       // Path to the screenshot if saved to disk.
+	ScreenshotData    string                            `json:"screenshot_data, bson:"screenshot_data"`        // Base64-encoded binary data of the screenshot.
 }
 
 // LogCodec captures the output from writing RPC requests and reading
