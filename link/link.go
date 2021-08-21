@@ -23,7 +23,6 @@ import (
 
 	"github.com/bobesa/go-domain-util/domainutil"
 	"github.com/goware/urlx"
-	log "github.com/sirupsen/logrus"
 )
 
 // Link defines details of a parsed URL.
@@ -42,7 +41,6 @@ type Link struct {
 func New(urlString string) (*Link, error) {
 	parsed, err := urlx.Parse(urlString)
 	if err != nil {
-		log.Error(err)
 		return nil, err
 	}
 
