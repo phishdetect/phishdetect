@@ -55,7 +55,7 @@ func New(urlString string) (*Link, error) {
 	// We separate hostname from port number.
 	host := parsed.Host
 	if host == "" {
-		return nil, errors.New("The link does not contain a host")
+		return nil, errors.New("the link does not contain a host")
 	}
 
 	port := ""

@@ -281,7 +281,7 @@ func (b *Browser) destroyNetwork() error {
 
 	for container := range inspect.Containers {
 		if err := cli.NetworkDisconnect(ctx, b.NetworkID, container, true); err != nil {
-			return fmt.Errorf("Unable to disconnect container %s from network %s: %s",
+			return fmt.Errorf("failed to disconnect container %s from network %s: %v",
 				container, b.NetworkID, err)
 		}
 	}
@@ -325,7 +325,7 @@ func (b *Browser) startContainer() error {
 	// First, we create a dedicated network.
 	err := b.createNetwork()
 	if err != nil {
-		return fmt.Errorf("Unable to create new Docker network: %s", err)
+		return fmt.Errorf("failed to create new Docker network: %v", err)
 	}
 
 	endpoints := make(map[string]*networkTypes.EndpointSettings, 1)
@@ -336,7 +336,7 @@ func (b *Browser) startContainer() error {
 
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		return fmt.Errorf("Unable to create new Docker client: %s", err)
+		return fmt.Errorf("failed to create new Docker client: %v", err)
 	}
 	defer cli.Close()
 
@@ -345,14 +345,14 @@ func (b *Browser) startContainer() error {
 	// Then we create the container, using the configurations we set earlier.
 	resp, err := cli.ContainerCreate(ctx, config, hostConfig, netConfig, nil, "")
 	if err != nil {
-		return fmt.Errorf("Unable to create container: %s", err)
+		return fmt.Errorf("failed to create container: %v", err)
 	}
 
 	b.ContainerID = resp.ID
 
 	// Now we start the container.
 	if err = cli.ContainerStart(ctx, b.ContainerID, types.ContainerStartOptions{}); err != nil {
-		return fmt.Errorf("Unable to start container: %s", err)
+		return fmt.Errorf("failed to start container: %v", err)
 	}
 
 	log.Debug("Started container with ID ", b.ContainerID)
@@ -398,13 +398,13 @@ func (b *Browser) getHTML() error {
 
 	doc, err := cli.DOM.GetDocument(ctx, nil)
 	if err != nil {
-		return fmt.Errorf("Unable to access DOM: %s", err)
+		return fmt.Errorf("failed to access DOM: %v", err)
 	}
 	result, err := cli.DOM.GetOuterHTML(ctx, &dom.GetOuterHTMLArgs{
 		NodeID: &doc.Root.NodeID,
 	})
 	if err != nil {
-		return fmt.Errorf("Unable to retrieve HTML from DOM: %s", err)
+		return fmt.Errorf("failed to retrieve HTML from DOM: %v", err)
 	}
 	b.HTML = result.OuterHTML
 	b.HTMLSHA256, _ = hashes.StringSHA256(b.HTML)
@@ -428,7 +428,7 @@ func (b *Browser) getScreenshot() error {
 		SetQuality(80)
 	screenshot, err := cli.Page.CaptureScreenshot(ctx, screenshotArgs)
 	if err != nil {
-		return fmt.Errorf("Unable to capture screenshot: %s", err)
+		return fmt.Errorf("failed to capture screenshot: %v", err)
 	}
 	b.ScreenshotData = base64.StdEncoding.EncodeToString(screenshot.Data)
 	if b.ScreenshotPath != "" {
@@ -548,7 +548,7 @@ func (b *Browser) getFinalURL() error {
 
 	navHistoryReply, err := cli.Page.GetNavigationHistory(ctx)
 	if err != nil {
-		return fmt.Errorf("Unable to get navigation history: %s", err)
+		return fmt.Errorf("failed to get navigation history: %v", err)
 	}
 
 	b.NavigationHistory = navHistoryReply.Entries
@@ -673,7 +673,7 @@ func (b *Browser) Run() error {
 		SetReferrer("https://mail.google.com/mail/u/0/")
 	nav, err := cli.Page.Navigate(ctx, navArgs)
 	if err != nil {
-		return fmt.Errorf("Failed to navigate to page: %s", err)
+		return fmt.Errorf("failed to navigate to page: %v", err)
 	}
 
 	// Navigation started!

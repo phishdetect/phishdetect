@@ -18,6 +18,7 @@ package checks
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
@@ -77,14 +78,16 @@ func InitializeYara(yaraRulesPath string) error {
 
 		err = compiler.AddFile(rulesFile, "")
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to add rule file to Yara compiler: %v",
+				err)
 		}
 	}
 
 	// Collect and compile Yara rules.
 	YaraRules, err = compiler.GetRules()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to compile Yara rules: %v",
+			err)
 	}
 
 	return nil

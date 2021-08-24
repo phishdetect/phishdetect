@@ -36,7 +36,7 @@ type Page struct {
 // New instantiates a new Page struct.
 func New(html string) (*Page, error) {
 	if strings.TrimSpace(html) == "" {
-		return nil, fmt.Errorf("No valid HTML provided")
+		return nil, fmt.Errorf("no valid HTML provided")
 	}
 
 	soup := soup.HTMLParse(html)

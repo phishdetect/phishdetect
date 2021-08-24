@@ -17,7 +17,7 @@
 package phishdetect
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/phishdetect/phishdetect/brands"
 	"github.com/phishdetect/phishdetect/browser"
@@ -77,7 +77,7 @@ func (a *Analysis) analyzeDomainOrURL(checks []checks.Check) error {
 
 	link, err := link.New(a.FinalURL)
 	if err != nil {
-		return errors.New("An error occurred parsing the domain, it might be invalid")
+		return fmt.Errorf("failed to parse URL, might be invalid: %v", err)
 	}
 	for _, check := range checks {
 		log.Debug("Running domain check ", check.Name, " ...")
@@ -119,7 +119,8 @@ func (a *Analysis) analyzeHTML(browser *browser.Browser) error {
 
 	link, err := link.New(a.FinalURL)
 	if err != nil {
-		return errors.New("An error occurred parsing the link: it might be invalid")
+		return fmt.Errorf("failed parsing the link, it might be invalid: %v",
+			err)
 	}
 	page, err := page.New(a.HTML)
 	if err != nil {
