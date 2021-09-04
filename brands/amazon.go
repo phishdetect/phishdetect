@@ -614,11 +614,13 @@ func Amazon() *Brand {
 		"amazen", "amozon", "amazun",
 		"umazon", "amazoncom",
 	}
+	exclusions := []string{"amazonaws"}
 
 	return &Brand{
 		Name:       name,
 		Original:   original,
 		Safelist:   safelist,
 		Suspicious: suspicious,
+		Exclusions: exclusions,
 	}
 }
