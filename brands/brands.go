@@ -35,7 +35,6 @@ func New() *Brands {
 		List: []*Brand{
 			Amazon(),
 			Apple(),
-			Coinbase(),
 			Docusign(),
 			Dropbox(),
 			Facebook(),
@@ -44,7 +43,6 @@ func New() *Brands {
 			Linkedin(),
 			Microsoft(),
 			Netflix(),
-			NYTimes(),
 			PayPal(),
 			ProtonMail(),
 			RiseUp(),
