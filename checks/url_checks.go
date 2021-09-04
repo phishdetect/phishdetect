@@ -99,9 +99,8 @@ func checkSuspiciousHostname(link *link.Link, page *page.Page, browser *browser.
 			// We check if a word in the domain is among any brand's
 			// list of suspicious words.
 			for _, suspicious := range brand.Suspicious {
-				// Check if the suspicious word is a substring of the current
-				// checked word.
-				if strings.Contains(strings.ToLower(word), strings.ToLower(suspicious)) {
+				// Check for direct match.
+				if strings.ToLower(word) == strings.ToLower(suspicious) {
 					brand.Matches += 10
 					return true, nil
 				}
