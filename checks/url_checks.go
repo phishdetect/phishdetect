@@ -145,8 +145,9 @@ func checkSuspiciousHostname(link *link.Link, page *page.Page, browser *browser.
 
 		// Then we check generic words.
 		for _, suspect := range lowSuspects {
-			// Check for any direct match.
-			if strings.ToLower(word) == strings.ToLower(suspect) {
+			// Check if one of the suspect words is contained in the currently
+			// checked word.
+			if strings.Contains(strings.ToLower(word), strings.ToLower(suspect)) {
 				low++
 				break
 			}
