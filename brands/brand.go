@@ -23,5 +23,6 @@ type Brand struct {
 	Dangerous  []string `json:"dangerous",yaml:"dangerous"`   // List of regexps matching URLs for this brand that might be prone to abuse (e.g. Google Sites, Google Script).
 	Safelist   []string `json:"safelist",yaml:"safelist"`     // List of safelisted domains associated with this brand.
 	Suspicious []string `json:"suspicious",yaml:"suspicious"` // List of suspicious permutations of brand names.
+	Exclusions []string `json:"exclusions",yaml:"exclusions"` // List of words to exclude from heuristics because of high risk of false positives.
 	Matches    int      `json:"matches",yaml:"matches"`       // Total number of matches of analysis checks for this brand.
 }

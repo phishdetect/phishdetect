@@ -306,11 +306,13 @@ func Apple() *Brand {
 		"appel", "appli", "opple",
 		"applo", "upple", "applecom",
 	}
+	exclusions := []string{"cloud"}
 
 	return &Brand{
 		Name:       name,
 		Original:   original,
 		Safelist:   safelist,
 		Suspicious: suspicious,
+		Exclusions: exclusions,
 	}
 }

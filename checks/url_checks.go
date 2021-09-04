@@ -85,8 +85,17 @@ func checkSuspiciousHostname(link *link.Link, page *page.Page, browser *browser.
 	low := 0
 
 	for _, word := range words {
+		excludeWord := false
+
 		// First we check any potential words related to brands.
 		for _, brand := range brands.List {
+			// If the word is contained within the exclusions list,
+			// we skip it.
+			if slice.ContainsNoCase(brand.Exclusions, word) {
+				excludeWord = true
+				break
+			}
+
 			// We check if a word in the domain is among any brand's
 			// list of suspicious words.
 			if slice.ContainsNoCase(brand.Suspicious, word) {
@@ -112,14 +121,6 @@ func checkSuspiciousHostname(link *link.Link, page *page.Page, browser *browser.
 				// This should normally be covered in the brand.Suspicious list,
 				// but just in case we perform some additional test.
 				if len(original) >= 5 && len(word) >= 5 {
-					// We skip if the word is among those that with an edit
-					// distance of 1 could cause too many false positives.
-					// e.g. "icloud" => "cloud".
-					exclude := []string{"cloud"}
-					if slice.ContainsNoCase(exclude, word) {
-						continue
-					}
-
 					distance := levenshtein.DistanceForStrings([]rune(word),
 						[]rune(original), levenshtein.DefaultOptions)
 
@@ -131,6 +132,12 @@ func checkSuspiciousHostname(link *link.Link, page *page.Page, browser *browser.
 					}
 				}
 			}
+		}
+
+		// If the current word was found to be excluded, we do not continue
+		// any further.
+		if excludeWord == true {
+			continue
 		}
 
 		// Then we check generic words.
