@@ -363,11 +363,13 @@ func Spotify() *Brand {
 		"spotiyf", "sputify", "spatify",
 		"spotefy", "spetify", "spotifycom",
 	}
+	exclusions := []string{"shopify"}
 
 	return &Brand{
 		Name:       name,
 		Original:   original,
 		Safelist:   safelist,
 		Suspicious: suspicious,
+		Exclusions: exclusions,
 	}
 }
