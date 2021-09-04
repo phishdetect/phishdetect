@@ -180,6 +180,7 @@ func checkSuspiciousTLD(link *link.Link, page *page.Page, browser *browser.Brows
 		".club",
 		".co",
 		".download",
+		".finance",
 		".ga",
 		".gb",
 		".gdn",
