@@ -98,20 +98,21 @@ func checkSuspiciousHostname(link *link.Link, page *page.Page, browser *browser.
 
 			// We check if a word in the domain is among any brand's
 			// list of suspicious words.
-			if slice.ContainsNoCase(brand.Suspicious, word) {
-				// A suspicious brand name in the domain should have more
-				// weight than anything.
-				brand.Matches += 10
-				return true, nil
+			for _, suspicious := range brand.Suspicious {
+				// Check if the suspicious word is a substring of the current
+				// checked word.
+				if strings.Contains(strings.ToLower(word), strings.ToLower(suspicious)) {
+					brand.Matches += 10
+					return true, nil
+				}
 			}
 
 			// If no obvious suspicious word is found, we do some additional
 			// checks ...
 			for _, original := range brand.Original {
-				// First we check if there is a clean brand name in the domain.
-				if strings.ToLower(word) == strings.ToLower(original) {
-					// A brand name in a domain should have more weight
-					// than a brand name in the page HTML.
+				// If the original brand name is contained as a substring to
+				// the word we consider it a high-risk indicator.
+				if strings.Contains(strings.ToLower(word), strings.ToLower(original)) {
 					brand.Matches += 3
 					high++
 					break
@@ -125,7 +126,9 @@ func checkSuspiciousHostname(link *link.Link, page *page.Page, browser *browser.
 						[]rune(original), levenshtein.DefaultOptions)
 
 					// We treat any distance higher than 1 as a false positive.
-					if distance == 1 {
+					// In cases of words with length >= 10 we also accept a
+					// distance of 2 as suspicious.
+					if distance == 1 || (len(word) >= 10 && distance == 2) {
 						brand.Matches += 5
 						high++
 						break
