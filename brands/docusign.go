@@ -694,7 +694,7 @@ func Docusign() *Brand {
 	}
 
 	return &Brand{
-		Name:	   name,
+		Name:       name,
 		Original:   original,
 		Safelist:   safelist,
 		Suspicious: suspicious,
