@@ -1,6 +1,6 @@
 module github.com/phishdetect/phishdetect
 
-go 1.18
+go 1.15
 
 require (
 	github.com/anaskhan96/soup v1.2.5
