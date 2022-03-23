@@ -16,7 +16,7 @@ linux: deps
 	@mkdir -p $(BUILD_FOLDER)
 
 	@echo "[builder] Building Linux command-line executable"
-	@cd cmd/phishdetect; $(FLAGS_LINUX) go build -o $(BUILD_FOLDER)/phishdetect
+	@$(FLAGS_LINUX) go build -o $(BUILD_FOLDER)/phishdetect ./cmd/phishdetect
 
 	@echo "[builder] Done!"
 
