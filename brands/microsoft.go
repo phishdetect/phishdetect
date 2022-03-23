@@ -2285,11 +2285,13 @@ func Microsoft() *Brand {
 		"offece365", "effice365", "affice365",
 		"offico365", "uffice365",
 	}...)
+	exclusions := []string{"microsoftazurelogicapps", "azurecontainerapps"}
 
 	return &Brand{
 		Name:       name,
 		Original:   original,
 		Safelist:   safelist,
 		Suspicious: suspicious,
+		Exclusions: exclusions,
 	}
 }
